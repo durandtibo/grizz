@@ -28,7 +28,7 @@ def setup_object(obj_or_config: T | dict) -> T:
 
     ```pycon
 
-    >>> from grizz.utils import setup_object
+    >>> from grizz.utils.factory import setup_object
     >>> obj = setup_object({"_target_": "collections.deque", "iterable": [1, 2, 1, 3]})
     >>> obj
     deque([1, 2, 1, 3])

@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 from objectory import OBJECT_TARGET
 
-from grizz.utils import setup_object
+from grizz.utils.factory import setup_object
 
 ##################################
 #     Tests for setup_object     #
