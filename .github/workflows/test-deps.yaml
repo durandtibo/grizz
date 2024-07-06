@@ -1,0 +1,177 @@
+name: Test - Dependencies
+on:
+  workflow_call:
+  workflow_dispatch:  # to trigger manually
+
+jobs:
+  coola:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        coola-version: [ 0.7.2 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install packages
+        run: |
+          poetry run make config-poetry
+          poetry run make install
+
+      - name: Install coola
+        run: |
+          poetry run pip install coola==${{ matrix.coola-version }}
+
+      - name: Show installed packages
+        run: |
+          poetry run poetry show
+          poetry run poetry show --tree
+
+      - name: Run unit tests
+        run: |
+          poetry run make unit-test-cov
+
+
+  objectory:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        objectory-version: [ 0.1.2 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install packages
+        run: |
+          poetry run make config-poetry
+          poetry run make install
+
+      - name: Install objectory
+        run: |
+          poetry run pip install objectory==${{ matrix.objectory-version }}
+
+      - name: Show installed packages
+        run: |
+          poetry run poetry show
+          poetry run poetry show --tree
+
+      - name: Run unit tests
+        run: |
+          poetry run make unit-test-cov
+
+
+  polars:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        polars-version: [ 1.0.0, 0.20.31, 0.19.19, 0.18.15 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install packages
+        run: |
+          poetry run make config-poetry
+          poetry run make install
+
+      - name: Install polars
+        run: |
+          poetry run pip install polars==${{ matrix.polars-version }}
+
+      - name: Show installed packages
+        run: |
+          poetry run poetry show
+          poetry run poetry show --tree
+
+      - name: Run unit tests
+        run: |
+          poetry run make unit-test-cov
+
+
+  #################################
+  #     Optional dependencies     #
+  #################################
+
+
+  tqdm:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        tqdm-version: [ 4.66.4, 4.65.2 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install packages
+        run: |
+          poetry run make config-poetry
+          poetry run make install
+
+      - name: Install PyTorch
+        run: |
+          poetry run pip install tqdm==${{ matrix.tqdm-version }}
+
+      - name: Show installed packages
+        run: |
+          poetry run poetry show
+          poetry run poetry show --tree
+
+      - name: Run unit tests
+        run: |
+          poetry run make unit-test-cov
