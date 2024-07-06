@@ -37,7 +37,7 @@ def is_clickhouse_connect_available() -> bool:
 
     ```pycon
 
-    >>> from flamme.utils.imports import is_clickhouse_connect_available
+    >>> from grizz.utils.imports import is_clickhouse_connect_available
     >>> is_clickhouse_connect_available()
 
     ```
@@ -56,7 +56,7 @@ def check_clickhouse_connect() -> None:
 
     ```pycon
 
-    >>> from flamme.utils.imports import check_clickhouse_connect
+    >>> from grizz.utils.imports import check_clickhouse_connect
     >>> check_clickhouse_connect()
 
     ```
@@ -85,7 +85,7 @@ def clickhouse_connect_available(fn: Callable[..., Any]) -> Callable[..., Any]:
 
     ```pycon
 
-    >>> from flamme.utils.imports import clickhouse_connect_available
+    >>> from grizz.utils.imports import clickhouse_connect_available
     >>> @clickhouse_connect_available
     ... def my_function(n: int = 0) -> int:
     ...     return 42 + n
@@ -112,7 +112,7 @@ def is_tqdm_available() -> bool:
 
     ```pycon
 
-    >>> from flamme.utils.imports import is_tqdm_available
+    >>> from grizz.utils.imports import is_tqdm_available
     >>> is_tqdm_available()
 
     ```
@@ -130,7 +130,7 @@ def check_tqdm() -> None:
 
     ```pycon
 
-    >>> from flamme.utils.imports import check_tqdm
+    >>> from grizz.utils.imports import check_tqdm
     >>> check_tqdm()
 
     ```
@@ -159,7 +159,7 @@ def tqdm_available(fn: Callable[..., Any]) -> Callable[..., Any]:
 
     ```pycon
 
-    >>> from flamme.utils.imports import tqdm_available
+    >>> from grizz.utils.imports import tqdm_available
     >>> @tqdm_available
     ... def my_function(n: int = 0) -> int:
     ...     return 42 + n

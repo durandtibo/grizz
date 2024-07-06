@@ -1,2 +1,2 @@
 # grizz
-A light library to prepare polars DataFrames
+A light library to preprocess data with polars

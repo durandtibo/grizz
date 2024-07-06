@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from objectory import OBJECT_TARGET
 
-from grizz.ingestor import is_ingestor_config, setup_ingestor, CsvIngestor
+from grizz.ingestor import CsvIngestor, is_ingestor_config, setup_ingestor
 
 if TYPE_CHECKING:
     import pytest

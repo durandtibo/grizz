@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "grizz"
 version = "0.0.1a0"
-description = "A library to check if two complex/nested objects are equal or not"
+description = "A light library to preprocess data with polars"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
 homepage = "https://github.com/durandtibo/grizz"
@@ -36,6 +36,7 @@ packages = [
 [tool.poetry.dependencies]
 # Core dependencies
 coola = ">=0.7,<1.0"
+iden = ">=0.0.4,<1.0"
 objectory = ">=0.1,<0.2"
 polars = ">=1.0,<2.0"
 python = ">=3.9,<3.13"
@@ -46,7 +47,7 @@ tqdm = { version = ">=4.65,<5.0", optional = true }
 
 
 [tool.poetry.extras]
-all = ["tqdm"]
+all = ["clickhouse-connect", "tqdm"]
 
 [tool.poetry.group.docs]
 optional = true

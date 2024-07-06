@@ -547,6 +547,24 @@ files = [
 colorama = ">=0.4"
 
 [[package]]
+name = "iden"
+version = "0.0.4"
+description = "simple library to manage a dataset of shards to train machine learning models"
+optional = false
+python-versions = "<3.13,>=3.9"
+files = [
+    {file = "iden-0.0.4-py3-none-any.whl", hash = "sha256:ae4f8e7166a475a8c3592234e091c7e197e60a0b40957046f84da42e5165b92a"},
+    {file = "iden-0.0.4.tar.gz", hash = "sha256:d95907e30ccb41593ca4b33b88cc213b9e9340c90ef39dad5d4ec066cd7b4630"},
+]
+
+[package.dependencies]
+coola = ">=0.3,<1.0"
+objectory = ">=0.1,<1.0"
+
+[package.extras]
+all = ["numpy (>=1.22,<2.0)", "pyyaml (>=6.0,<7.0)", "safetensors (>=0.4,<1.0)", "torch (>=1.11,<2.3)", "torch (>=1.11,<3.0)"]
+
+[[package]]
 name = "identify"
 version = "2.5.36"
 description = "File identification library for Python"
@@ -1738,9 +1756,9 @@ cffi = {version = ">=1.11", markers = "platform_python_implementation == \"PyPy\
 cffi = ["cffi (>=1.11)"]
 
 [extras]
-all = ["tqdm"]
+all = ["clickhouse-connect", "tqdm"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "1cf37e3962392b24cb1afcca56fac9c283214fd51f157f0dc75ad9a4919b8777"
+content-hash = "260fc86134a2169beb000af2ba875a0eeaf553220f947b34952edded0c3d297f"
