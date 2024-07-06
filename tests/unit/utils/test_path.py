@@ -6,8 +6,9 @@ from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
-from flamme.utils.io import save_text
-from flamme.utils.path import (
+
+from grizz.utils.io import save_text
+from grizz.utils.path import (
     find_files,
     find_parquet_files,
     human_file_size,
@@ -26,7 +27,7 @@ def test_human_file_size() -> None:
 def test_human_file_size_2kb() -> None:
     path = Mock(spec=Path, stat=Mock(return_value=Mock(st_size=2048)))
     sanitize_mock = Mock(return_value=path)
-    with patch("flamme.utils.path.sanitize_path", sanitize_mock):
+    with patch("grizz.utils.path.sanitize_path", sanitize_mock):
         assert human_file_size(path) == "2.00 KB"
         sanitize_mock.assert_called_once_with(path)
 
