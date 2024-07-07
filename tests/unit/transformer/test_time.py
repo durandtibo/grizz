@@ -12,11 +12,11 @@ from grizz.transformer import TimeToSecond
 #############################################
 
 
-def test_time_to_second_dataframe_transformer_str() -> None:
+def test_time_to_second_transformer_str() -> None:
     assert str(TimeToSecond(in_col="time", out_col="second")).startswith("TimeToSecondTransformer(")
 
 
-def test_time_to_second_dataframe_transformer_transform() -> None:
+def test_time_to_second_transformer_transform() -> None:
     frame = pl.DataFrame(
         {
             "time": [

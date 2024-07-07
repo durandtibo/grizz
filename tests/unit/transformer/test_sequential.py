@@ -10,7 +10,7 @@ from grizz.transformer import Cast, Sequential
 ###########################################
 
 
-def test_sequential_dataframe_transformer_repr() -> None:
+def test_sequential_transformer_repr() -> None:
     assert repr(
         Sequential(
             [
@@ -21,11 +21,11 @@ def test_sequential_dataframe_transformer_repr() -> None:
     ).startswith("SequentialTransformer(")
 
 
-def test_sequential_dataframe_transformer_repr_empty() -> None:
+def test_sequential_transformer_repr_empty() -> None:
     assert repr(Sequential([])) == "SequentialTransformer()"
 
 
-def test_sequential_dataframe_transformer_str() -> None:
+def test_sequential_transformer_str() -> None:
     assert str(
         Sequential(
             [
@@ -36,11 +36,11 @@ def test_sequential_dataframe_transformer_str() -> None:
     ).startswith("SequentialTransformer(")
 
 
-def test_sequential_dataframe_transformer_str_empty() -> None:
+def test_sequential_transformer_str_empty() -> None:
     assert str(Sequential([])) == "SequentialTransformer()"
 
 
-def test_sequential_dataframe_transformer_transform_1() -> None:
+def test_sequential_transformer_transform_1() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5],
@@ -63,7 +63,7 @@ def test_sequential_dataframe_transformer_transform_1() -> None:
     )
 
 
-def test_sequential_dataframe_transformer_transform_2() -> None:
+def test_sequential_transformer_transform_2() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5],
