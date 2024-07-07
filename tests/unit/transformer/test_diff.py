@@ -10,11 +10,11 @@ from grizz.transformer import Diff, TimeDiff
 #####################################
 
 
-def test_diff_dataframe_transformer_str() -> None:
+def test_diff_transformer_str() -> None:
     assert str(Diff(in_col="col1", out_col="diff")).startswith("DiffTransformer(")
 
 
-def test_diff_dataframe_transformer_transform_int32() -> None:
+def test_diff_transformer_transform_int32() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5],
@@ -37,7 +37,7 @@ def test_diff_dataframe_transformer_transform_int32() -> None:
     )
 
 
-def test_diff_dataframe_transformer_transform_float32() -> None:
+def test_diff_transformer_transform_float32() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
@@ -60,7 +60,7 @@ def test_diff_dataframe_transformer_transform_float32() -> None:
     )
 
 
-def test_diff_dataframe_transformer_transform_shift_2() -> None:
+def test_diff_transformer_transform_shift_2() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5],
@@ -83,7 +83,7 @@ def test_diff_dataframe_transformer_transform_shift_2() -> None:
     )
 
 
-def test_diff_dataframe_transformer_transform_empty() -> None:
+def test_diff_transformer_transform_empty() -> None:
     frame = pl.DataFrame(
         {"col1": [], "col2": []},
         schema={"col1": pl.Int64, "col2": pl.String},
@@ -104,13 +104,13 @@ def test_diff_dataframe_transformer_transform_empty() -> None:
 #########################################
 
 
-def test_time_diff_dataframe_transformer_str() -> None:
+def test_time_diff_transformer_str() -> None:
     assert str(TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff")).startswith(
         "TimeDiffTransformer("
     )
 
 
-def test_time_diff_dataframe_transformer_transform() -> None:
+def test_time_diff_transformer_transform() -> None:
     frame = pl.DataFrame(
         {
             "col": ["b", "b", "b", "c", "a", "a", "a", "b", "c", "d"],
@@ -133,7 +133,7 @@ def test_time_diff_dataframe_transformer_transform() -> None:
     )
 
 
-def test_time_diff_dataframe_transformer_transform_int64() -> None:
+def test_time_diff_transformer_transform_int64() -> None:
     frame = pl.DataFrame(
         {
             "col": ["a", "b", "a", "a", "b"],
@@ -156,7 +156,7 @@ def test_time_diff_dataframe_transformer_transform_int64() -> None:
     )
 
 
-def test_time_diff_dataframe_transformer_transform_float64() -> None:
+def test_time_diff_transformer_transform_float64() -> None:
     frame = pl.DataFrame(
         {
             "col": ["a", "b", "a", "a", "b"],
@@ -179,7 +179,7 @@ def test_time_diff_dataframe_transformer_transform_float64() -> None:
     )
 
 
-def test_time_diff_dataframe_transformer_transform_empty() -> None:
+def test_time_diff_transformer_transform_empty() -> None:
     frame = pl.DataFrame(
         {"col": [], "time": []},
         schema={"col": pl.String, "time": pl.Int64},

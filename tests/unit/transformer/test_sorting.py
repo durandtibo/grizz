@@ -10,11 +10,11 @@ from grizz.transformer import Sort, SortColumns
 #####################################
 
 
-def test_sort_dataframe_transformer_str() -> None:
+def test_sort_transformer_str() -> None:
     assert str(Sort(columns=["col3", "col1"])).startswith("SortTransformer(")
 
 
-def test_sort_dataframe_transformer_transform() -> None:
+def test_sort_transformer_transform() -> None:
     frame = pl.DataFrame(
         {"col1": [None, 1, 2, None], "col2": [None, 6.0, 5.0, 4.0], "col3": [None, "a", "c", "b"]}
     )
@@ -32,7 +32,7 @@ def test_sort_dataframe_transformer_transform() -> None:
     )
 
 
-def test_sort_dataframe_transformer_transform_null_last() -> None:
+def test_sort_transformer_transform_null_last() -> None:
     frame = pl.DataFrame(
         {"col1": [None, 1, 2, None], "col2": [None, 6.0, 5.0, 4.0], "col3": [None, "a", "c", "b"]}
     )
@@ -50,7 +50,7 @@ def test_sort_dataframe_transformer_transform_null_last() -> None:
     )
 
 
-def test_sort_dataframe_transformer_transform_empty() -> None:
+def test_sort_transformer_transform_empty() -> None:
     frame = pl.DataFrame({"col1": [], "col2": [], "col3": []})
     transformer = Sort(columns=["col3", "col1"])
     out = transformer.transform(frame)
@@ -62,11 +62,11 @@ def test_sort_dataframe_transformer_transform_empty() -> None:
 ############################################
 
 
-def test_sort_columns_dataframe_transformer_str() -> None:
+def test_sort_columns_transformer_str() -> None:
     assert str(SortColumns()).startswith("SortColumnsTransformer(")
 
 
-def test_sort_columns_dataframe_transformer_transform() -> None:
+def test_sort_columns_transformer_transform() -> None:
     frame = pl.DataFrame({"col2": [1, 2, None], "col3": [6.0, 5.0, 4.0], "col1": ["a", "c", "b"]})
     transformer = SortColumns()
     out = transformer.transform(frame)
@@ -76,7 +76,7 @@ def test_sort_columns_dataframe_transformer_transform() -> None:
     )
 
 
-def test_sort_columns_dataframe_transformer_transform_reverse() -> None:
+def test_sort_columns_transformer_transform_reverse() -> None:
     frame = pl.DataFrame({"col2": [1, 2, None], "col3": [6.0, 5.0, 4.0], "col1": ["a", "c", "b"]})
     transformer = SortColumns(reverse=True)
     out = transformer.transform(frame)

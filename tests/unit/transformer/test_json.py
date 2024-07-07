@@ -10,11 +10,11 @@ from grizz.transformer import JsonDecode
 ###########################################
 
 
-def test_json_decode_dataframe_transformer_str() -> None:
+def test_json_decode_transformer_str() -> None:
     assert str(JsonDecode(columns=["col1", "col3"])).startswith("JsonDecodeTransformer(")
 
 
-def test_json_decode_dataframe_transformer_transform() -> None:
+def test_json_decode_transformer_transform() -> None:
     frame = pl.DataFrame(
         {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
         schema={"list": pl.String, "dict": pl.String},
@@ -33,7 +33,7 @@ def test_json_decode_dataframe_transformer_transform() -> None:
     )
 
 
-def test_json_decode_dataframe_transformer_transform_one_col() -> None:
+def test_json_decode_transformer_transform_one_col() -> None:
     frame = pl.DataFrame(
         {
             "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
@@ -64,7 +64,7 @@ def test_json_decode_dataframe_transformer_transform_one_col() -> None:
     )
 
 
-def test_json_decode_dataframe_transformer_transform_two_cols() -> None:
+def test_json_decode_transformer_transform_two_cols() -> None:
     frame = pl.DataFrame(
         {
             "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
@@ -95,7 +95,7 @@ def test_json_decode_dataframe_transformer_transform_two_cols() -> None:
     )
 
 
-def test_json_decode_dataframe_transformer_transform_dtype() -> None:
+def test_json_decode_transformer_transform_dtype() -> None:
     frame = pl.DataFrame(
         {
             "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],

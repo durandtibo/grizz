@@ -14,15 +14,15 @@ def my_filter(frame: pl.DataFrame) -> pl.DataFrame:
     return frame.filter(pl.col("col1").is_in({2, 4}))
 
 
-def test_function_dataframe_transformer_repr() -> None:
+def test_function_transformer_repr() -> None:
     assert repr(Function(func=my_filter)).startswith("FunctionTransformer(")
 
 
-def test_function_dataframe_transformer_str() -> None:
+def test_function_transformer_str() -> None:
     assert str(Function(func=my_filter)).startswith("FunctionTransformer(")
 
 
-def test_function_dataframe_transformer_transform() -> None:
+def test_function_transformer_transform() -> None:
     transformer = Function(func=my_filter)
     frame = pl.DataFrame(
         {
