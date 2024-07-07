@@ -3,26 +3,31 @@ values."""
 
 from __future__ import annotations
 
-__all__ = ["StripCharsDataFrameTransformer"]
+__all__ = ["BaseColumnsTransformer"]
 
 import logging
-from typing import TYPE_CHECKING, Any
+from abc import abstractmethod
+from typing import TYPE_CHECKING
 
-import polars as pl
-
-from grizz.transformer.dataframe.columns import BaseColumnsDataFrameTransformer
-from grizz.utils.format import str_kwargs
+from grizz.transformer.base import BaseTransformer
+from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    import polars as pl
+
+if is_tqdm_available():
+    from tqdm import tqdm
+else:  # pragma: no cover
+    from grizz.utils.noop import tqdm
 
 logger = logging.getLogger(__name__)
 
 
-class StripCharsDataFrameTransformer(BaseColumnsDataFrameTransformer):
-    r"""Implement a transformer to remove leading and trailing
-    characters.
+class BaseColumnsTransformer(BaseTransformer):
+    r"""Define a base class to implement transformers that apply the same
+    transformation on multiple columns.
 
     Args:
         columns: The columns to prepare. If ``None``, it processes all
@@ -30,17 +35,16 @@ class StripCharsDataFrameTransformer(BaseColumnsDataFrameTransformer):
         ignore_missing: If ``False``, an exception is raised if a
             column is missing, otherwise just a warning message is
             shown.
-        **kwargs: The keyword arguments for ``strip_chars``.
 
     Example usage:
 
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import StripChars
+    >>> from grizz.transformer import StripChars
     >>> transformer = StripChars(columns=["col2", "col3"])
     >>> transformer
-    StripCharsDataFrameTransformer(columns=('col2', 'col3'), ignore_missing=False)
+    StripCharsTransformer(columns=('col2', 'col3'), ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -81,22 +85,46 @@ class StripCharsDataFrameTransformer(BaseColumnsDataFrameTransformer):
     """
 
     def __init__(
-        self, columns: Sequence[str] | None = None, ignore_missing: bool = False, **kwargs: Any
+        self,
+        columns: Sequence[str] | None = None,
+        ignore_missing: bool = False,
     ) -> None:
-        super().__init__(columns=columns, ignore_missing=ignore_missing)
-        self._kwargs = kwargs
+        self._columns = tuple(columns) if columns is not None else None
+        self._ignore_missing = bool(ignore_missing)
 
-    def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(columns={self._columns}, "
-            f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
-        )
-
-    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
-        if frame.schema[column] == pl.String:
-            logger.info(f"stripping characters of column {column}...")
-            frame = frame.with_columns(frame.select(pl.col(column).str.strip_chars(**self._kwargs)))
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self._columns
+        if columns is None:
+            columns = tuple(frame.columns)
+        for col in tqdm(columns, desc=self._get_progressbar_message()):
+            if col not in frame:
+                if self._ignore_missing:
+                    logger.warning(
+                        f"skipping transformation for column {col} because the column is missing"
+                    )
+                else:
+                    msg = f"column {col} is not in the DataFrame (columns:{sorted(frame.columns)})"
+                    raise RuntimeError(msg)
+            else:
+                frame = self._transform(frame=frame, column=col)
         return frame
 
+    @abstractmethod
     def _get_progressbar_message(self) -> str:
-        return "stripping chars"
+        r"""Return the message to show in the progress bar.
+
+        Returns:
+            The message.
+        """
+
+    @abstractmethod
+    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
+        r"""Transform the data in the given column.
+
+        Args:
+            frame: The DataFrame to transform.
+            column: The column to transform.
+
+        Returns:
+            The transformed DataFrame.
+        """

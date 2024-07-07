@@ -35,6 +35,9 @@ jobs:
       - name: check coola.ingestor
         run: |
           poetry run python -c "from grizz import ingestor"
+      - name: check coola.transformer
+        run: |
+          poetry run python -c "from grizz import transformer"
       - name: check coola.utils
         run: |
           poetry run python -c "from grizz import utils"

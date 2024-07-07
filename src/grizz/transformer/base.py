@@ -4,9 +4,9 @@ transformer."""
 from __future__ import annotations
 
 __all__ = [
-    "BaseDataFrameTransformer",
-    "is_dataframe_transformer_config",
-    "setup_dataframe_transformer",
+    "BaseTransformer",
+    "is_transformer_config",
+    "setup_transformer",
 ]
 
 import logging
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
+class BaseTransformer(ABC, metaclass=AbstractFactory):
     r"""Define the base class to transform a ``polars.DataFrame``.
 
     Example usage:
@@ -30,10 +30,10 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import Cast
+    >>> from grizz.transformer import Cast
     >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
-    CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
+    CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -87,7 +87,7 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer.dataframe import Cast
+        >>> from grizz.transformer import Cast
         >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
         >>> frame = pl.DataFrame(
         ...     {
@@ -129,9 +129,9 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
         """
 
 
-def is_dataframe_transformer_config(config: dict) -> bool:
+def is_transformer_config(config: dict) -> bool:
     r"""Indicate if the input configuration is a configuration for a
-    ``BaseDataFrameTransformer``.
+    ``BaseTransformer``.
 
     This function only checks if the value of the key  ``_target_``
     is valid. It does not check the other values. If ``_target_``
@@ -143,17 +143,17 @@ def is_dataframe_transformer_config(config: dict) -> bool:
 
     Returns:
         ``True`` if the input configuration is a configuration
-            for a ``BaseDataFrameTransformer`` object.
+            for a ``BaseTransformer`` object.
 
     Example usage:
 
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import is_dataframe_transformer_config
-    >>> is_dataframe_transformer_config(
+    >>> from grizz.transformer import is_transformer_config
+    >>> is_transformer_config(
     ...     {
-    ...         "_target_": "grizz.transformer.dataframe.Cast",
+    ...         "_target_": "grizz.transformer.Cast",
     ...         "columns": ("col1", "col3"),
     ...         "dtype": pl.Int32,
     ...     }
@@ -162,16 +162,16 @@ def is_dataframe_transformer_config(config: dict) -> bool:
 
     ```
     """
-    return is_object_config(config, BaseDataFrameTransformer)
+    return is_object_config(config, BaseTransformer)
 
 
-def setup_dataframe_transformer(
-    transformer: BaseDataFrameTransformer | dict,
-) -> BaseDataFrameTransformer:
+def setup_transformer(
+    transformer: BaseTransformer | dict,
+) -> BaseTransformer:
     r"""Set up a ``polars.DataFrame`` transformer.
 
     The transformer is instantiated from its configuration
-    by using the ``BaseDataFrameTransformer`` factory function.
+    by using the ``BaseTransformer`` factory function.
 
     Args:
         transformer: Specifies a ``polars.DataFrame`` transformer or
@@ -185,24 +185,22 @@ def setup_dataframe_transformer(
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import setup_dataframe_transformer
-    >>> transformer = setup_dataframe_transformer(
+    >>> from grizz.transformer import setup_transformer
+    >>> transformer = setup_transformer(
     ...     {
-    ...         "_target_": "grizz.transformer.dataframe.Cast",
+    ...         "_target_": "grizz.transformer.Cast",
     ...         "columns": ("col1", "col3"),
     ...         "dtype": pl.Int32,
     ...     }
     ... )
     >>> transformer
-    CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
+    CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
 
     ```
     """
     if isinstance(transformer, dict):
         logger.info("Initializing a DataFrame transformer from its configuration... ")
-        transformer = BaseDataFrameTransformer.factory(**transformer)
-    if not isinstance(transformer, BaseDataFrameTransformer):
-        logger.warning(
-            f"transformer is not a `BaseDataFrameTransformer` (received: {type(transformer)})"
-        )
+        transformer = BaseTransformer.factory(**transformer)
+    if not isinstance(transformer, BaseTransformer):
+        logger.warning(f"transformer is not a `BaseTransformer` (received: {type(transformer)})")
     return transformer
