@@ -31,6 +31,8 @@ __all__ = [
     "SortColumnsTransformer",
     "Sort",
     "SortColumns",
+    "TimeToSecond",
+    "TimeToSecondTransformer",
 ]
 
 from grizz.transformer.base import (
@@ -63,3 +65,5 @@ from grizz.transformer.sorting import SortTransformer
 from grizz.transformer.sorting import SortTransformer as Sort
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
+from grizz.transformer.time import TimeToSecondTransformer
+from grizz.transformer.time import TimeToSecondTransformer as TimeToSecond
