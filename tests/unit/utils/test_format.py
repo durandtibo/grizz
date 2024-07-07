@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from grizz.utils.format import human_byte
+from grizz.utils.format import human_byte, str_kwargs
 
 ################################
 #     Tests for human_byte     #
@@ -41,3 +41,20 @@ def test_human_byte_decimal_2(size: int, output: str) -> None:
 )
 def test_human_byte_decimal_3(size: int, output: str) -> None:
     assert human_byte(size, decimal=3) == output
+
+
+################################
+#     Tests for str_kwargs     #
+################################
+
+
+def test_str_kwargs_0() -> None:
+    assert str_kwargs({}) == ""
+
+
+def test_str_kwargs_1() -> None:
+    assert str_kwargs({"key1": 1}) == ", key1=1"
+
+
+def test_str_kwargs_2() -> None:
+    assert str_kwargs({"key1": 1, "key2": 2}) == ", key1=1, key2=2"
