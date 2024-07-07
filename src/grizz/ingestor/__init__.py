@@ -8,6 +8,7 @@ __all__ = [
     "CsvIngestor",
     "Ingestor",
     "ParquetIngestor",
+    "TransformIngestor",
     "is_ingestor_config",
     "setup_ingestor",
 ]
@@ -16,4 +17,5 @@ from grizz.ingestor.base import BaseIngestor, is_ingestor_config, setup_ingestor
 from grizz.ingestor.clickhouse import ClickHouseIngestor
 from grizz.ingestor.csv import CsvIngestor
 from grizz.ingestor.parquet import ParquetIngestor
+from grizz.ingestor.transform import TransformIngestor
 from grizz.ingestor.vanilla import Ingestor
