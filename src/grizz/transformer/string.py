@@ -3,14 +3,14 @@ values."""
 
 from __future__ import annotations
 
-__all__ = ["StripCharsDataFrameTransformer"]
+__all__ = ["StripCharsTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.columns import BaseColumnsDataFrameTransformer
+from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class StripCharsDataFrameTransformer(BaseColumnsDataFrameTransformer):
+class StripCharsTransformer(BaseColumnsTransformer):
     r"""Implement a transformer to remove leading and trailing
     characters.
 
@@ -40,7 +40,7 @@ class StripCharsDataFrameTransformer(BaseColumnsDataFrameTransformer):
     >>> from grizz.transformer import StripChars
     >>> transformer = StripChars(columns=["col2", "col3"])
     >>> transformer
-    StripCharsDataFrameTransformer(columns=('col2', 'col3'), ignore_missing=False)
+    StripCharsTransformer(columns=('col2', 'col3'), ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],

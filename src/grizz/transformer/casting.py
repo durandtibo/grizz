@@ -3,14 +3,14 @@ a new data type."""
 
 from __future__ import annotations
 
-__all__ = ["CastDataFrameTransformer"]
+__all__ = ["CastTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.columns import BaseColumnsDataFrameTransformer
+from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CastDataFrameTransformer(BaseColumnsDataFrameTransformer):
+class CastTransformer(BaseColumnsTransformer):
     r"""Implement a transformer to convert some columns to a new data
     type.
 
@@ -40,7 +40,7 @@ class CastDataFrameTransformer(BaseColumnsDataFrameTransformer):
     >>> from grizz.transformer import Cast
     >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
-    CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
+    CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],

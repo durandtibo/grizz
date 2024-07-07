@@ -23,32 +23,32 @@ def dataframe() -> pl.DataFrame:
 
 
 ##############################################
-#     Tests for CastDataFrameTransformer     #
+#     Tests for CastTransformer     #
 ##############################################
 
 
 def test_cast_dataframe_transformer_repr() -> None:
     assert repr(Cast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
     )
 
 
 def test_cast_dataframe_transformer_repr_with_kwargs() -> None:
     assert repr(Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
         "strict=False)"
     )
 
 
 def test_cast_dataframe_transformer_str() -> None:
     assert str(Cast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
     )
 
 
 def test_cast_dataframe_transformer_str_with_kwargs() -> None:
     assert str(Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
         "strict=False)"
     )
 

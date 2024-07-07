@@ -22,33 +22,31 @@ def dataframe() -> pl.DataFrame:
 
 
 ####################################################
-#     Tests for StripCharsDataFrameTransformer     #
+#     Tests for StripCharsTransformer     #
 ####################################################
 
 
 def test_strip_chars_dataframe_transformer_repr() -> None:
     assert repr(StripChars(columns=["col1", "col3"])) == (
-        "StripCharsDataFrameTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False)"
     )
 
 
 def test_strip_chars_dataframe_transformer_repr_with_kwargs() -> None:
     assert repr(StripChars(columns=["col1", "col3"], characters=None)) == (
-        "StripCharsDataFrameTransformer(columns=('col1', 'col3'), ignore_missing=False, "
-        "characters=None)"
+        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False, characters=None)"
     )
 
 
 def test_strip_chars_dataframe_transformer_str() -> None:
     assert str(StripChars(columns=["col1", "col3"])) == (
-        "StripCharsDataFrameTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False)"
     )
 
 
 def test_strip_chars_dataframe_transformer_str_with_kwargs() -> None:
     assert str(StripChars(columns=["col1", "col3"], characters=None)) == (
-        "StripCharsDataFrameTransformer(columns=('col1', 'col3'), ignore_missing=False, "
-        "characters=None)"
+        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False, characters=None)"
     )
 
 

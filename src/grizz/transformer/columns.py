@@ -3,13 +3,13 @@ values."""
 
 from __future__ import annotations
 
-__all__ = ["BaseColumnsDataFrameTransformer"]
+__all__ = ["BaseColumnsTransformer"]
 
 import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from grizz.transformer.base import BaseDataFrameTransformer
+from grizz.transformer.base import BaseTransformer
 from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ else:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class BaseColumnsDataFrameTransformer(BaseDataFrameTransformer):
+class BaseColumnsTransformer(BaseTransformer):
     r"""Define a base class to implement transformers that apply the same
     transformation on multiple columns.
 
@@ -44,7 +44,7 @@ class BaseColumnsDataFrameTransformer(BaseDataFrameTransformer):
     >>> from grizz.transformer import StripChars
     >>> transformer = StripChars(columns=["col2", "col3"])
     >>> transformer
-    StripCharsDataFrameTransformer(columns=('col2', 'col3'), ignore_missing=False)
+    StripCharsTransformer(columns=('col2', 'col3'), ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
