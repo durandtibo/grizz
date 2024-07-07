@@ -104,6 +104,96 @@ class CastTransformer(BaseColumnsTransformer):
         return frame.with_columns(frame.select(pl.col(column).cast(self._dtype, **self._kwargs)))
 
 
+class ToDatetimeTransformer(BaseColumnsTransformer):
+    r"""Implement a transformer to convert some columns to a
+    ``polars.Datetime`` type.
+
+    Args:
+        columns: The columns to convert.
+        format: Format to use for conversion. Refer to the
+            [chrono crate documentation](https://docs.rs/chrono/latest/chrono/format/strftime/index.html)
+            for the full specification.
+            Example: ``"%Y-%m-%d %H:%M:%S"``.
+            If set to ``None`` (default), the format is inferred from
+            the data.
+        ignore_missing: If ``False``, an exception is raised if a
+            column is missing, otherwise just a warning message is
+            shown.
+        **kwargs: The keyword arguments for ``to_datetime``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import ToDatetime
+    >>> transformer = ToDatetime(columns=["col1"], format="%H:%M:%S")
+    >>> transformer
+    ToDatetimeTransformer(columns=('col1',), format=%H:%M:%S, ignore_missing=False)
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 3)
+    ┌──────────┬──────┬──────────┐
+    │ col1     ┆ col2 ┆ col3     │
+    │ ---      ┆ ---  ┆ ---      │
+    │ str      ┆ str  ┆ str      │
+    ╞══════════╪══════╪══════════╡
+    │ 01:01:01 ┆ 1    ┆ 01:01:01 │
+    │ 02:02:02 ┆ 2    ┆ 02:02:02 │
+    │ 12:00:01 ┆ 3    ┆ 12:00:01 │
+    │ 18:18:18 ┆ 4    ┆ 18:18:18 │
+    │ 23:59:59 ┆ 5    ┆ 23:59:59 │
+    └──────────┴──────┴──────────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 3)
+    ┌──────────┬──────┬──────────┐
+    │ col1     ┆ col2 ┆ col3     │
+    │ ---      ┆ ---  ┆ ---      │
+    │ time     ┆ str  ┆ str      │
+    ╞══════════╪══════╪══════════╡
+    │ 01:01:01 ┆ 1    ┆ 01:01:01 │
+    │ 02:02:02 ┆ 2    ┆ 02:02:02 │
+    │ 12:00:01 ┆ 3    ┆ 12:00:01 │
+    │ 18:18:18 ┆ 4    ┆ 18:18:18 │
+    │ 23:59:59 ┆ 5    ┆ 23:59:59 │
+    └──────────┴──────┴──────────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str],
+        format: str | None = None,  # noqa: A002
+        ignore_missing: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(columns, ignore_missing)
+        self._format = format
+        self._kwargs = kwargs
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__qualname__}(columns={self._columns}, format={self._format}, "
+            f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
+        )
+
+    def _get_progressbar_message(self) -> str:
+        return f"converting to datetime ({self._format})"
+
+    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
+        return frame.with_columns(
+            frame.select(pl.col(column).str.to_datetime(self._format, **self._kwargs))
+        )
+
+
 class ToTimeTransformer(BaseColumnsTransformer):
     r"""Implement a transformer to convert some columns to a
     ``polars.Time`` type.
@@ -118,7 +208,7 @@ class ToTimeTransformer(BaseColumnsTransformer):
         ignore_missing: If ``False``, an exception is raised if a
             column is missing, otherwise just a warning message is
             shown.
-        **kwargs: The keyword arguments for ``cast``.
+        **kwargs: The keyword arguments for ``to_time``.
 
     Example usage:
 
