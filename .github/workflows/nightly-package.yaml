@@ -29,7 +29,7 @@ jobs:
 
       - name: Install package
         run: |
-          pip install "coola[all]"
+          pip install "grizz[all]"
 
       - name: Run some checks
         run: |
@@ -57,7 +57,7 @@ jobs:
 
       - name: Install package
         run: |
-          pip install coola
+          pip install grizz
 
       - name: Run some checks
         run: |
@@ -85,7 +85,7 @@ jobs:
 
       - name: Install package
         run: |
-          pip install --pre "coola[all]"
+          pip install --pre "grizz[all]"
 
       - name: Run some checks
         run: |
@@ -113,7 +113,7 @@ jobs:
 
       - name: Install package
         run: |
-          pip install --pre coola
+          pip install --pre grizz
 
       - name: Run some checks
         run: |
@@ -216,7 +216,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        polars-version: [ 1.0.0, 0.20.31, 0.19.19, 0.18.15 ]
+        polars-version: [ 1.0.0 ]
 
     steps:
       - name: Checkout
