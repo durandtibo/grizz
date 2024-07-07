@@ -21,6 +21,10 @@ __all__ = [
     "ToTimeTransformer",
     "is_transformer_config",
     "setup_transformer",
+    "ReplaceTransformer",
+    "ReplaceStrictTransformer",
+    "Replace",
+    "ReplaceStrict",
 ]
 
 from grizz.transformer.base import (
@@ -41,5 +45,9 @@ from grizz.transformer.diff import TimeDiffTransformer
 from grizz.transformer.diff import TimeDiffTransformer as TimeDiff
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
+from grizz.transformer.replace import ReplaceStrictTransformer
+from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
+from grizz.transformer.replace import ReplaceTransformer
+from grizz.transformer.replace import ReplaceTransformer as Replace
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
