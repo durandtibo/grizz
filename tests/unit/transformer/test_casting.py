@@ -6,7 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from grizz.transformer.dataframe import Cast
+from grizz.transformer import Cast
 
 
 @pytest.fixture()

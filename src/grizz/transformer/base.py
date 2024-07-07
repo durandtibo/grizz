@@ -30,7 +30,7 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import Cast
+    >>> from grizz.transformer import Cast
     >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
     CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
@@ -87,7 +87,7 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer.dataframe import Cast
+        >>> from grizz.transformer import Cast
         >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
         >>> frame = pl.DataFrame(
         ...     {
@@ -150,10 +150,10 @@ def is_dataframe_transformer_config(config: dict) -> bool:
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import is_dataframe_transformer_config
+    >>> from grizz.transformer import is_dataframe_transformer_config
     >>> is_dataframe_transformer_config(
     ...     {
-    ...         "_target_": "grizz.transformer.dataframe.Cast",
+    ...         "_target_": "grizz.transformer.Cast",
     ...         "columns": ("col1", "col3"),
     ...         "dtype": pl.Int32,
     ...     }
@@ -185,10 +185,10 @@ def setup_dataframe_transformer(
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import setup_dataframe_transformer
+    >>> from grizz.transformer import setup_dataframe_transformer
     >>> transformer = setup_dataframe_transformer(
     ...     {
-    ...         "_target_": "grizz.transformer.dataframe.Cast",
+    ...         "_target_": "grizz.transformer.Cast",
     ...         "columns": ("col1", "col3"),
     ...         "dtype": pl.Int32,
     ...     }

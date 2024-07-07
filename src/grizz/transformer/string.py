@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.dataframe.columns import BaseColumnsDataFrameTransformer
+from grizz.transformer.columns import BaseColumnsDataFrameTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ class StripCharsDataFrameTransformer(BaseColumnsDataFrameTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import StripChars
+    >>> from grizz.transformer import StripChars
     >>> transformer = StripChars(columns=["col2", "col3"])
     >>> transformer
     StripCharsDataFrameTransformer(columns=('col2', 'col3'), ignore_missing=False)

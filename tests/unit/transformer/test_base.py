@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 from objectory import OBJECT_TARGET
 
-from grizz.transformer.dataframe import (
+from grizz.transformer import (
     Cast,
     is_dataframe_transformer_config,
     setup_dataframe_transformer,
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 def test_is_dataframe_transformer_config_true() -> None:
     assert is_dataframe_transformer_config(
         {
-            OBJECT_TARGET: "grizz.transformer.dataframe.Cast",
+            OBJECT_TARGET: "grizz.transformer.Cast",
             "columns": ["col1", "col3"],
             "dtype": pl.Int32,
         }
@@ -49,7 +49,7 @@ def test_setup_dataframe_transformer_dict() -> None:
     assert isinstance(
         setup_dataframe_transformer(
             {
-                OBJECT_TARGET: "grizz.transformer.dataframe.Cast",
+                OBJECT_TARGET: "grizz.transformer.Cast",
                 "columns": ["col1", "col3"],
                 "dtype": pl.Int32,
             }

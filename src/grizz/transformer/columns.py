@@ -9,7 +9,7 @@ import logging
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from grizz.transformer.dataframe.base import BaseDataFrameTransformer
+from grizz.transformer.base import BaseDataFrameTransformer
 from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
@@ -41,7 +41,7 @@ class BaseColumnsDataFrameTransformer(BaseDataFrameTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import StripChars
+    >>> from grizz.transformer import StripChars
     >>> transformer = StripChars(columns=["col2", "col3"])
     >>> transformer
     StripCharsDataFrameTransformer(columns=('col2', 'col3'), ignore_missing=False)

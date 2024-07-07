@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.dataframe.columns import BaseColumnsDataFrameTransformer
+from grizz.transformer.columns import BaseColumnsDataFrameTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ class CastDataFrameTransformer(BaseColumnsDataFrameTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import Cast
+    >>> from grizz.transformer import Cast
     >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
     CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
