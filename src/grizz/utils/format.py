@@ -2,7 +2,12 @@ r"""Contain utility functions to format strings."""
 
 from __future__ import annotations
 
-__all__ = ["human_byte"]
+__all__ = ["human_byte", "str_kwargs"]
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 def human_byte(size: float, decimal: int = 2) -> str:
@@ -35,3 +40,33 @@ def human_byte(size: float, decimal: int = 2) -> str:
         if unit != "PB":
             size /= 1024.0
     return f"{size:,.{decimal}f} {unit}"
+
+
+def str_kwargs(mapping: Mapping) -> str:
+    r"""Return a string of the input mapping.
+
+    This function is designed to be used in ``__repr__`` and
+    ``__str__`` methods.
+
+    Args:
+        mapping: The mapping.
+
+    Returns:
+        The generated string.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.format import str_kwargs
+    >>> str_kwargs({"key1": 1})
+    ', key1=1'
+    >>> str_kwargs({"key1": 1, "key2": 2})
+    ', key1=1, key2=2'
+
+    ```
+    """
+    args = ", ".join([f"{key}={value}" for key, value in mapping.items()])
+    if args:
+        args = ", " + args
+    return args
