@@ -30,10 +30,10 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.dataframe import ToNumeric
-    >>> transformer = ToNumeric(columns=["col1", "col3"])
+    >>> from grizz.transformer.dataframe import Cast
+    >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
-    ToNumericDataFrameTransformer(columns=('col1', 'col3'), ignore_missing=False)
+    CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -42,19 +42,33 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
     ...         "col4": ["a", "b", "c", "d", "e"],
     ...     }
     ... )
-    >>> frame.dtypes
-    col1     int64
-    col2    object
-    col3    object
-    col4    object
-    dtype: object
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ str  ┆ str  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1    ┆ 1    ┆ 1    ┆ a    │
+    │ 2    ┆ 2    ┆ 2    ┆ b    │
+    │ 3    ┆ 3    ┆ 3    ┆ c    │
+    │ 4    ┆ 4    ┆ 4    ┆ d    │
+    │ 5    ┆ 5    ┆ 5    ┆ e    │
+    └──────┴──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
-    >>> out.dtypes
-    col1     int64
-    col2    object
-    col3     int64
-    col4    object
-    dtype: object
+    >>> out
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i32  ┆ str  ┆ i32  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1    ┆ 1    ┆ 1    ┆ a    │
+    │ 2    ┆ 2    ┆ 2    ┆ b    │
+    │ 3    ┆ 3    ┆ 3    ┆ c    │
+    │ 4    ┆ 4    ┆ 4    ┆ d    │
+    │ 5    ┆ 5    ┆ 5    ┆ e    │
+    └──────┴──────┴──────┴──────┘
 
     ```
     """
@@ -73,8 +87,8 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer.dataframe import ToNumeric
-        >>> transformer = ToNumeric(columns=["col1", "col3"])
+        >>> from grizz.transformer.dataframe import Cast
+        >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
         >>> frame = pl.DataFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
@@ -83,13 +97,33 @@ class BaseDataFrameTransformer(ABC, metaclass=AbstractFactory):
         ...         "col4": ["a", "b", "c", "d", "e"],
         ...     }
         ... )
+        >>> frame
+        shape: (5, 4)
+        ┌──────┬──────┬──────┬──────┐
+        │ col1 ┆ col2 ┆ col3 ┆ col4 │
+        │ ---  ┆ ---  ┆ ---  ┆ ---  │
+        │ i64  ┆ str  ┆ str  ┆ str  │
+        ╞══════╪══════╪══════╪══════╡
+        │ 1    ┆ 1    ┆ 1    ┆ a    │
+        │ 2    ┆ 2    ┆ 2    ┆ b    │
+        │ 3    ┆ 3    ┆ 3    ┆ c    │
+        │ 4    ┆ 4    ┆ 4    ┆ d    │
+        │ 5    ┆ 5    ┆ 5    ┆ e    │
+        └──────┴──────┴──────┴──────┘
         >>> out = transformer.transform(frame)
-        >>> out.dtypes
-        col1     int64
-        col2    object
-        col3     int64
-        col4    object
-        dtype: object
+        >>> out
+        shape: (5, 4)
+        ┌──────┬──────┬──────┬──────┐
+        │ col1 ┆ col2 ┆ col3 ┆ col4 │
+        │ ---  ┆ ---  ┆ ---  ┆ ---  │
+        │ i32  ┆ str  ┆ i32  ┆ str  │
+        ╞══════╪══════╪══════╪══════╡
+        │ 1    ┆ 1    ┆ 1    ┆ a    │
+        │ 2    ┆ 2    ┆ 2    ┆ b    │
+        │ 3    ┆ 3    ┆ 3    ┆ c    │
+        │ 4    ┆ 4    ┆ 4    ┆ d    │
+        │ 5    ┆ 5    ┆ 5    ┆ e    │
+        └──────┴──────┴──────┴──────┘
 
         ```
         """
@@ -115,9 +149,14 @@ def is_dataframe_transformer_config(config: dict) -> bool:
 
     ```pycon
 
+    >>> import polars as pl
     >>> from grizz.transformer.dataframe import is_dataframe_transformer_config
     >>> is_dataframe_transformer_config(
-    ...     {"_target_": "grizz.transformer.dataframe.ToNumeric", "columns": ["col1", "col3"]}
+    ...     {
+    ...         "_target_": "grizz.transformer.dataframe.Cast",
+    ...         "columns": ("col1", "col3"),
+    ...         "dtype": pl.Int32,
+    ...     }
     ... )
     True
 
@@ -145,12 +184,17 @@ def setup_dataframe_transformer(
 
     ```pycon
 
+    >>> import polars as pl
     >>> from grizz.transformer.dataframe import setup_dataframe_transformer
     >>> transformer = setup_dataframe_transformer(
-    ...     {"_target_": "grizz.transformer.dataframe.ToNumeric", "columns": ["col1", "col3"]}
+    ...     {
+    ...         "_target_": "grizz.transformer.dataframe.Cast",
+    ...         "columns": ("col1", "col3"),
+    ...         "dtype": pl.Int32,
+    ...     }
     ... )
     >>> transformer
-    ToNumericDataFrameTransformer(columns=('col1', 'col3'), ignore_missing=False)
+    CastDataFrameTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
 
     ```
     """
