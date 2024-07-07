@@ -1,0 +1,337 @@
+name: Nightly Package Tests
+on:
+  schedule:
+    - cron: '40 12 * * *' # run at 12:40 AM UTC
+  workflow_dispatch:  # to trigger manually
+
+jobs:
+  cyclic-imports:
+    uses: ./.github/workflows/cyclic-imports.yaml
+
+  stable-all:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install "coola[all]"
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  stable-min:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install coola
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  latest-all:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install --pre "coola[all]"
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  latest-min:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install --pre coola
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  coola:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        coola-version: [ 0.7.2 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz coola==${{ matrix.coola-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  iden:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        iden-version: [ 0.0.4 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz iden==${{ matrix.iden-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  objectory:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        objectory-version: [ 0.1.2 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz objectory==${{ matrix.objectory-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  polars:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        polars-version: [ 1.0.0, 0.20.31, 0.19.19, 0.18.15 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz polars==${{ matrix.polars-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  #################################
+  #     Optional dependencies     #
+  #################################
+
+
+  clickhouse-connect:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        clickhouse-connect-version: [ 0.7.15 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz clickhouse-connect==${{ matrix.clickhouse-connect-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  pyarrow:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        pyarrow-version: [ 16.1.0, 15.0.2, 14.0.2, 13.0.0, 12.0.1, 11.0.0, 10.0.1 ]
+        exclude:
+          - pyarrow-version: 13.0.0
+            python-version: '3.12'
+          - pyarrow-version: 12.0.1
+            python-version: '3.12'
+          - pyarrow-version: 11.0.0
+            python-version: '3.12'
+          - pyarrow-version: 10.0.1
+            python-version: '3.12'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz pyarrow==${{ matrix.pyarrow-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  tqdm:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        tqdm-version: [ 4.66.4, 4.65.2 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz tqdm==${{ matrix.tqdm-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
