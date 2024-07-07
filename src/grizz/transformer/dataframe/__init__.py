@@ -3,6 +3,7 @@ r"""Contain ``polars.DataFrame`` transformers."""
 from __future__ import annotations
 
 __all__ = [
+    "BaseColumnsDataFrameTransformer",
     "BaseDataFrameTransformer",
     "Cast",
     "CastDataFrameTransformer",
@@ -19,6 +20,7 @@ from grizz.transformer.dataframe.base import (
 )
 from grizz.transformer.dataframe.casting import CastDataFrameTransformer
 from grizz.transformer.dataframe.casting import CastDataFrameTransformer as Cast
+from grizz.transformer.dataframe.columns import BaseColumnsDataFrameTransformer
 from grizz.transformer.dataframe.string import StripCharsDataFrameTransformer
 from grizz.transformer.dataframe.string import (
     StripCharsDataFrameTransformer as StripChars,
