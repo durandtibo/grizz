@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 import polars as pl
 
 from grizz.transformer.dataframe.base import BaseDataFrameTransformer
+from grizz.utils.format import str_kwargs
 from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
@@ -97,12 +98,9 @@ class CastDataFrameTransformer(BaseDataFrameTransformer):
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = ", ".join([f"{key}={value}" for key, value in self._kwargs.items()])
-        if args:
-            args = ", " + args
         return (
             f"{self.__class__.__qualname__}(columns={self._columns}, dtype={self._dtype}, "
-            f"ignore_missing={self._ignore_missing}{args})"
+            f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
         )
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
