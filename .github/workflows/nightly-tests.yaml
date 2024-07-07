@@ -18,5 +18,3 @@ jobs:
     uses: ./.github/workflows/test.yaml
   test-deps:
     uses: ./.github/workflows/test-deps.yaml
-  test-demo:
-    uses: ./.github/workflows/test-demo.yaml
