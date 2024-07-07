@@ -31,8 +31,7 @@ def test_ingestor_str(dataframe: pl.DataFrame) -> None:
     assert str(Ingestor(frame=dataframe)).startswith("Ingestor(")
 
 
-def test_ingestor_ingest_polars(dataframe: pl.DataFrame) -> None:
-
+def test_ingestor_ingest(dataframe: pl.DataFrame) -> None:
     out = Ingestor(frame=dataframe).ingest()
     assert dataframe is out
     assert_frame_equal(

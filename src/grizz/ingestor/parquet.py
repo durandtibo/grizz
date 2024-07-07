@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 import polars as pl
 
 from grizz.ingestor.base import BaseIngestor
+from grizz.utils.format import str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
 
 if TYPE_CHECKING:
@@ -44,10 +45,7 @@ class ParquetIngestor(BaseIngestor):
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = ", ".join([f"{key}={value}" for key, value in self._kwargs.items()])
-        if args:
-            args = ", " + args
-        return f"{self.__class__.__qualname__}(path={self._path}{args})"
+        return f"{self.__class__.__qualname__}(path={self._path}{str_kwargs(self._kwargs)})"
 
     def ingest(self) -> pl.DataFrame:
         logger.info(
