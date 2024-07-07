@@ -15,6 +15,8 @@ __all__ = [
     "ToTimeTransformer",
     "ToDatetime",
     "ToDatetimeTransformer",
+    "Function",
+    "FunctionTransformer",
 ]
 
 from grizz.transformer.base import (
@@ -29,5 +31,7 @@ from grizz.transformer.casting import ToDatetimeTransformer as ToDatetime
 from grizz.transformer.casting import ToTimeTransformer
 from grizz.transformer.casting import ToTimeTransformer as ToTime
 from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.function import FunctionTransformer
+from grizz.transformer.function import FunctionTransformer as Function
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
