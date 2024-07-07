@@ -10,22 +10,17 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.dataframe.base import BaseDataFrameTransformer
+from grizz.transformer.dataframe.columns import BaseColumnsDataFrameTransformer
 from grizz.utils.format import str_kwargs
-from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-if is_tqdm_available():
-    from tqdm import tqdm
-else:  # pragma: no cover
-    from grizz.utils.noop import tqdm
 
 logger = logging.getLogger(__name__)
 
 
-class CastDataFrameTransformer(BaseDataFrameTransformer):
+class CastDataFrameTransformer(BaseColumnsDataFrameTransformer):
     r"""Implement a transformer to convert some columns to a new data
     type.
 
@@ -92,9 +87,8 @@ class CastDataFrameTransformer(BaseDataFrameTransformer):
         ignore_missing: bool = False,
         **kwargs: Any,
     ) -> None:
-        self._columns = tuple(columns)
+        super().__init__(columns, ignore_missing)
         self._dtype = dtype
-        self._ignore_missing = bool(ignore_missing)
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
@@ -103,19 +97,8 @@ class CastDataFrameTransformer(BaseDataFrameTransformer):
             f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        for col in tqdm(self._columns, desc=f"converting to {self._dtype}"):
-            if col not in frame:
-                if self._ignore_missing:
-                    logger.warning(
-                        f"skipping transformation for column {col} because the column is missing"
-                    )
-                else:
-                    msg = f"column {col} is not in the DataFrame (columns:{sorted(frame.columns)})"
-                    raise RuntimeError(msg)
-            else:
-                logger.info(f"transforming column `{col}`...")
-                frame = frame.with_columns(
-                    frame.select(pl.col(col).cast(self._dtype, **self._kwargs))
-                )
-        return frame
+    def _get_progressbar_message(self) -> str:
+        return f"converting to {self._dtype}"
+
+    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
+        return frame.with_columns(frame.select(pl.col(column).cast(self._dtype, **self._kwargs)))
