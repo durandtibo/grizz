@@ -1863,4 +1863,4 @@ all = ["clickhouse-connect", "pyarrow", "tqdm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "b43b2e28f29040fbc11546f2fc7a54efdbb270f20ee95b9495e70ab1ba491d0d"
+content-hash = "5d8b35de5fb387e13dec6e051c741ddc2a0c095f3678931134958fa89bf90867"

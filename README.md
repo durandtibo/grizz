@@ -60,7 +60,58 @@
     <br/>
 </p>
 
-A light library to preprocess data with polars
+## Overview
+
+`grizz` is a light library to ingest and transform data
+in [polars](https://docs.pola.rs/api/python/stable/reference/index.html) DataFrame.
+`grizz` uses an object-oriented strategy, where ingestors and transformers are building blocks that
+can be combined together.
+`grizz` can be extend to add custom DataFrame ingestors and transformers.
+For example, the following example shows how to change the casting of some columns.
+
+```pycon
+
+>>> import polars as pl
+>>> from grizz.transformer import Cast
+>>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+>>> frame = pl.DataFrame(
+...     {
+...         "col1": [1, 2, 3, 4, 5],
+...         "col2": ["1", "2", "3", "4", "5"],
+...         "col3": ["1", "2", "3", "4", "5"],
+...         "col4": ["a", "b", "c", "d", "e"],
+...     }
+... )
+>>> out = transformer.transform(frame)
+>>> out
+shape: (5, 4)
+┌──────┬──────┬──────┬──────┐
+│ col1 ┆ col2 ┆ col3 ┆ col4 │
+│ ---  ┆ ---  ┆ ---  ┆ ---  │
+│ i32  ┆ str  ┆ i32  ┆ str  │
+╞══════╪══════╪══════╪══════╡
+│ 1    ┆ 1    ┆ 1    ┆ a    │
+│ 2    ┆ 2    ┆ 2    ┆ b    │
+│ 3    ┆ 3    ┆ 3    ┆ c    │
+│ 4    ┆ 4    ┆ 4    ┆ d    │
+│ 5    ┆ 5    ┆ 5    ┆ e    │
+└──────┴──────┴──────┴──────┘
+
+```
+
+- [Documentation](https://durandtibo.github.io/grizz/)
+- [Installation](#installation)
+- [Contributing](#contributing)
+- [API stability](#api-stability)
+- [License](#license)
+
+## Documentation
+
+- [latest (stable)](https://durandtibo.github.io/grizz/): documentation from the latest stable
+  release.
+- [main (unstable)](https://durandtibo.github.io/grizz/main/): documentation associated to the
+  main branch of the repo. This documentation may contain a lot of work-in-progress/outdated/missing
+  parts.
 
 ## Installation
 
@@ -84,9 +135,15 @@ Please check the [get started page](https://durandtibo.github.io/grizz/get_start
 install only some specific dependencies or other alternatives to install the library.
 The following is the corresponding `grizz` versions and their dependencies.
 
-| `grizz` | `coola`      | `iden`         | `objectory`  | `polars`     | `tqdm`<sup>*</sup> | `python`      |
-|---------|--------------|----------------|--------------|--------------|--------------------|---------------|
-| `main`  | `>=0.7,<1.0` | `>=0.0.4,<1.0` | `>=0.1,<1.0` | `>=1.0,<2.0` | `>=4.65,<5.0`      | `>=3.9,<3.13` |
+| `grizz` | `coola`      | `iden`         | `objectory`  | `polars`     | `python`      |
+|---------|--------------|----------------|--------------|--------------|---------------|
+| `main`  | `>=0.7,<1.0` | `>=0.0.4,<1.0` | `>=0.1,<1.0` | `>=1.0,<2.0` | `>=3.9,<3.13` |
+
+Optional dependencies
+
+| `grizz` | `clickhouse-connect`<sup>*</sup> | `pyarrow`<sup>*</sup> | `tqdm`<sup>*</sup> |
+|---------|----------------------------------|-----------------------|--------------------|
+| `main`  | `>=0.7,<1.0`                     | `>=10.0,<17.0`        | `>=4.65,<5.0`      |
 
 <sup>*</sup> indicates an optional dependency
 
