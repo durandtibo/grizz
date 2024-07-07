@@ -27,6 +27,10 @@ __all__ = [
     "ToTimeTransformer",
     "is_transformer_config",
     "setup_transformer",
+    "SortTransformer",
+    "SortColumnsTransformer",
+    "Sort",
+    "SortColumns",
 ]
 
 from grizz.transformer.base import (
@@ -53,5 +57,9 @@ from grizz.transformer.replace import ReplaceStrictTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
 from grizz.transformer.replace import ReplaceTransformer
 from grizz.transformer.replace import ReplaceTransformer as Replace
+from grizz.transformer.sorting import SortColumnsTransformer
+from grizz.transformer.sorting import SortColumnsTransformer as SortColumns
+from grizz.transformer.sorting import SortTransformer
+from grizz.transformer.sorting import SortTransformer as Sort
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
