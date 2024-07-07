@@ -5,8 +5,8 @@ from __future__ import annotations
 
 __all__ = [
     "BaseTransformer",
-    "is_dataframe_transformer_config",
-    "setup_dataframe_transformer",
+    "is_transformer_config",
+    "setup_transformer",
 ]
 
 import logging
@@ -129,7 +129,7 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         """
 
 
-def is_dataframe_transformer_config(config: dict) -> bool:
+def is_transformer_config(config: dict) -> bool:
     r"""Indicate if the input configuration is a configuration for a
     ``BaseTransformer``.
 
@@ -150,8 +150,8 @@ def is_dataframe_transformer_config(config: dict) -> bool:
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import is_dataframe_transformer_config
-    >>> is_dataframe_transformer_config(
+    >>> from grizz.transformer import is_transformer_config
+    >>> is_transformer_config(
     ...     {
     ...         "_target_": "grizz.transformer.Cast",
     ...         "columns": ("col1", "col3"),
@@ -165,7 +165,7 @@ def is_dataframe_transformer_config(config: dict) -> bool:
     return is_object_config(config, BaseTransformer)
 
 
-def setup_dataframe_transformer(
+def setup_transformer(
     transformer: BaseTransformer | dict,
 ) -> BaseTransformer:
     r"""Set up a ``polars.DataFrame`` transformer.
@@ -185,8 +185,8 @@ def setup_dataframe_transformer(
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import setup_dataframe_transformer
-    >>> transformer = setup_dataframe_transformer(
+    >>> from grizz.transformer import setup_transformer
+    >>> transformer = setup_transformer(
     ...     {
     ...         "_target_": "grizz.transformer.Cast",
     ...         "columns": ("col1", "col3"),

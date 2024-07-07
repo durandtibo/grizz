@@ -21,36 +21,36 @@ def dataframe() -> pl.DataFrame:
     )
 
 
-####################################################
+###########################################
 #     Tests for StripCharsTransformer     #
-####################################################
+###########################################
 
 
-def test_strip_chars_dataframe_transformer_repr() -> None:
+def test_strip_chars_transformer_repr() -> None:
     assert repr(StripChars(columns=["col1", "col3"])) == (
         "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False)"
     )
 
 
-def test_strip_chars_dataframe_transformer_repr_with_kwargs() -> None:
+def test_strip_chars_transformer_repr_with_kwargs() -> None:
     assert repr(StripChars(columns=["col1", "col3"], characters=None)) == (
         "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False, characters=None)"
     )
 
 
-def test_strip_chars_dataframe_transformer_str() -> None:
+def test_strip_chars_transformer_str() -> None:
     assert str(StripChars(columns=["col1", "col3"])) == (
         "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False)"
     )
 
 
-def test_strip_chars_dataframe_transformer_str_with_kwargs() -> None:
+def test_strip_chars_transformer_str_with_kwargs() -> None:
     assert str(StripChars(columns=["col1", "col3"], characters=None)) == (
         "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False, characters=None)"
     )
 
 
-def test_strip_chars_dataframe_transformer_transform(dataframe: pl.DataFrame) -> None:
+def test_strip_chars_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = StripChars(columns=["col2", "col3"])
     out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -66,7 +66,7 @@ def test_strip_chars_dataframe_transformer_transform(dataframe: pl.DataFrame) ->
     )
 
 
-def test_strip_chars_dataframe_transformer_transform_none() -> None:
+def test_strip_chars_transformer_transform_none() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5, None],
@@ -90,7 +90,7 @@ def test_strip_chars_dataframe_transformer_transform_none() -> None:
     )
 
 
-def test_strip_chars_dataframe_transformer_transform_columns_none(dataframe: pl.DataFrame) -> None:
+def test_strip_chars_transformer_transform_columns_none(dataframe: pl.DataFrame) -> None:
     transformer = StripChars()
     out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -106,20 +106,20 @@ def test_strip_chars_dataframe_transformer_transform_columns_none(dataframe: pl.
     )
 
 
-def test_strip_chars_dataframe_transformer_transform_empty() -> None:
+def test_strip_chars_transformer_transform_empty() -> None:
     transformer = StripChars(columns=[])
     out = transformer.transform(pl.DataFrame({}))
     assert_frame_equal(out, pl.DataFrame({}))
 
 
-def test_strip_chars_dataframe_transformer_transform_empty_row() -> None:
+def test_strip_chars_transformer_transform_empty_row() -> None:
     frame = pl.DataFrame({"col": []}, schema={"col": pl.String})
     transformer = StripChars(columns=["col"])
     out = transformer.transform(frame)
     assert_frame_equal(out, pl.DataFrame({"col": []}, schema={"col": pl.String}))
 
 
-def test_strip_chars_dataframe_transformer_transform_ignore_missing_false(
+def test_strip_chars_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = StripChars(columns=["col2", "col3", "col5"])
@@ -127,7 +127,7 @@ def test_strip_chars_dataframe_transformer_transform_ignore_missing_false(
         transformer.transform(dataframe)
 
 
-def test_strip_chars_dataframe_transformer_transform_ignore_missing_true(
+def test_strip_chars_transformer_transform_ignore_missing_true(
     caplog: pytest.LogCaptureFixture, dataframe: pl.DataFrame
 ) -> None:
     transformer = StripChars(columns=["col2", "col3", "col5"], ignore_missing=True)

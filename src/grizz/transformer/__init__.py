@@ -9,14 +9,14 @@ __all__ = [
     "CastTransformer",
     "StripChars",
     "StripCharsTransformer",
-    "is_dataframe_transformer_config",
-    "setup_dataframe_transformer",
+    "is_transformer_config",
+    "setup_transformer",
 ]
 
 from grizz.transformer.base import (
     BaseTransformer,
-    is_dataframe_transformer_config,
-    setup_dataframe_transformer,
+    is_transformer_config,
+    setup_transformer,
 )
 from grizz.transformer.casting import CastTransformer
 from grizz.transformer.casting import CastTransformer as Cast
