@@ -11,6 +11,12 @@ __all__ = [
     "DiffTransformer",
     "Function",
     "FunctionTransformer",
+    "JsonDecode",
+    "JsonDecodeTransformer",
+    "Replace",
+    "ReplaceStrict",
+    "ReplaceStrictTransformer",
+    "ReplaceTransformer",
     "StripChars",
     "StripCharsTransformer",
     "TimeDiff",
@@ -21,10 +27,6 @@ __all__ = [
     "ToTimeTransformer",
     "is_transformer_config",
     "setup_transformer",
-    "ReplaceTransformer",
-    "ReplaceStrictTransformer",
-    "Replace",
-    "ReplaceStrict",
 ]
 
 from grizz.transformer.base import (
@@ -45,6 +47,8 @@ from grizz.transformer.diff import TimeDiffTransformer
 from grizz.transformer.diff import TimeDiffTransformer as TimeDiff
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
+from grizz.transformer.json import JsonDecodeTransformer
+from grizz.transformer.json import JsonDecodeTransformer as JsonDecode
 from grizz.transformer.replace import ReplaceStrictTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
 from grizz.transformer.replace import ReplaceTransformer
