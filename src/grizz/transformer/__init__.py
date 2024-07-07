@@ -11,6 +11,8 @@ __all__ = [
     "StripCharsTransformer",
     "is_transformer_config",
     "setup_transformer",
+    "ToTime",
+    "ToTimeTransformer",
 ]
 
 from grizz.transformer.base import (
@@ -20,6 +22,8 @@ from grizz.transformer.base import (
 )
 from grizz.transformer.casting import CastTransformer
 from grizz.transformer.casting import CastTransformer as Cast
+from grizz.transformer.casting import ToTimeTransformer
+from grizz.transformer.casting import ToTimeTransformer as ToTime
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
