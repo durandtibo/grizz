@@ -26,6 +26,7 @@ nav:
   - get_started.md
   - Reference:
       - ingestor: refs/ingestor.md
+      - transformer: refs/transformer.md
       - utils: refs/utils.md
   - GitHub: https://github.com/durandtibo/grizz
 
