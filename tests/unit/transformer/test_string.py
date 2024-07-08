@@ -123,7 +123,7 @@ def test_strip_chars_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = StripChars(columns=["col2", "col3", "col5"])
-    with pytest.raises(RuntimeError, match="column col5 is not in the DataFrame"):
+    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -145,5 +145,5 @@ def test_strip_chars_transformer_transform_ignore_missing_true(
             ),
         )
         assert caplog.messages[-1].startswith(
-            "skipping transformation for column col5 because the column is missing"
+            "1 columns are missing in the DataFrame and will be ignored:"
         )
