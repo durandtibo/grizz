@@ -10,6 +10,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from grizz.transformer.base import BaseTransformer
+from grizz.utils.column import find_common_columns, find_missing_columns
 from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
@@ -96,17 +97,19 @@ class BaseColumnsTransformer(BaseTransformer):
         columns = self._columns
         if columns is None:
             columns = tuple(frame.columns)
+        missing = find_missing_columns(frame, columns)
+        if missing and not self._ignore_missing:
+            msg = f"{len(missing)} columns are missing in the DataFrame: {missing}"
+            raise RuntimeError(msg)
+        if missing:
+            logger.warning(
+                f"{len(missing)} columns are missing in the DataFrame and will be ignored: "
+                f"{missing}"
+            )
+
+        columns = find_common_columns(frame, columns)
         for col in tqdm(columns, desc=self._get_progressbar_message()):
-            if col not in frame:
-                if self._ignore_missing:
-                    logger.warning(
-                        f"skipping transformation for column {col} because the column is missing"
-                    )
-                else:
-                    msg = f"column {col} is not in the DataFrame (columns:{sorted(frame.columns)})"
-                    raise RuntimeError(msg)
-            else:
-                frame = self._transform(frame=frame, column=col)
+            frame = self._transform(frame=frame, column=col)
         return frame
 
     @abstractmethod

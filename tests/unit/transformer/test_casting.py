@@ -92,7 +92,7 @@ def test_cast_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
-    with pytest.raises(RuntimeError, match="column col5 is not in the DataFrame"):
+    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -120,7 +120,7 @@ def test_cast_transformer_transform_ignore_missing_true(
             ),
         )
         assert caplog.messages[-1].startswith(
-            "skipping transformation for column col5 because the column is missing"
+            "1 columns are missing in the DataFrame and will be ignored:"
         )
 
 
@@ -454,7 +454,7 @@ def test_to_datetime_transformer_transform_ignore_missing_false() -> None:
         schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
     )
     transformer = ToDatetime(columns=["col1", "col3", "col5"])
-    with pytest.raises(RuntimeError, match="column col5 is not in the DataFrame"):
+    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame)
 
 
@@ -607,7 +607,7 @@ def test_to_datetime_transformer_transform_ignore_missing_true(
             ),
         )
         assert caplog.messages[-1].startswith(
-            "skipping transformation for column col5 because the column is missing"
+            "1 columns are missing in the DataFrame and will be ignored:"
         )
 
 
@@ -729,7 +729,7 @@ def test_to_time_transformer_transform_ignore_missing_false() -> None:
         schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
     )
     transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S")
-    with pytest.raises(RuntimeError, match="column col5 is not in the DataFrame"):
+    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame)
 
 
@@ -773,5 +773,5 @@ def test_to_time_transformer_transform_ignore_missing_true(
             ),
         )
         assert caplog.messages[-1].startswith(
-            "skipping transformation for column col5 because the column is missing"
+            "1 columns are missing in the DataFrame and will be ignored:"
         )
