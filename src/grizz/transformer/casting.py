@@ -9,6 +9,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
+import polars.selectors as cs
 
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
@@ -31,7 +32,8 @@ class CastTransformer(BaseColumnsTransformer):
     type.
 
     Args:
-        columns: The columns to convert.
+        columns: The columns to convert. ``None`` means all the
+            columns.
         dtype: The target data type.
         ignore_missing: If ``False``, an exception is raised if a
             column is missing, otherwise just a warning message is
@@ -88,7 +90,7 @@ class CastTransformer(BaseColumnsTransformer):
 
     def __init__(
         self,
-        columns: Sequence[str],
+        columns: Sequence[str] | None,
         dtype: type[pl.DataType],
         ignore_missing: bool = False,
         **kwargs: Any,
@@ -109,7 +111,9 @@ class CastTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        return frame.cast({col: self._dtype for col in columns}, **self._kwargs)
+        return frame.with_columns(
+            frame.select(cs.by_name(columns)).cast(self._dtype, **self._kwargs)
+        )
 
 
 class ToDatetimeTransformer(BaseColumnsTransformer):

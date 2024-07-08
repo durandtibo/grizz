@@ -88,6 +88,50 @@ def test_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> None:
     )
 
 
+def test_cast_transformer_transform_none() -> None:
+    transformer = Cast(columns=None, dtype=pl.Float32)
+    out = transformer.transform(
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["101", "102", "103", "104", "105"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+        )
+    )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": [101.0, 102.0, 103.0, 104.0, 105.0],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.Float32},
+        ),
+    )
+
+
+def test_cast_transformer_transform_strict_false(dataframe: pl.DataFrame) -> None:
+    transformer = Cast(columns=None, dtype=pl.Float32, strict=False)
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": [None, None, None, None, None],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.Float32},
+        ),
+    )
+
+
 def test_cast_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
