@@ -7,6 +7,8 @@ __all__ = [
     "BaseTransformer",
     "Cast",
     "CastTransformer",
+    "ColumnSelection",
+    "ColumnSelectionTransformer",
     "Diff",
     "DiffTransformer",
     "Function",
@@ -61,6 +63,8 @@ from grizz.transformer.replace import ReplaceStrictTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
 from grizz.transformer.replace import ReplaceTransformer
 from grizz.transformer.replace import ReplaceTransformer as Replace
+from grizz.transformer.selection import ColumnSelectionTransformer
+from grizz.transformer.selection import ColumnSelectionTransformer as ColumnSelection
 from grizz.transformer.sequential import SequentialTransformer
 from grizz.transformer.sequential import SequentialTransformer as Sequential
 from grizz.transformer.sorting import SortColumnsTransformer
