@@ -2,7 +2,7 @@ r"""Contain DataFrame columns utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["find_missing_columns"]
+__all__ = ["find_common_columns", "find_missing_columns"]
 
 
 from typing import TYPE_CHECKING
@@ -13,11 +13,49 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
+def find_common_columns(
+    frame_or_cols: pl.DataFrame | Sequence, columns: Sequence[str]
+) -> list[str]:
+    r"""Find the common columns that are both in the DataFrame and the
+    given columns.
+
+    Args:
+        frame_or_cols: The DataFrame or its columns.
+        columns: The columns to check.
+
+    Returns:
+        The list of common columns i.e. the columns that are both in
+            ``columns`` and ``frame_or_cols``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.column import find_common_columns
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> cols = find_common_columns(frame, columns=["col1", "col2", "col3", "col4"])
+    >>> cols
+    ['col1', 'col2', 'col3']
+
+    ```
+    """
+    cols = set(frame_or_cols.columns if isinstance(frame_or_cols, pl.DataFrame) else frame_or_cols)
+    columns = set(columns)
+    return sorted(columns.intersection(cols))
+
+
 def find_missing_columns(
     frame_or_cols: pl.DataFrame | Sequence, columns: Sequence[str]
 ) -> list[str]:
-    r"""Find the given columns that are not in the DataFrame (or its
-    columns).
+    r"""Find the columns that are in the given columns but not in the
+    DataFrame.
 
     Args:
         frame_or_cols: The DataFrame or its columns.
