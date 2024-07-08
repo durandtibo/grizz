@@ -3,12 +3,27 @@ time values."""
 
 from __future__ import annotations
 
-__all__ = ["TimeToSecondTransformer"]
+__all__ = ["TimeToSecondTransformer", "ToTimeTransformer"]
 
+import logging
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
 from grizz.transformer.base import BaseTransformer
+from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.utils.format import str_kwargs
+from grizz.utils.imports import is_tqdm_available
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+if is_tqdm_available():
+    from tqdm import tqdm
+else:  # pragma: no cover
+    from grizz.utils.noop import tqdm
+
+logger = logging.getLogger(__name__)
 
 
 class TimeToSecondTransformer(BaseTransformer):
@@ -90,3 +105,97 @@ class TimeToSecondTransformer(BaseTransformer):
                 .alias(self._out_col)
             )
         )
+
+
+class ToTimeTransformer(BaseColumnsTransformer):
+    r"""Implement a transformer to convert some columns to a
+    ``polars.Time`` type.
+
+    Args:
+        columns: The columns to convert.
+        format: Format to use for conversion. Refer to the
+            [chrono crate documentation](https://docs.rs/chrono/latest/chrono/format/strftime/index.html)
+            for the full specification. Example: ``"%H:%M:%S"``.
+            If set to ``None`` (default), the format is inferred from
+            the data.
+        ignore_missing: If ``False``, an exception is raised if a
+            column is missing, otherwise just a warning message is
+            shown.
+        **kwargs: The keyword arguments for ``to_time``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import ToTime
+    >>> transformer = ToTime(columns=["col1"], format="%H:%M:%S")
+    >>> transformer
+    ToTimeTransformer(columns=('col1',), format=%H:%M:%S, ignore_missing=False)
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 3)
+    ┌──────────┬──────┬──────────┐
+    │ col1     ┆ col2 ┆ col3     │
+    │ ---      ┆ ---  ┆ ---      │
+    │ str      ┆ str  ┆ str      │
+    ╞══════════╪══════╪══════════╡
+    │ 01:01:01 ┆ 1    ┆ 01:01:01 │
+    │ 02:02:02 ┆ 2    ┆ 02:02:02 │
+    │ 12:00:01 ┆ 3    ┆ 12:00:01 │
+    │ 18:18:18 ┆ 4    ┆ 18:18:18 │
+    │ 23:59:59 ┆ 5    ┆ 23:59:59 │
+    └──────────┴──────┴──────────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 3)
+    ┌──────────┬──────┬──────────┐
+    │ col1     ┆ col2 ┆ col3     │
+    │ ---      ┆ ---  ┆ ---      │
+    │ time     ┆ str  ┆ str      │
+    ╞══════════╪══════╪══════════╡
+    │ 01:01:01 ┆ 1    ┆ 01:01:01 │
+    │ 02:02:02 ┆ 2    ┆ 02:02:02 │
+    │ 12:00:01 ┆ 3    ┆ 12:00:01 │
+    │ 18:18:18 ┆ 4    ┆ 18:18:18 │
+    │ 23:59:59 ┆ 5    ┆ 23:59:59 │
+    └──────────┴──────┴──────────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str],
+        format: str | None = None,  # noqa: A002
+        ignore_missing: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(columns, ignore_missing)
+        self._format = format
+        self._kwargs = kwargs
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__qualname__}(columns={self._columns}, format={self._format}, "
+            f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
+        )
+
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"converting {len(columns):,} columns to time ({self._format})...")
+
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
+        for col in tqdm(columns, desc=f"converting to time ({self._format})"):
+            logger.debug(f"converting column {col} to time ({self._format})...")
+            frame = frame.with_columns(
+                frame.select(pl.col(col).str.to_time(self._format, **self._kwargs))
+            )
+        return frame
