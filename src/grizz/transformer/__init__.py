@@ -17,6 +17,8 @@ __all__ = [
     "FloatCastTransformer",
     "Function",
     "FunctionTransformer",
+    "IntegerCast",
+    "IntegerCastTransformer",
     "JsonDecode",
     "JsonDecodeTransformer",
     "Replace",
@@ -54,6 +56,8 @@ from grizz.transformer.casting import DecimalCastTransformer
 from grizz.transformer.casting import DecimalCastTransformer as DecimalCast
 from grizz.transformer.casting import FloatCastTransformer
 from grizz.transformer.casting import FloatCastTransformer as FloatCast
+from grizz.transformer.casting import IntegerCastTransformer
+from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.transformer.datetime import ToDatetimeTransformer
 from grizz.transformer.datetime import ToDatetimeTransformer as ToDatetime
