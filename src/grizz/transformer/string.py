@@ -12,6 +12,12 @@ import polars as pl
 
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
+from grizz.utils.imports import is_tqdm_available
+
+if is_tqdm_available():
+    from tqdm import tqdm
+else:  # pragma: no cover
+    from grizz.utils.noop import tqdm
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -92,11 +98,18 @@ class StripCharsTransformer(BaseColumnsTransformer):
             f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
         )
 
-    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
-        if frame.schema[column] == pl.String:
-            logger.info(f"stripping characters of column {column}...")
-            frame = frame.with_columns(frame.select(pl.col(column).str.strip_chars(**self._kwargs)))
-        return frame
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"stripping characters of {len(columns):,} columns...")
 
-    def _get_progressbar_message(self) -> str:
-        return "stripping chars"
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
+        for col in tqdm(columns, desc="stripping chars"):
+            if frame.schema[col] == pl.String:
+                logger.debug(f"stripping characters of column {col}...")
+                frame = frame.with_columns(
+                    frame.select(pl.col(col).str.strip_chars(**self._kwargs))
+                )
+            else:
+                logger.debug(f"ignoring column {col} because it is not of type string")
+        return frame
