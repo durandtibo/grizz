@@ -13,12 +13,6 @@ import polars.selectors as cs
 
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
-from grizz.utils.imports import is_tqdm_available
-
-if is_tqdm_available():
-    pass
-else:  # pragma: no cover
-    pass
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
