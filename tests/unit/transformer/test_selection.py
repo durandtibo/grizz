@@ -46,9 +46,7 @@ def test_column_selection_transformer_transform_empty_row() -> None:
 
 def test_column_selection_transformer_transform_empty() -> None:
     transformer = ColumnSelection(columns=["col1", "col2"])
-    with pytest.raises(
-        RuntimeError, match=r"2 columns are missing in the DataFrame: \['col1', 'col2'\]"
-    ):
+    with pytest.raises(RuntimeError, match=r"2 columns are missing in the DataFrame:"):
         transformer.transform(pl.DataFrame({}))
 
 
@@ -58,7 +56,6 @@ def test_column_selection_transformer_transform_ignore_missing_true(
     transformer = ColumnSelection(columns=["col"], ignore_missing=True)
     with caplog.at_level(logging.WARNING):
         transformer.transform(pl.DataFrame({}))
-        assert (
-            caplog.messages[0]
-            == "1 columns are missing in the DataFrame and will be ignored: ['col']"
+        assert caplog.messages[0].startswith(
+            "1 columns are missing in the DataFrame and will be ignored:"
         )

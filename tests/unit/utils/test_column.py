@@ -23,40 +23,40 @@ def dataframe() -> pl.DataFrame:
 
 
 def test_find_common_columns_dataframe(dataframe: pl.DataFrame) -> None:
-    assert find_common_columns(dataframe, columns=["col1", "col2", "col3", "col4"]) == [
+    assert find_common_columns(dataframe, columns=["col1", "col2", "col3", "col4"]) == (
         "col1",
         "col2",
         "col3",
-    ]
+    )
 
 
 def test_find_common_columns_1() -> None:
-    assert find_common_columns(["col1", "col2", "col3"], columns=["col1"]) == ["col1"]
+    assert find_common_columns(["col1", "col2", "col3"], columns=["col1"]) == ("col1",)
 
 
 def test_find_common_columns_2() -> None:
-    assert find_common_columns(["col1", "col2", "col3"], columns=["col1", "col2"]) == [
+    assert find_common_columns(["col1", "col2", "col3"], columns=["col1", "col2"]) == (
         "col1",
         "col2",
-    ]
+    )
 
 
 def test_find_common_columns_3() -> None:
-    assert find_common_columns(["col1", "col2", "col3"], columns=["col1", "col2", "col3"]) == [
+    assert find_common_columns(["col1", "col2", "col3"], columns=["col1", "col2", "col3"]) == (
         "col1",
         "col2",
         "col3",
-    ]
+    )
 
 
 def test_find_common_columns_4() -> None:
     assert find_common_columns(
         ["col1", "col2", "col3"], columns=["col1", "col2", "col3", "col4"]
-    ) == ["col1", "col2", "col3"]
+    ) == ("col1", "col2", "col3")
 
 
 def test_find_common_columns_empty() -> None:
-    assert find_common_columns([], []) == []
+    assert find_common_columns([], []) == ()
 
 
 ##########################################
@@ -65,26 +65,26 @@ def test_find_common_columns_empty() -> None:
 
 
 def test_find_missing_columns_dataframe(dataframe: pl.DataFrame) -> None:
-    assert find_missing_columns(dataframe, columns=["col1", "col2", "col3", "col4"]) == ["col4"]
+    assert find_missing_columns(dataframe, columns=["col1", "col2", "col3", "col4"]) == ("col4",)
 
 
 def test_find_missing_columns_1() -> None:
-    assert find_missing_columns(["col1", "col2", "col3"], columns=["col1"]) == []
+    assert find_missing_columns(["col1", "col2", "col3"], columns=["col1"]) == ()
 
 
 def test_find_missing_columns_2() -> None:
-    assert find_missing_columns(["col1", "col2", "col3"], columns=["col1", "col2"]) == []
+    assert find_missing_columns(["col1", "col2", "col3"], columns=["col1", "col2"]) == ()
 
 
 def test_find_missing_columns_3() -> None:
-    assert find_missing_columns(["col1", "col2", "col3"], columns=["col1", "col2", "col3"]) == []
+    assert find_missing_columns(["col1", "col2", "col3"], columns=["col1", "col2", "col3"]) == ()
 
 
 def test_find_missing_columns_4() -> None:
     assert find_missing_columns(
         ["col1", "col2", "col3"], columns=["col1", "col2", "col3", "col4"]
-    ) == ["col4"]
+    ) == ("col4",)
 
 
 def test_find_missing_columns_empty() -> None:
-    assert find_missing_columns([], []) == []
+    assert find_missing_columns([], []) == ()

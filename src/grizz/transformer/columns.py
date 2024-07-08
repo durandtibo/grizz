@@ -101,7 +101,7 @@ class BaseColumnsTransformer(BaseTransformer):
             )
         return self._transform(frame=frame)
 
-    def find_columns(self, frame: pl.DataFrame) -> list[str]:
+    def find_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the columns to transform.
 
         Args:
@@ -128,18 +128,18 @@ class BaseColumnsTransformer(BaseTransformer):
         ... )
         >>> transformer = StripChars(columns=["col2", "col3"])
         >>> transformer.find_columns(frame)
-        ['col2', 'col3']
+        ('col2', 'col3')
         >>> transformer = StripChars()
         >>> transformer.find_columns(frame)
-        ['col1', 'col2', 'col3', 'col4']
+        ('col1', 'col2', 'col3', 'col4')
 
         ```
         """
         if self._columns is None:
-            return list(frame.columns)
-        return list(self._columns)
+            return tuple(frame.columns)
+        return self._columns
 
-    def find_common_columns(self, frame: pl.DataFrame) -> list[str]:
+    def find_common_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the common columns.
 
         Args:
@@ -166,16 +166,16 @@ class BaseColumnsTransformer(BaseTransformer):
         ... )
         >>> transformer = StripChars(columns=["col2", "col3", "col5"])
         >>> transformer.find_common_columns(frame)
-        ['col2', 'col3']
+        ('col2', 'col3')
         >>> transformer = StripChars()
         >>> transformer.find_common_columns(frame)
-        ['col1', 'col2', 'col3', 'col4']
+        ('col1', 'col2', 'col3', 'col4')
 
         ```
         """
         return find_common_columns(frame, self.find_columns(frame))
 
-    def find_missing_columns(self, frame: pl.DataFrame) -> list[str]:
+    def find_missing_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the missing columns.
 
         Args:
@@ -202,10 +202,10 @@ class BaseColumnsTransformer(BaseTransformer):
         ... )
         >>> transformer = StripChars(columns=["col2", "col3", "col5"])
         >>> transformer.find_missing_columns(frame)
-        ['col5']
+        ('col5',)
         >>> transformer = StripChars()
         >>> transformer.find_missing_columns(frame)
-        []
+        ()
 
         ```
         """

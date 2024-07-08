@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 def find_common_columns(
     frame_or_cols: pl.DataFrame | Sequence, columns: Sequence[str]
-) -> list[str]:
+) -> tuple[str, ...]:
     r"""Find the common columns that are both in the DataFrame and the
     given columns.
 
@@ -24,7 +24,7 @@ def find_common_columns(
         columns: The columns to check.
 
     Returns:
-        The list of common columns i.e. the columns that are both in
+        The columns i.e. the columns that are both in
             ``columns`` and ``frame_or_cols``.
 
     Example usage:
@@ -42,18 +42,18 @@ def find_common_columns(
     ... )
     >>> cols = find_common_columns(frame, columns=["col1", "col2", "col3", "col4"])
     >>> cols
-    ['col1', 'col2', 'col3']
+    ('col1', 'col2', 'col3')
 
     ```
     """
     cols = set(frame_or_cols.columns if isinstance(frame_or_cols, pl.DataFrame) else frame_or_cols)
     columns = set(columns)
-    return sorted(columns.intersection(cols))
+    return tuple(sorted(columns.intersection(cols)))
 
 
 def find_missing_columns(
     frame_or_cols: pl.DataFrame | Sequence, columns: Sequence[str]
-) -> list[str]:
+) -> tuple[str, ...]:
     r"""Find the columns that are in the given columns but not in the
     DataFrame.
 
@@ -80,10 +80,10 @@ def find_missing_columns(
     ... )
     >>> cols = find_missing_columns(frame, columns=["col1", "col2", "col3", "col4"])
     >>> cols
-    ['col4']
+    ('col4',)
 
     ```
     """
     cols = set(frame_or_cols.columns if isinstance(frame_or_cols, pl.DataFrame) else frame_or_cols)
     columns = set(columns)
-    return sorted(columns.difference(cols).intersection(columns))
+    return tuple(sorted(columns.difference(cols).intersection(columns)))
