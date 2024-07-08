@@ -3,7 +3,12 @@ a new data type."""
 
 from __future__ import annotations
 
-__all__ = ["CastTransformer", "DecimalCastTransformer", "FloatCastTransformer"]
+__all__ = [
+    "CastTransformer",
+    "DecimalCastTransformer",
+    "FloatCastTransformer",
+    "IntegerCastTransformer",
+]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -263,4 +268,82 @@ class FloatCastTransformer(CastTransformer):
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select(cs.by_name(columns)).select(cs.float().cast(self._dtype, **self._kwargs))
+        )
+
+
+class IntegerCastTransformer(CastTransformer):
+    r"""Implement a transformer to convert columns of type integer to a
+    new data type.
+
+    Args:
+        columns: The columns to convert. ``None`` means all the
+            columns.
+        dtype: The target data type.
+        ignore_missing: If ``False``, an exception is raised if a
+            column is missing, otherwise just a warning message is
+            shown.
+        **kwargs: The keyword arguments for ``cast``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import IntegerCast
+    >>> transformer = IntegerCast(columns=["col1", "col2"], dtype=pl.Float32)
+    >>> transformer
+    IntegerCastTransformer(columns=('col1', 'col2'), dtype=Float32, ignore_missing=False)
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+    ...         "col3": [1, 2, 3, 4, 5],
+    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...     },
+    ...     schema={
+    ...         "col1": pl.Int64,
+    ...         "col2": pl.Float64,
+    ...         "col3": pl.Int64,
+    ...         "col4": pl.String,
+    ...     },
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ f64  ┆ i64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1    ┆ 1.0  ┆ 1    ┆ a    │
+    │ 2    ┆ 2.0  ┆ 2    ┆ b    │
+    │ 3    ┆ 3.0  ┆ 3    ┆ c    │
+    │ 4    ┆ 4.0  ┆ 4    ┆ d    │
+    │ 5    ┆ 5.0  ┆ 5    ┆ e    │
+    └──────┴──────┴──────┴──────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ f32  ┆ f64  ┆ i64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1.0  ┆ 1.0  ┆ 1    ┆ a    │
+    │ 2.0  ┆ 2.0  ┆ 2    ┆ b    │
+    │ 3.0  ┆ 3.0  ┆ 3    ┆ c    │
+    │ 4.0  ┆ 4.0  ┆ 4    ┆ d    │
+    │ 5.0  ┆ 5.0  ┆ 5    ┆ e    │
+    └──────┴──────┴──────┴──────┘
+
+    ```
+    """
+
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"converting {len(columns):,} columns to {self._dtype}...")
+
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
+        return frame.with_columns(
+            frame.select(cs.by_name(columns)).select(cs.integer().cast(self._dtype, **self._kwargs))
         )
