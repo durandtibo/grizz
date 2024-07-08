@@ -109,10 +109,7 @@ class CastTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        for col in tqdm(columns, desc=f"converting to {self._dtype}"):
-            logger.debug(f"converting column {col} to {self._dtype}...")
-            frame = frame.with_columns(frame.select(pl.col(col).cast(self._dtype, **self._kwargs)))
-        return frame
+        return frame.cast({col: self._dtype for col in columns}, **self._kwargs)
 
 
 class ToDatetimeTransformer(BaseColumnsTransformer):
