@@ -9,6 +9,8 @@ __all__ = [
     "CastTransformer",
     "ColumnSelection",
     "ColumnSelectionTransformer",
+    "DecimalCast",
+    "DecimalCastTransformer",
     "Diff",
     "DiffTransformer",
     "Function",
@@ -46,6 +48,8 @@ from grizz.transformer.base import (
 )
 from grizz.transformer.casting import CastTransformer
 from grizz.transformer.casting import CastTransformer as Cast
+from grizz.transformer.casting import DecimalCastTransformer
+from grizz.transformer.casting import DecimalCastTransformer as DecimalCast
 from grizz.transformer.casting import ToDatetimeTransformer
 from grizz.transformer.casting import ToDatetimeTransformer as ToDatetime
 from grizz.transformer.casting import ToTimeTransformer

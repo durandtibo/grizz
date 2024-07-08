@@ -7,7 +7,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from grizz.transformer import Cast, ToDatetime, ToTime
+from grizz.transformer import Cast, DecimalCast, ToDatetime, ToTime
 
 
 @pytest.fixture()
@@ -159,6 +159,156 @@ def test_cast_transformer_transform_ignore_missing_true(
                     "col1": pl.Float32,
                     "col2": pl.String,
                     "col3": pl.Float32,
+                    "col4": pl.String,
+                },
+            ),
+        )
+        assert caplog.messages[-1].startswith(
+            "1 columns are missing in the DataFrame and will be ignored:"
+        )
+
+
+############################################
+#     Tests for DecimalCastTransformer     #
+############################################
+
+
+@pytest.fixture()
+def frame_decimal() -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5],
+            "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.Decimal, "col3": pl.Decimal, "col4": pl.String},
+    )
+
+
+def test_decimal_cast_transformer_repr() -> None:
+    assert repr(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+    )
+
+
+def test_decimal_cast_transformer_repr_with_kwargs() -> None:
+    assert repr(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "strict=False)"
+    )
+
+
+def test_decimal_cast_transformer_str() -> None:
+    assert str(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+    )
+
+
+def test_decimal_cast_transformer_str_with_kwargs() -> None:
+    assert str(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "strict=False)"
+    )
+
+
+def test_decimal_cast_transformer_transform_int32(frame_decimal: pl.DataFrame) -> None:
+    transformer = DecimalCast(columns=["col1", "col2"], dtype=pl.Int32)
+    out = transformer.transform(frame_decimal)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1, 2, 3, 4, 5],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Int32, "col3": pl.Decimal, "col4": pl.String},
+        ),
+    )
+
+
+def test_decimal_cast_transformer_transform_float32(frame_decimal: pl.DataFrame) -> None:
+    transformer = DecimalCast(columns=["col1", "col2"], dtype=pl.Float32)
+    out = transformer.transform(frame_decimal)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float32, "col3": pl.Decimal, "col4": pl.String},
+        ),
+    )
+
+
+def test_decimal_cast_transformer_transform_none(frame_decimal: pl.DataFrame) -> None:
+    transformer = DecimalCast(columns=None, dtype=pl.Float32)
+    out = transformer.transform(frame_decimal)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.String},
+        ),
+    )
+
+
+def test_decimal_cast_transformer_transform_strict_false(frame_decimal: pl.DataFrame) -> None:
+    transformer = DecimalCast(columns=None, dtype=pl.Float32, strict=False)
+    out = transformer.transform(frame_decimal)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.String},
+        ),
+    )
+
+
+def test_decimal_cast_transformer_transform_ignore_missing_false(
+    frame_decimal: pl.DataFrame,
+) -> None:
+    transformer = DecimalCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+        transformer.transform(frame_decimal)
+
+
+def test_decimal_cast_transformer_transform_ignore_missing_true(
+    frame_decimal: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = DecimalCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, ignore_missing=True
+    )
+    with caplog.at_level(logging.WARNING):
+        out = transformer.transform(frame_decimal)
+        assert_frame_equal(
+            out,
+            pl.DataFrame(
+                {
+                    "col1": [1, 2, 3, 4, 5],
+                    "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                    "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                    "col4": ["a", "b", "c", "d", "e"],
+                },
+                schema={
+                    "col1": pl.Int64,
+                    "col2": pl.Float32,
+                    "col3": pl.Decimal,
                     "col4": pl.String,
                 },
             ),
