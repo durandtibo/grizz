@@ -52,8 +52,6 @@ from grizz.transformer.casting import DecimalCastTransformer
 from grizz.transformer.casting import DecimalCastTransformer as DecimalCast
 from grizz.transformer.casting import ToDatetimeTransformer
 from grizz.transformer.casting import ToDatetimeTransformer as ToDatetime
-from grizz.transformer.casting import ToTimeTransformer
-from grizz.transformer.casting import ToTimeTransformer as ToTime
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.transformer.diff import DiffTransformer
 from grizz.transformer.diff import DiffTransformer as Diff
@@ -79,3 +77,5 @@ from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
 from grizz.transformer.time import TimeToSecondTransformer
 from grizz.transformer.time import TimeToSecondTransformer as TimeToSecond
+from grizz.transformer.time import ToTimeTransformer
+from grizz.transformer.time import ToTimeTransformer as ToTime
