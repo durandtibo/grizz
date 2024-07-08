@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "grizz"
-version = "0.0.1a0"
+version = "0.0.1"
 description = "A light library to preprocess data with polars"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
