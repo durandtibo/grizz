@@ -147,3 +147,33 @@ def test_strip_chars_transformer_transform_ignore_missing_true(
         assert caplog.messages[-1].startswith(
             "1 columns are missing in the DataFrame and will be ignored:"
         )
+
+
+def test_strip_chars_transformer_find_columns(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars(columns=["col2", "col3", "col5"])
+    assert transformer.find_columns(dataframe) == ["col2", "col3", "col5"]
+
+
+def test_strip_chars_transformer_find_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars()
+    assert transformer.find_columns(dataframe) == ["col1", "col2", "col3", "col4"]
+
+
+def test_strip_chars_transformer_find_common_columns(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars(columns=["col2", "col3", "col5"])
+    assert transformer.find_common_columns(dataframe) == ["col2", "col3"]
+
+
+def test_strip_chars_transformer_find_common_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars()
+    assert transformer.find_common_columns(dataframe) == ["col1", "col2", "col3", "col4"]
+
+
+def test_strip_chars_transformer_find_missing_columns(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars(columns=["col2", "col3", "col5"])
+    assert transformer.find_missing_columns(dataframe) == ["col5"]
+
+
+def test_strip_chars_transformer_find_missing_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars()
+    assert transformer.find_missing_columns(dataframe) == []

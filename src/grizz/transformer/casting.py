@@ -12,6 +12,12 @@ import polars as pl
 
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
+from grizz.utils.imports import is_tqdm_available
+
+if is_tqdm_available():
+    from tqdm import tqdm
+else:  # pragma: no cover
+    from grizz.utils.noop import tqdm
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -97,11 +103,16 @@ class CastTransformer(BaseColumnsTransformer):
             f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
         )
 
-    def _get_progressbar_message(self) -> str:
-        return f"converting to {self._dtype}"
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"converting {len(columns):,} columns to {self._dtype}...")
 
-    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
-        return frame.with_columns(frame.select(pl.col(column).cast(self._dtype, **self._kwargs)))
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
+        for col in tqdm(columns, desc=f"converting to {self._dtype}"):
+            logger.debug(f"converting column {col} to {self._dtype}...")
+            frame = frame.with_columns(frame.select(pl.col(col).cast(self._dtype, **self._kwargs)))
+        return frame
 
 
 class ToDatetimeTransformer(BaseColumnsTransformer):
@@ -197,13 +208,18 @@ class ToDatetimeTransformer(BaseColumnsTransformer):
             f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
         )
 
-    def _get_progressbar_message(self) -> str:
-        return f"converting to datetime ({self._format})"
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"converting {len(columns):,} columns to datetime ({self._format})...")
 
-    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
-        return frame.with_columns(
-            frame.select(pl.col(column).str.to_datetime(self._format, **self._kwargs))
-        )
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
+        for col in tqdm(columns, desc=f"converting to datetime ({self._format})"):
+            logger.debug(f"converting column {col} to datetime ({self._format})...")
+            frame = frame.with_columns(
+                frame.select(pl.col(col).str.to_datetime(self._format, **self._kwargs))
+            )
+        return frame
 
 
 class ToTimeTransformer(BaseColumnsTransformer):
@@ -286,10 +302,15 @@ class ToTimeTransformer(BaseColumnsTransformer):
             f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
         )
 
-    def _get_progressbar_message(self) -> str:
-        return f"converting to time ({self._format})"
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"converting {len(columns):,} columns to time ({self._format})...")
 
-    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
-        return frame.with_columns(
-            frame.select(pl.col(column).str.to_time(self._format, **self._kwargs))
-        )
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
+        for col in tqdm(columns, desc=f"converting to time ({self._format})"):
+            logger.debug(f"converting column {col} to time ({self._format})...")
+            frame = frame.with_columns(
+                frame.select(pl.col(col).str.to_time(self._format, **self._kwargs))
+            )
+        return frame

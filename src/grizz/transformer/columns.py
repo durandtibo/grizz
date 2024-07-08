@@ -11,17 +11,12 @@ from typing import TYPE_CHECKING
 
 from grizz.transformer.base import BaseTransformer
 from grizz.utils.column import find_common_columns, find_missing_columns
-from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     import polars as pl
 
-if is_tqdm_available():
-    from tqdm import tqdm
-else:  # pragma: no cover
-    from grizz.utils.noop import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -94,10 +89,8 @@ class BaseColumnsTransformer(BaseTransformer):
         self._ignore_missing = bool(ignore_missing)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        columns = self._columns
-        if columns is None:
-            columns = tuple(frame.columns)
-        missing = find_missing_columns(frame, columns)
+        self._pre_transform(frame)
+        missing = self.find_missing_columns(frame)
         if missing and not self._ignore_missing:
             msg = f"{len(missing)} columns are missing in the DataFrame: {missing}"
             raise RuntimeError(msg)
@@ -106,27 +99,132 @@ class BaseColumnsTransformer(BaseTransformer):
                 f"{len(missing)} columns are missing in the DataFrame and will be ignored: "
                 f"{missing}"
             )
+        return self._transform(frame=frame)
 
-        columns = find_common_columns(frame, columns)
-        for col in tqdm(columns, desc=self._get_progressbar_message()):
-            frame = self._transform(frame=frame, column=col)
-        return frame
+    def find_columns(self, frame: pl.DataFrame) -> list[str]:
+        r"""Find the columns to transform.
 
-    @abstractmethod
-    def _get_progressbar_message(self) -> str:
-        r"""Return the message to show in the progress bar.
+        Args:
+            frame: The input DataFrame. Sometimes the columns to
+                transform are found by analyzing the input
+                DataFrame.
 
         Returns:
-            The message.
+            The columns to transform.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import polars as pl
+        >>> from grizz.transformer import StripChars
+        >>> frame = pl.DataFrame(
+        ...     {
+        ...         "col1": [1, 2, 3, 4, 5],
+        ...         "col2": ["1", "2", "3", "4", "5"],
+        ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+        ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+        ...     }
+        ... )
+        >>> transformer = StripChars(columns=["col2", "col3"])
+        >>> transformer.find_columns(frame)
+        ['col2', 'col3']
+        >>> transformer = StripChars()
+        >>> transformer.find_columns(frame)
+        ['col1', 'col2', 'col3', 'col4']
+
+        ```
+        """
+        if self._columns is None:
+            return list(frame.columns)
+        return list(self._columns)
+
+    def find_common_columns(self, frame: pl.DataFrame) -> list[str]:
+        r"""Find the common columns.
+
+        Args:
+            frame: The input DataFrame. Sometimes the columns to
+                transform are found by analyzing the input
+                DataFrame.
+
+        Returns:
+            The common columns.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import polars as pl
+        >>> from grizz.transformer import StripChars
+        >>> frame = pl.DataFrame(
+        ...     {
+        ...         "col1": [1, 2, 3, 4, 5],
+        ...         "col2": ["1", "2", "3", "4", "5"],
+        ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+        ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+        ...     }
+        ... )
+        >>> transformer = StripChars(columns=["col2", "col3", "col5"])
+        >>> transformer.find_common_columns(frame)
+        ['col2', 'col3']
+        >>> transformer = StripChars()
+        >>> transformer.find_common_columns(frame)
+        ['col1', 'col2', 'col3', 'col4']
+
+        ```
+        """
+        return find_common_columns(frame, self.find_columns(frame))
+
+    def find_missing_columns(self, frame: pl.DataFrame) -> list[str]:
+        r"""Find the missing columns.
+
+        Args:
+            frame: The input DataFrame. Sometimes the columns to
+                transform are found by analyzing the input
+                DataFrame.
+
+        Returns:
+            The missing columns.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import polars as pl
+        >>> from grizz.transformer import StripChars
+        >>> frame = pl.DataFrame(
+        ...     {
+        ...         "col1": [1, 2, 3, 4, 5],
+        ...         "col2": ["1", "2", "3", "4", "5"],
+        ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+        ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+        ...     }
+        ... )
+        >>> transformer = StripChars(columns=["col2", "col3", "col5"])
+        >>> transformer.find_missing_columns(frame)
+        ['col5']
+        >>> transformer = StripChars()
+        >>> transformer.find_missing_columns(frame)
+        []
+
+        ```
+        """
+        return find_missing_columns(frame, self.find_columns(frame))
+
+    @abstractmethod
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        r"""Log information about the transformation.
+
+        Args:
+            frame: The DataFrame to transform.
         """
 
     @abstractmethod
-    def _transform(self, frame: pl.DataFrame, column: str) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         r"""Transform the data in the given column.
 
         Args:
             frame: The DataFrame to transform.
-            column: The column to transform.
 
         Returns:
             The transformed DataFrame.
