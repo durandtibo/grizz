@@ -9,6 +9,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from grizz.transformer.base import BaseTransformer
+from grizz.utils.column import find_common_columns, find_missing_columns
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -73,19 +74,18 @@ class ColumnSelectionTransformer(BaseTransformer):
         )
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        columns = []
-        for col in self._columns:
-            if col not in frame:
-                if self._ignore_missing:
-                    logger.warning(f"Column `{col}` is not in the DataFrame")
-                else:
-                    msg = (
-                        f"Column `{col}` is not in the DataFrame (columns:{sorted(frame.columns)})"
-                    )
-                    raise RuntimeError(msg)
-            else:
-                columns.append(col)
-        logger.info(f"Selecting {len(columns):,} columns: {columns}")
+        logger.info(f"selecting {len(self._columns):,} columns: {self._columns}")
+        missing = find_missing_columns(frame, self._columns)
+        if missing and not self._ignore_missing:
+            msg = f"{len(missing)} columns are missing in the DataFrame: {missing}"
+            raise RuntimeError(msg)
+        if missing:
+            logger.warning(
+                f"{len(missing)} columns are missing in the DataFrame and will be ignored: "
+                f"{missing}"
+            )
+
+        columns = find_common_columns(frame, self._columns)
         out = frame.select(columns)
         logger.info(f"DataFrame shape after the column selection: {out.shape}")
         return out
