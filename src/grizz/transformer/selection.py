@@ -8,8 +8,8 @@ __all__ = ["ColumnSelectionTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-from grizz.transformer.base import BaseTransformer
-from grizz.utils.column import find_common_columns, find_missing_columns
+from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.utils.column import find_common_columns
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ColumnSelectionTransformer(BaseTransformer):
+class ColumnSelectionTransformer(BaseColumnsTransformer):
     r"""Implement a ``polars.DataFrame`` transformer to select a subset
     of columns.
 
@@ -37,7 +37,7 @@ class ColumnSelectionTransformer(BaseTransformer):
     >>> from grizz.transformer import ColumnSelection
     >>> transformer = ColumnSelection(columns=["col1", "col2"])
     >>> transformer
-    ColumnSelectionTransformer(columns=['col1', 'col2'], ignore_missing=False)
+    ColumnSelectionTransformer(columns=('col1', 'col2'), ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
@@ -64,8 +64,7 @@ class ColumnSelectionTransformer(BaseTransformer):
     """
 
     def __init__(self, columns: Sequence[str], ignore_missing: bool = False) -> None:
-        self._columns = list(columns)
-        self._ignore_missing = bool(ignore_missing)
+        super().__init__(columns, ignore_missing)
 
     def __repr__(self) -> str:
         return (
@@ -73,18 +72,11 @@ class ColumnSelectionTransformer(BaseTransformer):
             f"ignore_missing={self._ignore_missing})"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"selecting {len(self._columns):,} columns: {self._columns}")
-        missing = find_missing_columns(frame, self._columns)
-        if missing and not self._ignore_missing:
-            msg = f"{len(missing)} columns are missing in the DataFrame: {missing}"
-            raise RuntimeError(msg)
-        if missing:
-            logger.warning(
-                f"{len(missing)} columns are missing in the DataFrame and will be ignored: "
-                f"{missing}"
-            )
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"selecting {len(columns):,} columns...")
 
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = find_common_columns(frame, self._columns)
         out = frame.select(columns)
         logger.info(f"DataFrame shape after the column selection: {out.shape}")
