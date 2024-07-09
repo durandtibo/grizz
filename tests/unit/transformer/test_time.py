@@ -58,6 +58,25 @@ def test_time_to_second_transformer_transform() -> None:
 #######################################
 
 
+@pytest.fixture()
+def frame_time() -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "col1": [
+                datetime.time(1, 1, 1),
+                datetime.time(2, 2, 2),
+                datetime.time(12, 0, 1),
+                datetime.time(18, 18, 18),
+                datetime.time(23, 59, 59),
+            ],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
+            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+        },
+        schema={"col1": pl.Time, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+    )
+
+
 def test_to_time_transformer_repr() -> None:
     assert repr(ToTime(columns=["col1", "col3"])) == (
         "ToTimeTransformer(columns=('col1', 'col3'), format=None, ignore_missing=False)"
@@ -84,18 +103,9 @@ def test_to_time_transformer_str_with_kwargs() -> None:
     )
 
 
-def test_to_time_transformer_transform_no_format() -> None:
-    frame = pl.DataFrame(
-        {
-            "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-            "col2": ["1", "2", "3", "4", "5"],
-            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
-            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-        },
-        schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
-    )
+def test_to_time_transformer_transform_no_format(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3"])
-    out = transformer.transform(frame)
+    out = transformer.transform(frame_time)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -122,18 +132,9 @@ def test_to_time_transformer_transform_no_format() -> None:
     )
 
 
-def test_to_time_transformer_transform_format() -> None:
-    frame = pl.DataFrame(
-        {
-            "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-            "col2": ["1", "2", "3", "4", "5"],
-            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
-            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-        },
-        schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
-    )
+def test_to_time_transformer_transform_format(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3"], format="%H:%M:%S")
-    out = transformer.transform(frame)
+    out = transformer.transform(frame_time)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -160,36 +161,18 @@ def test_to_time_transformer_transform_format() -> None:
     )
 
 
-def test_to_time_transformer_transform_ignore_missing_false() -> None:
-    frame = pl.DataFrame(
-        {
-            "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-            "col2": ["1", "2", "3", "4", "5"],
-            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
-            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-        },
-        schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
-    )
+def test_to_time_transformer_transform_ignore_missing_false(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S")
     with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
-        transformer.transform(frame)
+        transformer.transform(frame_time)
 
 
 def test_to_time_transformer_transform_ignore_missing_true(
-    caplog: pytest.LogCaptureFixture,
+    caplog: pytest.LogCaptureFixture, frame_time: pl.DataFrame
 ) -> None:
-    frame = pl.DataFrame(
-        {
-            "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-            "col2": ["1", "2", "3", "4", "5"],
-            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
-            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-        },
-        schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
-    )
     transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S", ignore_missing=True)
     with caplog.at_level(logging.WARNING):
-        out = transformer.transform(frame)
+        out = transformer.transform(frame_time)
         assert_frame_equal(
             out,
             pl.DataFrame(
