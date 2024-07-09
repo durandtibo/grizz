@@ -9,15 +9,10 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
+import polars.selectors as cs
 
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
-from grizz.utils.imports import is_tqdm_available
-
-if is_tqdm_available():
-    from tqdm import tqdm
-else:  # pragma: no cover
-    from grizz.utils.noop import tqdm
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -104,12 +99,6 @@ class StripCharsTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        for col in tqdm(columns, desc="stripping chars"):
-            if frame.schema[col] == pl.String:
-                logger.debug(f"stripping characters of column {col}...")
-                frame = frame.with_columns(
-                    frame.select(pl.col(col).str.strip_chars(**self._kwargs))
-                )
-            else:
-                logger.debug(f"ignoring column {col} because it is not of type string")
-        return frame
+        return frame.with_columns(
+            frame.select((cs.by_name(columns) & cs.string()).str.strip_chars(**self._kwargs))
+        )
