@@ -320,7 +320,13 @@ def test_to_datetime_transformer_transform_format(dataframe: pl.DataFrame) -> No
                         tzinfo=timezone.utc,
                     ),
                     datetime(
-                        year=2020, month=4, day=1, hour=8, minute=8, second=8, tzinfo=timezone.utc,
+                        year=2020,
+                        month=4,
+                        day=1,
+                        hour=8,
+                        minute=8,
+                        second=8,
+                        tzinfo=timezone.utc,
                     ),
                     datetime(
                         year=2020,
