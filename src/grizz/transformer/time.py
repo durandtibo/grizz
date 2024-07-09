@@ -9,19 +9,15 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
+import polars.selectors as cs
 
 from grizz.transformer.base import BaseTransformer
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
-from grizz.utils.imports import is_tqdm_available
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-if is_tqdm_available():
-    from tqdm import tqdm
-else:  # pragma: no cover
-    from grizz.utils.noop import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -193,9 +189,6 @@ class ToTimeTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        for col in tqdm(columns, desc=f"converting to time ({self._format})"):
-            logger.debug(f"converting column {col} to time ({self._format})...")
-            frame = frame.with_columns(
-                frame.select(pl.col(col).str.to_time(self._format, **self._kwargs))
-            )
-        return frame
+        return frame.with_columns(
+            frame.select(cs.by_name(columns).str.to_time(self._format, **self._kwargs))
+        )
