@@ -2,7 +2,7 @@ r"""Contain transformers to replace values."""
 
 from __future__ import annotations
 
-__all__ = ["ReplaceTransformer", "ReplaceStrictTransformer"]
+__all__ = ["ReplaceStrictTransformer", "ReplaceTransformer"]
 
 from typing import Any
 
