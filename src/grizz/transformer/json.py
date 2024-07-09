@@ -5,32 +5,32 @@ from __future__ import annotations
 
 __all__ = ["JsonDecodeTransformer"]
 
-from typing import TYPE_CHECKING, Union
+import logging
+from typing import TYPE_CHECKING, Any, Union
 
 import polars as pl
+import polars.selectors as cs
 
-from grizz.transformer.base import BaseTransformer
-from grizz.utils.imports import is_tqdm_available
+from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from polars.type_aliases import PythonDataType
 
-if is_tqdm_available():
-    from tqdm import tqdm
-else:  # pragma: no cover
-    from grizz.utils.noop import tqdm
+logger = logging.getLogger(__name__)
 
 
 PolarsDataType = Union[pl.DataType, type[pl.DataType]]
 
 
-class JsonDecodeTransformer(BaseTransformer):
+class JsonDecodeTransformer(BaseColumnsTransformer):
     r"""Implement a transformer to parse string values as JSON.
 
     Args:
-        columns: The columns to parse.
+        columns: The columns to parse. ``None`` means all the
+            columns.
         dtype: The dtype to cast the extracted value to.
             If ``None``, the dtype will be inferred from the JSON value.
 
@@ -42,7 +42,7 @@ class JsonDecodeTransformer(BaseTransformer):
     >>> from grizz.transformer import JsonDecode
     >>> transformer = JsonDecode(columns=["col1", "col3"])
     >>> transformer
-    JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None)
+    JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
@@ -83,17 +83,32 @@ class JsonDecodeTransformer(BaseTransformer):
     """
 
     def __init__(
-        self, columns: Sequence[str], dtype: PolarsDataType | PythonDataType | None = None
+        self,
+        columns: Sequence[str] | None,
+        dtype: PolarsDataType | PythonDataType | None = None,
+        ignore_missing: bool = False,
+        **kwargs: Any,
     ) -> None:
-        self._columns = tuple(columns)
+        super().__init__(columns, ignore_missing)
         self._dtype = dtype
+        self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(columns={self._columns}, dtype={self._dtype})"
+        return (
+            f"{self.__class__.__qualname__}(columns={self._columns}, dtype={self._dtype}, "
+            f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
+        )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        for col in tqdm(self._columns, desc="converting to JSON"):
-            frame = frame.with_columns(
-                frame.select(pl.col(col).str.replace_all("'", '"').str.json_decode(self._dtype))
+    def _pre_transform(self, frame: pl.DataFrame) -> None:
+        columns = self.find_columns(frame)
+        logger.info(f"converting {len(columns):,} columns to JSON...")
+
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
+        return frame.with_columns(
+            frame.select(
+                cs.by_name(columns)
+                .str.replace_all("'", '"')
+                .str.json_decode(self._dtype, **self._kwargs)
             )
-        return frame
+        )
