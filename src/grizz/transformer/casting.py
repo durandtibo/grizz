@@ -189,7 +189,7 @@ class DecimalCastTransformer(CastTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
         return frame.with_columns(
-            frame.select(cs.by_name(columns)).select(cs.decimal().cast(self._dtype, **self._kwargs))
+            frame.select((cs.by_name(columns) & cs.decimal()).cast(self._dtype, **self._kwargs))
         )
 
 
@@ -267,7 +267,7 @@ class FloatCastTransformer(CastTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
         return frame.with_columns(
-            frame.select(cs.by_name(columns)).select(cs.float().cast(self._dtype, **self._kwargs))
+            frame.select((cs.by_name(columns) & cs.float()).cast(self._dtype, **self._kwargs))
         )
 
 
@@ -345,5 +345,5 @@ class IntegerCastTransformer(CastTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
         return frame.with_columns(
-            frame.select(cs.by_name(columns)).select(cs.integer().cast(self._dtype, **self._kwargs))
+            frame.select((cs.by_name(columns) & cs.integer()).cast(self._dtype, **self._kwargs))
         )
