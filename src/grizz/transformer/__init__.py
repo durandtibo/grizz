@@ -13,6 +13,8 @@ __all__ = [
     "DecimalCastTransformer",
     "Diff",
     "DiffTransformer",
+    "DropDuplicate",
+    "DropDuplicateTransformer",
     "DropNullColumn",
     "DropNullColumnTransformer",
     "DropNullRow",
@@ -69,6 +71,8 @@ from grizz.transformer.diff import DiffTransformer
 from grizz.transformer.diff import DiffTransformer as Diff
 from grizz.transformer.diff import TimeDiffTransformer
 from grizz.transformer.diff import TimeDiffTransformer as TimeDiff
+from grizz.transformer.duplicate import DropDuplicateTransformer
+from grizz.transformer.duplicate import DropDuplicateTransformer as DropDuplicate
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
 from grizz.transformer.json import JsonDecodeTransformer
