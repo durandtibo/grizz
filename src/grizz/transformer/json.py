@@ -107,7 +107,7 @@ class JsonDecodeTransformer(BaseColumnsTransformer):
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select(
-                cs.by_name(columns)
+                (cs.by_name(columns) & cs.string())
                 .str.replace_all("'", '"')
                 .str.json_decode(self._dtype, **self._kwargs)
             )
