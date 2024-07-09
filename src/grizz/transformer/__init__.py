@@ -37,6 +37,7 @@ __all__ = [
     "SortColumns",
     "SortColumnsTransformer",
     "SortTransformer",
+    "SqlTransformer",
     "StripChars",
     "StripCharsTransformer",
     "TimeDiff",
@@ -93,6 +94,7 @@ from grizz.transformer.sorting import SortColumnsTransformer
 from grizz.transformer.sorting import SortColumnsTransformer as SortColumns
 from grizz.transformer.sorting import SortTransformer
 from grizz.transformer.sorting import SortTransformer as Sort
+from grizz.transformer.sql import SqlTransformer
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
 from grizz.transformer.time import TimeToSecondTransformer

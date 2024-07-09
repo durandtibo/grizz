@@ -2,7 +2,7 @@ r"""Contain utility functions to format strings."""
 
 from __future__ import annotations
 
-__all__ = ["human_byte", "str_kwargs"]
+__all__ = ["human_byte", "str_kwargs", "str_col_diff", "str_row_diff"]
 
 from typing import TYPE_CHECKING
 
@@ -70,3 +70,59 @@ def str_kwargs(mapping: Mapping) -> str:
     if args:
         args = ", " + args
     return args
+
+
+def str_col_diff(orig: int, final: int) -> str:
+    r"""Return a string that indicates the difference of columns.
+
+    Args:
+        orig: The original number of columns.
+        final: The final number of columns.
+
+    Returns:
+        The generated string with the difference of columns.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.format import str_col_diff
+    >>> str_col_diff(100, 10)
+    90/100 (90.0000 %) columns have been removed
+    >>> str_col_diff(100, 99)
+    1/100 (1.0000 %) column has been removed
+
+    ```
+    """
+    diff = orig - final
+    diff_pct = 100 * diff / orig if orig > 0 else float("nan")
+    row = "columns have" if diff > 1 else "column has"
+    return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been removed"
+
+
+def str_row_diff(orig: int, final: int) -> str:
+    r"""Return a string that indicates the difference of rows.
+
+    Args:
+        orig: The original number of rows.
+        final: The final number of rows.
+
+    Returns:
+        The generated string with the difference of rows.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.format import str_row_diff
+    >>> str_row_diff(100, 10)
+    90/100 (90.0000 %) rows have been removed
+    >>> str_row_diff(100, 99)
+    1/100 (1.0000 %) row has been removed
+
+    ```
+    """
+    diff = orig - final
+    diff_pct = 100 * diff / orig if orig > 0 else float("nan")
+    row = "rows have" if diff > 1 else "row has"
+    return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been removed"
