@@ -11,7 +11,7 @@ import polars as pl
 import polars.selectors as cs
 
 from grizz.transformer.columns import BaseColumnsTransformer
-from grizz.utils.format import str_kwargs
+from grizz.utils.format import str_kwargs, str_row_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -98,11 +98,10 @@ class DropDuplicateTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        orig_shape = frame.shape
+        initial_shape = frame.shape
         out = frame.unique(subset=cs.by_name(columns), **self._kwargs)
-
-        logger.info(f"shape: {orig_shape} -> {out.shape}")
-        diff = orig_shape[0] - out.shape[0]
-        diff_pct = diff / (orig_shape[0] if orig_shape[0] > 0 else float("nan"))
-        logger.info(f"{diff:,} ({100 * diff_pct} %) rows have been removed")
+        logger.info(
+            f"DataFrame shape: {initial_shape} -> {out.shape} | "
+            f"{str_row_diff(orig=initial_shape[0], final=out.shape[0])}"
+        )
         return out
