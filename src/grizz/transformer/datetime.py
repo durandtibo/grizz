@@ -9,15 +9,10 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
+import polars.selectors as cs
 
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
-from grizz.utils.imports import is_tqdm_available
-
-if is_tqdm_available():
-    from tqdm import tqdm
-else:  # pragma: no cover
-    from grizz.utils.noop import tqdm
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -31,7 +26,8 @@ class ToDatetimeTransformer(BaseColumnsTransformer):
     ``polars.Datetime`` type.
 
     Args:
-        columns: The columns to convert.
+        columns: The columns to convert. ``None`` means all the
+            columns.
         format: Format to use for conversion. Refer to the
             [chrono crate documentation](https://docs.rs/chrono/latest/chrono/format/strftime/index.html)
             for the full specification.
@@ -104,7 +100,7 @@ class ToDatetimeTransformer(BaseColumnsTransformer):
 
     def __init__(
         self,
-        columns: Sequence[str],
+        columns: Sequence[str] | None,
         format: str | None = None,  # noqa: A002
         ignore_missing: bool = False,
         **kwargs: Any,
@@ -125,9 +121,6 @@ class ToDatetimeTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        for col in tqdm(columns, desc=f"converting to datetime ({self._format})"):
-            logger.debug(f"converting column {col} to datetime ({self._format})...")
-            frame = frame.with_columns(
-                frame.select(pl.col(col).str.to_datetime(self._format, **self._kwargs))
-            )
-        return frame
+        return frame.with_columns(
+            frame.select(cs.by_name(columns).str.to_datetime(self._format, **self._kwargs))
+        )
