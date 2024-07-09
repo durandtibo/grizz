@@ -191,5 +191,7 @@ class ToTimeTransformer(BaseColumnsTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
         return frame.with_columns(
-            frame.select(cs.by_name(columns).str.to_time(self._format, **self._kwargs))
+            frame.select(
+                (cs.by_name(columns) & cs.string()).str.to_time(self._format, **self._kwargs)
+            )
         )
