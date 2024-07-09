@@ -2,7 +2,7 @@ r"""Contain transformers to drop columns or rows with null values."""
 
 from __future__ import annotations
 
-__all__ = ["NullColumnTransformer", "DropNullRowTransformer"]
+__all__ = ["DropNullColumnTransformer", "DropNullRowTransformer"]
 
 import logging
 from itertools import compress
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NullColumnTransformer(BaseColumnsTransformer):
+class DropNullColumnTransformer(BaseColumnsTransformer):
     r"""Implement a transformer to remove the columns that have too many
     null values.
 
@@ -43,10 +43,10 @@ class NullColumnTransformer(BaseColumnsTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import NullColumn
-    >>> transformer = NullColumn()
+    >>> from grizz.transformer import DropNullColumn
+    >>> transformer = DropNullColumn()
     >>> transformer
-    NullColumnTransformer(columns=None, threshold=1.0, ignore_missing=False)
+    DropNullColumnTransformer(columns=None, threshold=1.0, ignore_missing=False)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
