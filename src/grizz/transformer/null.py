@@ -12,7 +12,7 @@ import polars as pl
 import polars.selectors as cs
 
 from grizz.transformer.columns import BaseColumnsTransformer
-from grizz.utils.format import str_kwargs
+from grizz.utils.format import str_col_diff, str_kwargs, str_row_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -111,7 +111,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
         if frame.shape[0] == 0:
             return frame
         columns = self.find_common_columns(frame)
-        orig_shape = frame.shape
+        initial_shape = frame.shape
         pct = frame.select(columns).null_count() / frame.shape[0]
         cols = list(compress(pct.columns, (pct >= self._threshold).row(0)))
         logger.info(
@@ -119,7 +119,10 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
             f"many null values (threshold={self._threshold})..."
         )
         out = frame.drop(cols)
-        logger.info(f"shape: {orig_shape} -> {out.shape}")
+        logger.info(
+            f"DataFrame shape: {initial_shape} -> {out.shape} | "
+            f"{str_col_diff(orig=initial_shape[1], final=out.shape[1])}"
+        )
         return out
 
 
@@ -194,7 +197,10 @@ class DropNullRowTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        orig_shape = frame.shape
+        initial_shape = frame.shape
         out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))
-        logger.info(f"shape: {orig_shape} -> {out.shape}")
+        logger.info(
+            f"DataFrame shape: {initial_shape} -> {out.shape} | "
+            f"{str_row_diff(orig=initial_shape[0], final=out.shape[0])}"
+        )
         return out

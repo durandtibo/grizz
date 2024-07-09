@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from coola.utils import repr_indent, repr_mapping
 
 from grizz.transformer.base import BaseTransformer
+from grizz.utils.format import str_col_diff, str_row_diff
 
 if TYPE_CHECKING:
 
@@ -72,10 +73,9 @@ class SqlTransformer(BaseTransformer):
         logger.info(f"executing the following SQL query:\n{self._query}")
         initial_shape = frame.shape
         out = frame.sql(self._query)
-        diff = initial_shape[0] - out.shape[0]
-        diff_pct = 100 * diff / out.shape[0] if out.shape[0] > 0 else float("nan")
         logger.info(
-            f"{diff:,} ({diff_pct:.4f} %) rows have been removed | "
-            f"DataFrame shape: {initial_shape} -> {out.shape}"
+            f"DataFrame shape: {initial_shape} -> {out.shape} | "
+            f"{str_row_diff(orig=initial_shape[0], final=out.shape[0])} | "
+            f"{str_col_diff(orig=initial_shape[1], final=out.shape[1])}"
         )
         return out

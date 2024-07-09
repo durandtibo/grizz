@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.column import find_common_columns
+from grizz.utils.format import str_col_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -78,6 +79,10 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = find_common_columns(frame, self._columns)
+        initial_shape = frame.shape
         out = frame.select(columns)
-        logger.info(f"DataFrame shape after the column selection: {out.shape}")
+        logger.info(
+            f"DataFrame shape: {initial_shape} -> {out.shape} | "
+            f"{str_col_diff(orig=initial_shape[1], final=out.shape[1])}"
+        )
         return out
