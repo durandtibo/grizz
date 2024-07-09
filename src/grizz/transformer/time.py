@@ -108,7 +108,8 @@ class ToTimeTransformer(BaseColumnsTransformer):
     ``polars.Time`` type.
 
     Args:
-        columns: The columns to convert.
+        columns: The columns to convert. ``None`` means all the
+            columns.
         format: Format to use for conversion. Refer to the
             [chrono crate documentation](https://docs.rs/chrono/latest/chrono/format/strftime/index.html)
             for the full specification. Example: ``"%H:%M:%S"``.
@@ -168,7 +169,7 @@ class ToTimeTransformer(BaseColumnsTransformer):
 
     def __init__(
         self,
-        columns: Sequence[str],
+        columns: Sequence[str] | None,
         format: str | None = None,  # noqa: A002
         ignore_missing: bool = False,
         **kwargs: Any,
