@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from grizz.utils.format import human_byte, str_kwargs
+from grizz.utils.format import human_byte, str_col_diff, str_kwargs, str_row_diff
 
 ################################
 #     Tests for human_byte     #
@@ -58,3 +58,37 @@ def test_str_kwargs_1() -> None:
 
 def test_str_kwargs_2() -> None:
     assert str_kwargs({"key1": 1, "key2": 2}) == ", key1=1, key2=2"
+
+
+##################################
+#     Tests for str_col_diff     #
+##################################
+
+
+def test_str_col_diff_zero() -> None:
+    assert str_col_diff(0, 0) == "0/0 (nan %) column has been removed"
+
+
+def test_str_col_diff_one() -> None:
+    assert str_col_diff(100, 99) == "1/100 (1.0000 %) column has been removed"
+
+
+def test_str_col_diff_multiple() -> None:
+    assert str_col_diff(100, 10) == "90/100 (90.0000 %) columns have been removed"
+
+
+##################################
+#     Tests for str_row_diff     #
+##################################
+
+
+def test_str_row_diff_zero() -> None:
+    assert str_row_diff(0, 0) == "0/0 (nan %) row has been removed"
+
+
+def test_str_row_diff_one() -> None:
+    assert str_row_diff(100, 99) == "1/100 (1.0000 %) row has been removed"
+
+
+def test_str_row_diff_multiple() -> None:
+    assert str_row_diff(100, 10) == "90/100 (90.0000 %) rows have been removed"
