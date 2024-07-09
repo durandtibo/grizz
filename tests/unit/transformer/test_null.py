@@ -6,7 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from grizz.transformer import NullColumn
+from grizz.transformer import DropNullRow, NullColumn
 
 ###########################################
 #     Tests for NullColumnTransformer     #
@@ -124,6 +124,105 @@ def test_null_column_transformer_transform_columns_ignore_missing_true(
                 {
                     "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
                     "col3": [None, None, None, None, None],
+                }
+            ),
+        )
+        assert caplog.messages[-1].startswith(
+            "1 columns are missing in the DataFrame and will be ignored:"
+        )
+
+
+############################################
+#     Tests for DropNullRowTransformer     #
+############################################
+
+
+@pytest.fixture()
+def frame_row() -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "col1": ["2020-1-1", None, "2020-1-31", "2020-12-31", None],
+            "col2": [1, None, 3, None, None],
+            "col3": [None, None, None, None, None],
+        }
+    )
+
+
+def test_drop_null_row_transformer_repr() -> None:
+    assert repr(DropNullRow(columns=["col1", "col3"])) == (
+        "DropNullRowTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+    )
+
+
+def test_drop_null_row_transformer_str() -> None:
+    assert str(DropNullRow(columns=["col1", "col3"])) == (
+        "DropNullRowTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+    )
+
+
+def test_drop_null_row_transformer_transform(frame_row: pl.DataFrame) -> None:
+    transformer = DropNullRow()
+    out = transformer.transform(frame_row)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-31", "2020-12-31"],
+                "col2": [1, 3, None],
+                "col3": [None, None, None],
+            }
+        ),
+    )
+
+
+def test_drop_null_row_transformer_transform_columns(frame_row: pl.DataFrame) -> None:
+    transformer = DropNullRow(columns=["col2", "col3"])
+    out = transformer.transform(frame_row)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-31"],
+                "col2": [1, 3],
+                "col3": [None, None],
+            }
+        ),
+    )
+
+
+def test_drop_null_row_transformer_transform_empty_row() -> None:
+    transformer = DropNullRow()
+    out = transformer.transform(pl.DataFrame({"col1": [], "col2": [], "col3": []}))
+    assert_frame_equal(out, pl.DataFrame({"col1": [], "col2": [], "col3": []}))
+
+
+def test_drop_null_row_transformer_transform_empty() -> None:
+    transformer = DropNullRow()
+    out = transformer.transform(pl.DataFrame({}))
+    assert_frame_equal(out, pl.DataFrame({}))
+
+
+def test_drop_null_row_transformer_transform_columns_ignore_missing_false(
+    frame_row: pl.DataFrame,
+) -> None:
+    transformer = DropNullRow(columns=["col1", "col2", "col5"])
+    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+        transformer.transform(frame_row)
+
+
+def test_drop_null_row_transformer_transform_columns_ignore_missing_true(
+    frame_row: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = DropNullRow(columns=["col1", "col2", "col5"], ignore_missing=True)
+    with caplog.at_level(logging.WARNING):
+        out = transformer.transform(frame_row)
+        assert_frame_equal(
+            out,
+            pl.DataFrame(
+                {
+                    "col1": ["2020-1-1", "2020-1-31", "2020-12-31"],
+                    "col2": [1, 3, None],
+                    "col3": [None, None, None],
                 }
             ),
         )
