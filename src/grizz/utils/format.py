@@ -2,7 +2,13 @@ r"""Contain utility functions to format strings."""
 
 from __future__ import annotations
 
-__all__ = ["human_byte", "str_kwargs", "str_col_diff", "str_row_diff", "strftime_format"]
+__all__ = [
+    "human_byte",
+    "str_kwargs",
+    "str_col_diff",
+    "str_row_diff",
+    "time_unit_to_strftime_format",
+]
 
 from typing import TYPE_CHECKING
 
@@ -142,7 +148,7 @@ def str_row_diff(orig: int, final: int) -> str:
     return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been removed"
 
 
-def strftime_format(time_unit: str) -> str:
+def time_unit_to_strftime_format(time_unit: str) -> str:
     r"""Return the default strftime format for a given time unit.
 
     Args:
@@ -155,10 +161,10 @@ def strftime_format(time_unit: str) -> str:
 
     ```pycon
 
-    >>> from grizz.utils.format import strftime_format
-    >>> strftime_format("h")
+    >>> from grizz.utils.format import time_unit_to_strftime_format
+    >>> time_unit_to_strftime_format("h")
     %Y-%m-%d %H:%M
-    >>> strftime_format("mo")
+    >>> time_unit_to_strftime_format("mo")
     %Y-%m
 
     ```
