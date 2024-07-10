@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from grizz.utils.format import human_byte, str_col_diff, str_kwargs, str_row_diff
+from grizz.utils.format import (
+    human_byte,
+    str_col_diff,
+    str_kwargs,
+    str_row_diff,
+    strftime_format,
+)
 
 ################################
 #     Tests for human_byte     #
@@ -92,3 +98,23 @@ def test_str_row_diff_one() -> None:
 
 def test_str_row_diff_multiple() -> None:
     assert str_row_diff(100, 10) == "90/100 (90.0000 %) rows have been removed"
+
+
+#####################################
+#     Tests for strftime_format     #
+#####################################
+
+
+def test_strftime_format_minute() -> None:
+    assert strftime_format("m") == "%Y-%m-%d %H:%M"
+
+
+def test_strftime_format_month() -> None:
+    assert strftime_format("mo") == "%Y-%m"
+
+
+def test_strftime_format_invalid() -> None:
+    with pytest.raises(
+        RuntimeError, match="Incorrect time unit invalid. The valid time units are:"
+    ):
+        strftime_format("invalid")
