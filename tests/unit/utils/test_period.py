@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from grizz.utils.period import find_time_unit, time_unit_to_strftime_format
+from grizz.utils.period import (
+    find_time_unit,
+    period_to_strftime_format,
+    time_unit_to_strftime_format,
+)
 
 ####################################
 #     Tests for find_time_unit     #
@@ -69,6 +73,24 @@ def test_find_time_unit(period: str, time_unit: str) -> None:
 def test_find_time_unit_incorrect(period: str) -> None:
     with pytest.raises(RuntimeError, match="could not find the time unit of"):
         find_time_unit(period)
+
+
+###############################################
+#     Tests for period_to_strftime_format     #
+###############################################
+
+
+def test_period_to_strftime_format_minute() -> None:
+    assert period_to_strftime_format("3d12h4m") == "%Y-%m-%d %H:%M"
+
+
+def test_period_to_strftime_format_month() -> None:
+    assert period_to_strftime_format("3y1mo") == "%Y-%m"
+
+
+def test_period_to_strftime_format_invalid() -> None:
+    with pytest.raises(RuntimeError, match="could not find the time unit of invalid"):
+        period_to_strftime_format("invalid")
 
 
 ##################################################

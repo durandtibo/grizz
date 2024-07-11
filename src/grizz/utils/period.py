@@ -67,6 +67,30 @@ def find_time_unit(period: str) -> str:
     raise RuntimeError(msg)
 
 
+def period_to_strftime_format(period: str) -> str:
+    r"""Return the default strftime format for a given period.
+
+    Args:
+        period: The ``polars`` period to analyze.
+
+    Returns:
+        The default strftime format.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.period import period_to_strftime_format
+    >>> period_to_strftime_format("1h")
+    %Y-%m-%d %H:%M
+    >>> period_to_strftime_format("3y1mo")
+    %Y-%m
+
+    ```
+    """
+    return time_unit_to_strftime_format(time_unit=find_time_unit(period))
+
+
 def time_unit_to_strftime_format(time_unit: str) -> str:
     r"""Return the default strftime format for a given time unit.
 
