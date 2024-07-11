@@ -2,12 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from grizz.utils.format import (
-    human_byte,
-    str_col_diff,
-    str_kwargs,
-    str_row_diff,
-)
+from grizz.utils.format import human_byte, str_col_diff, str_kwargs, str_row_diff
 
 ################################
 #     Tests for human_byte     #
