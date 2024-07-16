@@ -4,10 +4,10 @@ from datetime import timedelta
 
 import pytest
 
-from grizz.utils.period import (
+from grizz.utils.interval import (
     find_time_unit,
-    period_to_strftime_format,
-    period_to_timedelta,
+    interval_to_strftime_format,
+    interval_to_timedelta,
     time_unit_to_strftime_format,
 )
 
@@ -17,7 +17,7 @@ from grizz.utils.period import (
 
 
 @pytest.mark.parametrize(
-    ("period", "time_unit"),
+    ("interval", "time_unit"),
     [
         # ns
         ("1ns", "ns"),
@@ -65,35 +65,35 @@ from grizz.utils.period import (
         ("3y12y", "y"),
     ],
 )
-def test_find_time_unit(period: str, time_unit: str) -> None:
-    assert find_time_unit(period) == time_unit
+def test_find_time_unit(interval: str, time_unit: str) -> None:
+    assert find_time_unit(interval) == time_unit
 
 
 @pytest.mark.parametrize(
-    "period",
+    "interval",
     ["ns", "us", "ms", "s", "m", "h", "d", "w", "mo", "q", "y", "abc"],
 )
-def test_find_time_unit_incorrect(period: str) -> None:
+def test_find_time_unit_incorrect(interval: str) -> None:
     with pytest.raises(RuntimeError, match="could not find the time unit of"):
-        find_time_unit(period)
+        find_time_unit(interval)
 
 
 ###############################################
-#     Tests for period_to_strftime_format     #
+#     Tests for interval_to_strftime_format     #
 ###############################################
 
 
-def test_period_to_strftime_format_minute() -> None:
-    assert period_to_strftime_format("3d12h4m") == "%Y-%m-%d %H:%M"
+def test_interval_to_strftime_format_minute() -> None:
+    assert interval_to_strftime_format("3d12h4m") == "%Y-%m-%d %H:%M"
 
 
-def test_period_to_strftime_format_month() -> None:
-    assert period_to_strftime_format("3y1mo") == "%Y-%m"
+def test_interval_to_strftime_format_month() -> None:
+    assert interval_to_strftime_format("3y1mo") == "%Y-%m"
 
 
-def test_period_to_strftime_format_invalid() -> None:
+def test_interval_to_strftime_format_invalid() -> None:
     with pytest.raises(RuntimeError, match="could not find the time unit of invalid"):
-        period_to_strftime_format("invalid")
+        interval_to_strftime_format("invalid")
 
 
 ####################################
@@ -102,7 +102,7 @@ def test_period_to_strftime_format_invalid() -> None:
 
 
 @pytest.mark.parametrize(
-    ("period", "time_delta"),
+    ("interval", "time_delta"),
     [
         ("2w", timedelta(days=14)),
         ("12w", timedelta(days=84)),
@@ -126,8 +126,8 @@ def test_period_to_strftime_format_invalid() -> None:
         ("1mo", timedelta()),
     ],
 )
-def test_period_to_timedelta(period: str, time_delta: timedelta) -> None:
-    assert period_to_timedelta(period) == time_delta
+def test_interval_to_timedelta(interval: str, time_delta: timedelta) -> None:
+    assert interval_to_timedelta(interval) == time_delta
 
 
 ##################################################

@@ -4,5 +4,6 @@
 ::: grizz.utils.factory
 ::: grizz.utils.format
 ::: grizz.utils.imports
+::: grizz.utils.interval
 ::: grizz.utils.noop
 ::: grizz.utils.path

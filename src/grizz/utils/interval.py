@@ -1,11 +1,11 @@
-r"""Contain period utility functions."""
+r"""Contain interval utility functions."""
 
 from __future__ import annotations
 
 __all__ = [
     "find_time_unit",
-    "period_to_strftime_format",
-    "period_to_timedelta",
+    "interval_to_strftime_format",
+    "interval_to_timedelta",
     "time_unit_to_strftime_format",
 ]
 
@@ -26,7 +26,7 @@ STRFTIME_FORMAT = {
     "y": "%Y",
 }
 
-TIME_UNIT_TO_PERIOD_REGEX = {
+TIME_UNIT_TO_INTERVAL_REGEX = {
     "ns": "[0-9]+ns([0-9]|$)",
     "us": "[0-9]+us([0-9]|$)",
     "ms": "[0-9]+ms([0-9]|$)",
@@ -41,11 +41,11 @@ TIME_UNIT_TO_PERIOD_REGEX = {
 }
 
 
-def find_time_unit(period: str) -> str:
-    r"""Find the time unit associated to a ``polars`` period.
+def find_time_unit(interval: str) -> str:
+    r"""Find the time unit associated to a ``polars`` interval.
 
     Args:
-        period: The ``polars`` period to analyze.
+        interval: The ``polars`` interval to analyze.
 
     Returns:
         The found time unit.
@@ -57,7 +57,7 @@ def find_time_unit(period: str) -> str:
 
     ```pycon
 
-    >>> from grizz.utils.period import find_time_unit
+    >>> from grizz.utils.interval import find_time_unit
     >>> find_time_unit("3d12h4m")
     m
     >>> find_time_unit("3y5mo")
@@ -65,19 +65,19 @@ def find_time_unit(period: str) -> str:
 
     ```
     """
-    for unit, regex in TIME_UNIT_TO_PERIOD_REGEX.items():
-        if re.compile(regex).search(period) is not None:
+    for unit, regex in TIME_UNIT_TO_INTERVAL_REGEX.items():
+        if re.compile(regex).search(interval) is not None:
             return unit
 
-    msg = f"could not find the time unit of {period}"
+    msg = f"could not find the time unit of {interval}"
     raise RuntimeError(msg)
 
 
-def period_to_strftime_format(period: str) -> str:
-    r"""Return the default strftime format for a given period.
+def interval_to_strftime_format(interval: str) -> str:
+    r"""Return the default strftime format for a given interval.
 
     Args:
-        period: The ``polars`` period to analyze.
+        interval: The ``polars`` interval to analyze.
 
     Returns:
         The default strftime format.
@@ -86,52 +86,52 @@ def period_to_strftime_format(period: str) -> str:
 
     ```pycon
 
-    >>> from grizz.utils.period import period_to_strftime_format
-    >>> period_to_strftime_format("1h")
+    >>> from grizz.utils.interval import interval_to_strftime_format
+    >>> interval_to_strftime_format("1h")
     %Y-%m-%d %H:%M
-    >>> period_to_strftime_format("3y1mo")
+    >>> interval_to_strftime_format("3y1mo")
     %Y-%m
 
     ```
     """
-    return time_unit_to_strftime_format(time_unit=find_time_unit(period))
+    return time_unit_to_strftime_format(time_unit=find_time_unit(interval))
 
 
-def period_to_timedelta(period: str) -> timedelta:
-    r"""Convert a period to a timedelta object.
+def interval_to_timedelta(interval: str) -> timedelta:
+    r"""Convert a interval to a timedelta object.
 
     Args:
-        period: The input period.
+        interval: The input interval.
 
     Returns:
-        The timedelta object generated from the period.
+        The timedelta object generated from the interval.
 
     Example usage:
 
     ```pycon
 
-    >>> from grizz.utils.period import period_to_timedelta
-    >>> period_to_timedelta("5d1h42m")
+    >>> from grizz.utils.interval import interval_to_timedelta
+    >>> interval_to_timedelta("5d1h42m")
     datetime.timedelta(days=5, seconds=6120)
 
     ```
     """
 
-    def extract(regex: str, period: str) -> float | None:
-        res = re.compile(regex).search(period)
+    def extract(regex: str, interval: str) -> float | None:
+        res = re.compile(regex).search(interval)
         if res is None:
             return 0.0
         return float(re.compile("[0-9]+").search(res[0])[0])
 
-    days = extract(TIME_UNIT_TO_PERIOD_REGEX["w"], period)
-    microseconds = extract(TIME_UNIT_TO_PERIOD_REGEX["ns"], period) * 0.001
+    days = extract(TIME_UNIT_TO_INTERVAL_REGEX["w"], interval)
+    microseconds = extract(TIME_UNIT_TO_INTERVAL_REGEX["ns"], interval) * 0.001
     return timedelta(
-        days=extract(TIME_UNIT_TO_PERIOD_REGEX["d"], period) + 7 * days,
-        hours=extract(TIME_UNIT_TO_PERIOD_REGEX["h"], period),
-        minutes=extract(TIME_UNIT_TO_PERIOD_REGEX["m"], period),
-        seconds=extract(TIME_UNIT_TO_PERIOD_REGEX["s"], period),
-        milliseconds=extract(TIME_UNIT_TO_PERIOD_REGEX["ms"], period),
-        microseconds=extract(TIME_UNIT_TO_PERIOD_REGEX["us"], period) + microseconds,
+        days=extract(TIME_UNIT_TO_INTERVAL_REGEX["d"], interval) + 7 * days,
+        hours=extract(TIME_UNIT_TO_INTERVAL_REGEX["h"], interval),
+        minutes=extract(TIME_UNIT_TO_INTERVAL_REGEX["m"], interval),
+        seconds=extract(TIME_UNIT_TO_INTERVAL_REGEX["s"], interval),
+        milliseconds=extract(TIME_UNIT_TO_INTERVAL_REGEX["ms"], interval),
+        microseconds=extract(TIME_UNIT_TO_INTERVAL_REGEX["us"], interval) + microseconds,
     )
 
 
@@ -148,7 +148,7 @@ def time_unit_to_strftime_format(time_unit: str) -> str:
 
     ```pycon
 
-    >>> from grizz.utils.period import time_unit_to_strftime_format
+    >>> from grizz.utils.interval import time_unit_to_strftime_format
     >>> time_unit_to_strftime_format("h")
     %Y-%m-%d %H:%M
     >>> time_unit_to_strftime_format("mo")
