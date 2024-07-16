@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from datetime import timedelta
+
 import pytest
 
 from grizz.utils.period import (
     find_time_unit,
     period_to_strftime_format,
+    period_to_timedelta,
     time_unit_to_strftime_format,
 )
 
@@ -91,6 +94,40 @@ def test_period_to_strftime_format_month() -> None:
 def test_period_to_strftime_format_invalid() -> None:
     with pytest.raises(RuntimeError, match="could not find the time unit of invalid"):
         period_to_strftime_format("invalid")
+
+
+####################################
+#     Tests for find_time_unit     #
+####################################
+
+
+@pytest.mark.parametrize(
+    ("period", "time_delta"),
+    [
+        ("2w", timedelta(days=14)),
+        ("12w", timedelta(days=84)),
+        ("5d", timedelta(days=5)),
+        ("55d", timedelta(days=55)),
+        ("6h", timedelta(hours=6)),
+        ("16h", timedelta(hours=16)),
+        ("7m", timedelta(minutes=7)),
+        ("27m", timedelta(minutes=27)),
+        ("2s", timedelta(seconds=2)),
+        ("42s", timedelta(seconds=42)),
+        ("3ms", timedelta(milliseconds=3)),
+        ("23ms", timedelta(milliseconds=23)),
+        ("7us", timedelta(microseconds=7)),
+        ("37us", timedelta(microseconds=37)),
+        ("7ns", timedelta(microseconds=0.007)),
+        ("37ns", timedelta(microseconds=0.037)),
+        ("5d1h2m", timedelta(days=5, hours=1, minutes=2)),
+        ("15d18h42m", timedelta(days=15, hours=18, minutes=42)),
+        ("", timedelta()),
+        ("1mo", timedelta()),
+    ],
+)
+def test_period_to_timedelta(period: str, time_delta: timedelta) -> None:
+    assert period_to_timedelta(period) == time_delta
 
 
 ##################################################

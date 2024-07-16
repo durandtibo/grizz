@@ -2,9 +2,15 @@ r"""Contain period utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["find_time_unit", "period_to_strftime_format", "time_unit_to_strftime_format"]
+__all__ = [
+    "find_time_unit",
+    "period_to_strftime_format",
+    "period_to_timedelta",
+    "time_unit_to_strftime_format",
+]
 
 import re
+from datetime import timedelta
 
 STRFTIME_FORMAT = {
     "ns": "%Y-%m-%d %H:%M:%S.%f",
@@ -21,17 +27,17 @@ STRFTIME_FORMAT = {
 }
 
 TIME_UNIT_TO_PERIOD_REGEX = {
-    "ns": "[0-9]ns([0-9]|$)",
-    "us": "[0-9]us([0-9]|$)",
-    "ms": "[0-9]ms([0-9]|$)",
-    "s": "[0-9]s([0-9]|$)",
-    "m": "[0-9]m([0-9]|$)",
-    "h": "[0-9]h([0-9]|$)",
-    "d": "[0-9]d([0-9]|$)",
-    "w": "[0-9]w([0-9]|$)",
-    "mo": "[0-9]mo([0-9]|$)",
-    "q": "[0-9]q([0-9]|$)",
-    "y": "[0-9]y([0-9]|$)",
+    "ns": "[0-9]+ns([0-9]|$)",
+    "us": "[0-9]+us([0-9]|$)",
+    "ms": "[0-9]+ms([0-9]|$)",
+    "s": "[0-9]+s([0-9]|$)",
+    "m": "[0-9]+m([0-9]|$)",
+    "h": "[0-9]+h([0-9]|$)",
+    "d": "[0-9]+d([0-9]|$)",
+    "w": "[0-9]+w([0-9]|$)",
+    "mo": "[0-9]+mo([0-9]|$)",
+    "q": "[0-9]+q([0-9]|$)",
+    "y": "[0-9]+y([0-9]|$)",
 }
 
 
@@ -89,6 +95,44 @@ def period_to_strftime_format(period: str) -> str:
     ```
     """
     return time_unit_to_strftime_format(time_unit=find_time_unit(period))
+
+
+def period_to_timedelta(period: str) -> timedelta:
+    r"""Convert a period to a timedelta object.
+
+    Args:
+        period: The input period.
+
+    Returns:
+        The timedelta object generated from the period.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.period import period_to_timedelta
+    >>> period_to_timedelta("5d1h42m")
+    datetime.timedelta(days=5, seconds=6120)
+
+    ```
+    """
+
+    def extract(regex: str, period: str) -> float | None:
+        res = re.compile(regex).search(period)
+        if res is None:
+            return 0.0
+        return float(re.compile("[0-9]+").search(res[0])[0])
+
+    days = extract(TIME_UNIT_TO_PERIOD_REGEX["w"], period)
+    microseconds = extract(TIME_UNIT_TO_PERIOD_REGEX["ns"], period) * 0.001
+    return timedelta(
+        days=extract(TIME_UNIT_TO_PERIOD_REGEX["d"], period) + 7 * days,
+        hours=extract(TIME_UNIT_TO_PERIOD_REGEX["h"], period),
+        minutes=extract(TIME_UNIT_TO_PERIOD_REGEX["m"], period),
+        seconds=extract(TIME_UNIT_TO_PERIOD_REGEX["s"], period),
+        milliseconds=extract(TIME_UNIT_TO_PERIOD_REGEX["ms"], period),
+        microseconds=extract(TIME_UNIT_TO_PERIOD_REGEX["us"], period) + microseconds,
+    )
 
 
 def time_unit_to_strftime_format(time_unit: str) -> str:
