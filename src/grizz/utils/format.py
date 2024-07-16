@@ -4,8 +4,8 @@ from __future__ import annotations
 
 __all__ = [
     "human_byte",
-    "str_kwargs",
     "str_col_diff",
+    "str_kwargs",
     "str_row_diff",
 ]
 

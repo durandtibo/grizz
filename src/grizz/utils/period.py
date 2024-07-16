@@ -2,7 +2,7 @@ r"""Contain period utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["time_unit_to_strftime_format", "find_time_unit"]
+__all__ = ["find_time_unit", "period_to_strftime_format", "time_unit_to_strftime_format"]
 
 import re
 
