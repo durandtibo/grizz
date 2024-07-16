@@ -49,7 +49,7 @@ class ParquetIngestor(BaseIngestor):
 
     def ingest(self) -> pl.DataFrame:
         logger.info(
-            f"ingesting parquet data from {self._path} | size={human_file_size(self._path)}..."
+            f"Ingesting parquet data from {self._path} | size={human_file_size(self._path)}..."
         )
         frame = pl.read_parquet(self._path, **self._kwargs)
         logger.info(f"data ingested | shape: {frame.shape}")

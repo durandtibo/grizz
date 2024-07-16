@@ -101,7 +101,7 @@ class JsonDecodeTransformer(BaseColumnsTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"converting {len(columns):,} columns to JSON...")
+        logger.info(f"Converting {len(columns):,} columns to JSON...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)

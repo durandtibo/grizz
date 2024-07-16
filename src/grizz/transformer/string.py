@@ -95,7 +95,7 @@ class StripCharsTransformer(BaseColumnsTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"stripping characters of {len(columns):,} columns...")
+        logger.info(f"Stripping characters of {len(columns):,} columns...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
