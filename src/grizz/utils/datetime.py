@@ -2,7 +2,7 @@ r"""Contain utility functions for datetime and date objects."""
 
 from __future__ import annotations
 
-__all__ = ["find_end_datetime"]
+__all__ = ["find_end_datetime", "to_datetime"]
 
 
 from datetime import date, datetime, timedelta, timezone
