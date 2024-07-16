@@ -74,7 +74,7 @@ class SortTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}(columns={self._columns})"
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f'Sorting rows based on the columns: {self._columns}')
+        logger.info(f"Sorting rows based on the columns: {self._columns}")
         return frame.sort(self._columns, *self._args, **self._kwargs)
 
 
@@ -131,5 +131,5 @@ class SortColumnsTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}(reverse={self._reverse})"
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info('Sorting columns')
+        logger.info("Sorting columns")
         return frame.select(sorted(frame.columns, reverse=self._reverse))
