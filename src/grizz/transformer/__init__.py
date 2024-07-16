@@ -50,6 +50,8 @@ __all__ = [
     "ToTimeTransformer",
     "is_transformer_config",
     "setup_transformer",
+    "FillNan",
+    "FillNanTransformer",
 ]
 
 from grizz.transformer.base import (
@@ -74,6 +76,8 @@ from grizz.transformer.diff import TimeDiffTransformer
 from grizz.transformer.diff import TimeDiffTransformer as TimeDiff
 from grizz.transformer.duplicate import DropDuplicateTransformer
 from grizz.transformer.duplicate import DropDuplicateTransformer as DropDuplicate
+from grizz.transformer.fill import FillNanTransformer
+from grizz.transformer.fill import FillNanTransformer as FillNan
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
 from grizz.transformer.json import JsonDecodeTransformer
