@@ -7,7 +7,7 @@ __all__ = ["find_end_datetime"]
 
 from datetime import date, datetime, timedelta, timezone
 
-from grizz.utils.period import period_to_timedelta
+from grizz.utils.interval import interval_to_timedelta
 
 
 def find_end_datetime(start: datetime | date, interval: str | timedelta, periods: int) -> datetime:
@@ -54,7 +54,7 @@ def find_end_datetime(start: datetime | date, interval: str | timedelta, periods
     """
     start = to_datetime(start)
     if isinstance(interval, str):
-        interval = period_to_timedelta(interval)
+        interval = interval_to_timedelta(interval)
     return start + interval * periods
 
 
