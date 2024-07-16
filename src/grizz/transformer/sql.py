@@ -70,7 +70,7 @@ class SqlTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"executing the following SQL query:\n{self._query}")
+        logger.info(f"Executing the following SQL query:\n{self._query}")
         initial_shape = frame.shape
         out = frame.sql(self._query)
         logger.info(

@@ -104,7 +104,8 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
-            f"removing columns with too many missing values (threshold={self._threshold})..."
+            f"Checking columns and dropping the columns that have too "
+            f"many null values (threshold={self._threshold})..."
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
@@ -115,7 +116,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
         pct = frame.select(columns).null_count() / frame.shape[0]
         cols = list(compress(pct.columns, (pct >= self._threshold).row(0)))
         logger.info(
-            f"Removing {len(cols):,} columns because they have too "
+            f"Dropping {len(cols):,} columns that have too "
             f"many null values (threshold={self._threshold})..."
         )
         out = frame.drop(cols)
@@ -193,7 +194,7 @@ class DropNullRowTransformer(BaseColumnsTransformer):
         )
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info("dropping all rows that contain null values....")
+        logger.info("Dropping all rows that contain null values....")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)

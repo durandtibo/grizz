@@ -4,9 +4,12 @@ from __future__ import annotations
 
 __all__ = ["SortColumnsTransformer", "SortTransformer"]
 
+import logging
 from typing import TYPE_CHECKING, Any
 
 from grizz.transformer.base import BaseTransformer
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -71,6 +74,7 @@ class SortTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}(columns={self._columns})"
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        logger.info(f'Sorting rows based on the columns: {self._columns}')
         return frame.sort(self._columns, *self._args, **self._kwargs)
 
 
@@ -127,4 +131,5 @@ class SortColumnsTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}(reverse={self._reverse})"
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        logger.info('Sorting columns')
         return frame.select(sorted(frame.columns, reverse=self._reverse))

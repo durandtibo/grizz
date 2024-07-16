@@ -92,6 +92,7 @@ class TimeToSecondTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}(in_col={self._in_col}, out_col={self._out_col})"
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        logger.info(f"Converting time column ({self._in_col}) to seconds ({self._out_col})...")
         return frame.with_columns(
             frame.select(
                 pl.col(self._in_col)
@@ -186,7 +187,7 @@ class ToTimeTransformer(BaseColumnsTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"converting {len(columns):,} columns to time ({self._format})...")
+        logger.info(f"Converting {len(columns):,} columns to time ({self._format})...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)

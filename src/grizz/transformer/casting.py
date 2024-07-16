@@ -106,7 +106,7 @@ class CastTransformer(BaseColumnsTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"converting {len(columns):,} columns to {self._dtype}...")
+        logger.info(f"Converting {len(columns):,} columns to {self._dtype}...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
@@ -184,7 +184,7 @@ class DecimalCastTransformer(CastTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"converting {len(columns):,} columns to {self._dtype}...")
+        logger.info(f"Converting {len(columns):,} columns to {self._dtype}...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
@@ -262,7 +262,7 @@ class FloatCastTransformer(CastTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"converting {len(columns):,} columns to {self._dtype}...")
+        logger.info(f"Converting {len(columns):,} columns to {self._dtype}...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
@@ -340,7 +340,7 @@ class IntegerCastTransformer(CastTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"converting {len(columns):,} columns to {self._dtype}...")
+        logger.info(f"Converting {len(columns):,} columns to {self._dtype}...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
