@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = ["find_time_unit", "period_to_strftime_format", "time_unit_to_strftime_format"]
 
 import re
+from datetime import timedelta
 
 STRFTIME_FORMAT = {
     "ns": "%Y-%m-%d %H:%M:%S.%f",
@@ -89,6 +90,40 @@ def period_to_strftime_format(period: str) -> str:
     ```
     """
     return time_unit_to_strftime_format(time_unit=find_time_unit(period))
+
+
+def period_to_timedelta(period: str) -> timedelta:
+    r"""Convert a period to a timedelta object.
+
+    Args:
+        period: The input period.
+
+    Returns:
+        The timedelta object generated from the period.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.period import period_to_timedelta
+    >>> period_to_timedelta("5d1h42m")
+    %Y-%m-%d %H:%M
+
+    ```
+    """
+
+    def extract(regex: str, period: str) -> float | None:
+        res = re.compile(regex).search(period)
+        if res is None:
+            return 0.0
+        return float("".join(c for c in res[0] if c.isdigit()))
+
+    return timedelta(
+        days=extract(TIME_UNIT_TO_PERIOD_REGEX["d"], period),
+        hours=extract(TIME_UNIT_TO_PERIOD_REGEX["h"], period),
+        minutes=extract(TIME_UNIT_TO_PERIOD_REGEX["m"], period),
+        seconds=extract(TIME_UNIT_TO_PERIOD_REGEX["s"], period),
+    )
 
 
 def time_unit_to_strftime_format(time_unit: str) -> str:
