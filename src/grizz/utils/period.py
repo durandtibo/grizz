@@ -14,7 +14,7 @@ STRFTIME_FORMAT = {
     "m": "%Y-%m-%d %H:%M",
     "h": "%Y-%m-%d %H:%M",
     "d": "%Y-%m-%d",
-    "w": "%Y %W",
+    "w": "%Y week %W",
     "mo": "%Y-%m",
     "q": "%Y-%m",
     "y": "%Y",
