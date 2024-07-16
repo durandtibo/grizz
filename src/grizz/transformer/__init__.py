@@ -19,6 +19,10 @@ __all__ = [
     "DropNullColumnTransformer",
     "DropNullRow",
     "DropNullRowTransformer",
+    "FillNan",
+    "FillNanTransformer",
+    "FillNull",
+    "FillNullTransformer",
     "FloatCast",
     "FloatCastTransformer",
     "Function",
@@ -50,8 +54,6 @@ __all__ = [
     "ToTimeTransformer",
     "is_transformer_config",
     "setup_transformer",
-    "FillNan",
-    "FillNanTransformer",
 ]
 
 from grizz.transformer.base import (
@@ -78,6 +80,8 @@ from grizz.transformer.duplicate import DropDuplicateTransformer
 from grizz.transformer.duplicate import DropDuplicateTransformer as DropDuplicate
 from grizz.transformer.fill import FillNanTransformer
 from grizz.transformer.fill import FillNanTransformer as FillNan
+from grizz.transformer.fill import FillNullTransformer
+from grizz.transformer.fill import FillNullTransformer as FillNull
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
 from grizz.transformer.json import JsonDecodeTransformer
