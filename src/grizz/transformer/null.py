@@ -109,7 +109,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        if frame.shape[0] == 0:
+        if frame.is_empty():
             return frame
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
