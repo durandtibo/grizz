@@ -10,6 +10,10 @@ from grizz.transformer import Sort, SortColumns
 #####################################
 
 
+def test_sort_transformer_repr() -> None:
+    assert repr(Sort(columns=["col3", "col1"])).startswith("SortTransformer(")
+
+
 def test_sort_transformer_str() -> None:
     assert str(Sort(columns=["col3", "col1"])).startswith("SortTransformer(")
 
@@ -60,6 +64,10 @@ def test_sort_transformer_transform_empty() -> None:
 ############################################
 #     Tests for SortColumnsTransformer     #
 ############################################
+
+
+def test_sort_columns_transformer_repr() -> None:
+    assert repr(SortColumns()).startswith("SortColumnsTransformer(")
 
 
 def test_sort_columns_transformer_str() -> None:

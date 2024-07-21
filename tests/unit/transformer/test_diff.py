@@ -10,6 +10,10 @@ from grizz.transformer import Diff, TimeDiff
 #####################################
 
 
+def test_diff_transformer_repr() -> None:
+    assert str(Diff(in_col="col1", out_col="diff")).startswith("DiffTransformer(")
+
+
 def test_diff_transformer_str() -> None:
     assert str(Diff(in_col="col1", out_col="diff")).startswith("DiffTransformer(")
 
@@ -102,6 +106,12 @@ def test_diff_transformer_transform_empty() -> None:
 #########################################
 #     Tests for TimeDiffTransformer     #
 #########################################
+
+
+def test_time_diff_transformer_repr() -> None:
+    assert repr(TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff")).startswith(
+        "TimeDiffTransformer("
+    )
 
 
 def test_time_diff_transformer_str() -> None:

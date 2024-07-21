@@ -13,6 +13,10 @@ from grizz.transformer import ColumnSelection
 ################################################
 
 
+def test_column_selection_transformer_repr() -> None:
+    assert repr(ColumnSelection(columns=["col1", "col2"])).startswith("ColumnSelectionTransformer(")
+
+
 def test_column_selection_transformer_str() -> None:
     assert str(ColumnSelection(columns=["col1", "col2"])).startswith("ColumnSelectionTransformer(")
 
