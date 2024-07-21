@@ -35,6 +35,10 @@ def test_csv_ingestor_repr(frame_path: Path) -> None:
     assert repr(CsvIngestor(frame_path)).startswith("CsvIngestor(")
 
 
+def test_csv_ingestor_repr_with_kwargs(frame_path: Path) -> None:
+    assert repr(CsvIngestor(frame_path, usecols=["col1", "col3"])).startswith("CsvIngestor(")
+
+
 def test_csv_ingestor_str(frame_path: Path) -> None:
     assert str(CsvIngestor(frame_path)).startswith("CsvIngestor(")
 

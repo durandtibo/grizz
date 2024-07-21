@@ -14,6 +14,12 @@ from grizz.transformer import TimeToSecond, ToTime
 #############################################
 
 
+def test_time_to_second_transformer_repr() -> None:
+    assert repr(TimeToSecond(in_col="time", out_col="second")).startswith(
+        "TimeToSecondTransformer("
+    )
+
+
 def test_time_to_second_transformer_str() -> None:
     assert str(TimeToSecond(in_col="time", out_col="second")).startswith("TimeToSecondTransformer(")
 

@@ -35,6 +35,12 @@ def test_parquet_ingestor_repr(frame_path: Path) -> None:
     assert repr(ParquetIngestor(frame_path)).startswith("ParquetIngestor(")
 
 
+def test_parquet_ingestor_repr_with_kwargs(frame_path: Path) -> None:
+    assert repr(ParquetIngestor(frame_path, columns=["col1", "col3"])).startswith(
+        "ParquetIngestor("
+    )
+
+
 def test_parquet_ingestor_str(frame_path: Path) -> None:
     assert str(ParquetIngestor(frame_path)).startswith("ParquetIngestor(")
 
