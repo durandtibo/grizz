@@ -373,13 +373,13 @@ files = [
 
 [[package]]
 name = "coola"
-version = "0.7.4"
-description = "A library to check if two complex/nested objects are equal or not"
+version = "0.8.0"
+description = "Library to check equality between two complex/nested objects"
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "coola-0.7.4-py3-none-any.whl", hash = "sha256:5bff8d3ccc4229b5862a39f1ee0c130702b9411ba79956ba8592aac599d5bd45"},
-    {file = "coola-0.7.4.tar.gz", hash = "sha256:5a8d47ff21ab9d7cc602ad2f21784e08a3afdc004683a2e6d4e1d20536c57d1e"},
+    {file = "coola-0.8.0-py3-none-any.whl", hash = "sha256:18e0555eefa4c9bec03e48ae97d22e2911c650d40f578606f933be9d5687a4b4"},
+    {file = "coola-0.8.0.tar.gz", hash = "sha256:32981b9f77c68a0442809bc17b88f9cc4b0bf03218021dc756b4c3fb6094d10b"},
 ]
 
 [package.extras]
