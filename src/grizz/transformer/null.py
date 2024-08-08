@@ -119,6 +119,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
             f"Dropping {len(cols):,} columns that have too "
             f"many null values (threshold={self._threshold})..."
         )
+        logger.info(f"dropped columns: {cols}")
         out = frame.drop(cols)
         logger.info(
             f"DataFrame shape: {initial_shape} -> {out.shape} | "
