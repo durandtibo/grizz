@@ -7,7 +7,7 @@ from polars.testing import assert_frame_equal
 from grizz.ingestor import Ingestor
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataframe() -> pl.DataFrame:
     return pl.DataFrame(
         {

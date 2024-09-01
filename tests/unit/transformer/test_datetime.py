@@ -14,7 +14,7 @@ from grizz.transformer import ToDatetime
 ###########################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataframe() -> pl.DataFrame:
     return pl.DataFrame(
         {
