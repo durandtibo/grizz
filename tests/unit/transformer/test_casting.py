@@ -9,7 +9,7 @@ from polars.testing import assert_frame_equal
 from grizz.transformer import Cast, DecimalCast, FloatCast, IntegerCast
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataframe() -> pl.DataFrame:
     return pl.DataFrame(
         {
@@ -172,7 +172,7 @@ def test_cast_transformer_transform_ignore_missing_true(
 ############################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def frame_decimal() -> pl.DataFrame:
     return pl.DataFrame(
         {
@@ -322,7 +322,7 @@ def test_decimal_cast_transformer_transform_ignore_missing_true(
 ##########################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def frame_float() -> pl.DataFrame:
     return pl.DataFrame(
         {
@@ -470,7 +470,7 @@ def test_float_cast_transformer_transform_ignore_missing_true(
 ############################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def frame_integer() -> pl.DataFrame:
     return pl.DataFrame(
         {

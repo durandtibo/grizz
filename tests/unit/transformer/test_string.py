@@ -9,7 +9,7 @@ from polars.testing import assert_frame_equal
 from grizz.transformer import StripChars
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataframe() -> pl.DataFrame:
     return pl.DataFrame(
         {
