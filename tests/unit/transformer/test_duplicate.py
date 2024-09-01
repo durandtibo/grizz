@@ -13,7 +13,7 @@ from grizz.transformer import DropDuplicate
 ##############################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataframe() -> pl.DataFrame:
     return pl.DataFrame(
         {

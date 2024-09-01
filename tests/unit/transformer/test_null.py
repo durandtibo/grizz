@@ -13,7 +13,7 @@ from grizz.transformer import DropNullColumn, DropNullRow
 ###############################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def frame_col() -> pl.DataFrame:
     return pl.DataFrame(
         {
@@ -139,7 +139,7 @@ def test_drop_null_column_transformer_transform_columns_ignore_missing_true(
 ############################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def frame_row() -> pl.DataFrame:
     return pl.DataFrame(
         {

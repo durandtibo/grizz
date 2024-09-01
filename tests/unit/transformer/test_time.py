@@ -64,7 +64,7 @@ def test_time_to_second_transformer_transform() -> None:
 #######################################
 
 
-@pytest.fixture()
+@pytest.fixture
 def frame_time() -> pl.DataFrame:
     return pl.DataFrame(
         {

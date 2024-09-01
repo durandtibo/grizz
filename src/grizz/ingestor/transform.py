@@ -24,7 +24,7 @@ class TransformIngestor(BaseIngestor):
 
     Args:
         ingestor: The base ingestor.
-        transformer: Specifies a ``polars.DataFrame`` transformer or
+        transformer: The ``polars.DataFrame`` transformer or
             its configuration.
 
     Example usage:

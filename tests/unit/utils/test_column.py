@@ -6,7 +6,7 @@ import pytest
 from grizz.utils.column import find_common_columns, find_missing_columns
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataframe() -> pl.DataFrame:
     return pl.DataFrame(
         {
