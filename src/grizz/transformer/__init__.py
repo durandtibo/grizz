@@ -9,6 +9,8 @@ __all__ = [
     "CastTransformer",
     "ColumnSelection",
     "ColumnSelectionTransformer",
+    "ConcatColumns",
+    "ConcatColumnsTransformer",
     "DecimalCast",
     "DecimalCastTransformer",
     "Diff",
@@ -70,6 +72,8 @@ from grizz.transformer.casting import FloatCastTransformer as FloatCast
 from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.concat import ConcatColumnsTransformer
+from grizz.transformer.concat import ConcatColumnsTransformer as ConcatColumns
 from grizz.transformer.datetime import ToDatetimeTransformer
 from grizz.transformer.datetime import ToDatetimeTransformer as ToDatetime
 from grizz.transformer.diff import DiffTransformer
