@@ -9,6 +9,8 @@ __all__ = [
     "CastTransformer",
     "ColumnSelection",
     "ColumnSelectionTransformer",
+    "ConcatColumns",
+    "ConcatColumnsTransformer",
     "DecimalCast",
     "DecimalCastTransformer",
     "Diff",
@@ -54,8 +56,6 @@ __all__ = [
     "ToTimeTransformer",
     "is_transformer_config",
     "setup_transformer",
-    "ConcatColumns",
-    "ConcatColumnsTransformer",
 ]
 
 from grizz.transformer.base import (
