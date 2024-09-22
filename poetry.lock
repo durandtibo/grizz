@@ -522,17 +522,21 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "feu"
-version = "0.0.7"
+version = "0.1.0"
 description = "A light library to help to manage packages"
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "feu-0.0.7-py3-none-any.whl", hash = "sha256:2f0832e6a75ed61479adaa30786da57ba8ed23a7bb6b5ed0bbfc46121dfb7c00"},
-    {file = "feu-0.0.7.tar.gz", hash = "sha256:e5e4e12d283fb9f27c7b93f65c56e6cd0a3303e28d259906179fdba6a7c0d233"},
+    {file = "feu-0.1.0-py3-none-any.whl", hash = "sha256:a87f5da11a3b515c55c2a4397241a443a9d7cc0a07318898e2b1f0c5899c0076"},
+    {file = "feu-0.1.0.tar.gz", hash = "sha256:78180f01ee6faef13f2f09c50c1ce3e6fa35b30aed18db6c8653af0029fe34f9"},
 ]
 
 [package.dependencies]
 packaging = ">=21.0,<25.0"
+
+[package.extras]
+all = ["fire (>=0.6.0,<1.0)"]
+fire = ["fire (>=0.6.0,<1.0)"]
 
 [[package]]
 name = "filelock"
@@ -1342,13 +1346,13 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytest"
-version = "8.3.2"
+version = "8.3.3"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pytest-8.3.2-py3-none-any.whl", hash = "sha256:4ba08f9ae7dcf84ded419494d229b48d0903ea6407b030eaec46df5e6a73bba5"},
-    {file = "pytest-8.3.2.tar.gz", hash = "sha256:c132345d12ce551242c87269de812483f5bcc87cdbb4722e48487ba194f9fdce"},
+    {file = "pytest-8.3.3-py3-none-any.whl", hash = "sha256:a6853c7375b2663155079443d2e45de913a911a11d669df02a50814944db57b2"},
+    {file = "pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181"},
 ]
 
 [package.dependencies]
