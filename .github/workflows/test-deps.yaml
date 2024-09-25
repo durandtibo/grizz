@@ -32,9 +32,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install coola
-        run: |
-          poetry run pip install coola==${{ matrix.coola-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'coola'
+          package-version: ${{ matrix.coola-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -74,9 +77,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install iden
-        run: |
-          poetry run pip install iden==${{ matrix.iden-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'iden'
+          package-version: ${{ matrix.iden-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -116,9 +122,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install objectory
-        run: |
-          poetry run pip install objectory==${{ matrix.objectory-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'objectory'
+          package-version: ${{ matrix.objectory-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -139,7 +148,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        polars-version: [ 1.6.0, 1.5.0, 1.4.1, 1.3.0, 1.2.1, 1.1.0, 1.0.0 ]
+        polars-version: [ 1.8.1, 1.7.1, 1.6.0, 1.5.0, 1.4.1, 1.3.0, 1.2.1, 1.1.0, 1.0.0 ]
 
     steps:
       - name: Checkout
@@ -158,9 +167,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install polars
-        run: |
-          poetry run pip install polars==${{ matrix.polars-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'polars'
+          package-version: ${{ matrix.polars-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -205,9 +217,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install clickhouse-connect
-        run: |
-          poetry run pip install clickhouse-connect==${{ matrix.clickhouse-connect-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'clickhouse-connect'
+          package-version: ${{ matrix.clickhouse-connect-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -229,19 +244,6 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
         pyarrow-version: [ 17.0.0, 16.1.0, 15.0.2, 14.0.2, 13.0.0, 12.0.1, 11.0.0, 10.0.1 ]
-        exclude:
-          # python 3.9
-          - pyarrow-version: 1.17.0
-            python-version: '3.9'
-          # python 3.12
-          - pyarrow-version: 13.0.0
-            python-version: '3.12'
-          - pyarrow-version: 12.0.1
-            python-version: '3.12'
-          - pyarrow-version: 11.0.0
-            python-version: '3.12'
-          - pyarrow-version: 10.0.1
-            python-version: '3.12'
 
     steps:
       - name: Checkout
@@ -260,9 +262,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install pyarrow
-        run: |
-          poetry run python -c "from feu import install_package; install_package('pyarrow', '${{ matrix.pyarrow-version }}')"
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'pyarrow'
+          package-version: ${{ matrix.pyarrow-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
@@ -302,9 +307,12 @@ jobs:
           poetry run make config-poetry
           poetry run make install
 
-      - name: Install PyTorch
-        run: |
-          poetry run pip install tqdm==${{ matrix.tqdm-version }}
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'tqdm'
+          package-version: ${{ matrix.tqdm-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Show installed packages
         run: |
