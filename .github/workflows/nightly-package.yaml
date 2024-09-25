@@ -147,7 +147,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install grizz coola==${{ matrix.coola-version }}
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'coola'
+          package-version: ${{ matrix.coola-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -176,7 +183,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install grizz iden==${{ matrix.iden-version }}
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'iden'
+          package-version: ${{ matrix.iden-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -205,7 +219,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install grizz objectory==${{ matrix.objectory-version }}
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'objectory'
+          package-version: ${{ matrix.objectory-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -221,7 +242,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        polars-version: [ 1.6.0, 1.5.0, 1.4.1, 1.3.0, 1.2.1, 1.1.0, 1.0.0 ]
+        polars-version: [ 1.8.1, 1.7.1, 1.6.0, 1.5.0, 1.4.1, 1.3.0, 1.2.1, 1.1.0, 1.0.0 ]
 
     steps:
       - name: Checkout
@@ -235,6 +256,13 @@ jobs:
       - name: Install package
         run: |
           pip install grizz polars==${{ matrix.polars-version }}
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'polars'
+          package-version: ${{ matrix.polars-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -268,7 +296,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install grizz clickhouse-connect==${{ matrix.clickhouse-connect-version }}
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'clickhouse-connect'
+          package-version: ${{ matrix.clickhouse-connect-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -285,19 +320,6 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ '3.12', '3.11', '3.10', '3.9' ]
         pyarrow-version: [ 17.0.0, 16.1.0, 15.0.2, 14.0.2, 13.0.0, 12.0.1, 11.0.0, 10.0.1 ]
-        exclude:
-          # python 3.9
-          - pyarrow-version: 1.17.0
-            python-version: '3.9'
-          # python 3.12
-          - pyarrow-version: 13.0.0
-            python-version: '3.12'
-          - pyarrow-version: 12.0.1
-            python-version: '3.12'
-          - pyarrow-version: 11.0.0
-            python-version: '3.12'
-          - pyarrow-version: 10.0.1
-            python-version: '3.12'
 
     steps:
       - name: Checkout
@@ -310,7 +332,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install grizz pyarrow==${{ matrix.pyarrow-version }}
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'pyarrow'
+          package-version: ${{ matrix.pyarrow-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
@@ -339,7 +368,14 @@ jobs:
 
       - name: Install package
         run: |
-          pip install grizz tqdm==${{ matrix.tqdm-version }}
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.2.1
+        with:
+          package-name: 'tqdm'
+          package-version: ${{ matrix.tqdm-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
         run: |
