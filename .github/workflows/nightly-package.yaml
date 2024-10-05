@@ -150,7 +150,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.2.1
+        uses: durandtibo/pip-install-package-action@v0.2.3
         with:
           package-name: 'coola'
           package-version: ${{ matrix.coola-version }}
@@ -186,7 +186,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.2.1
+        uses: durandtibo/pip-install-package-action@v0.2.3
         with:
           package-name: 'iden'
           package-version: ${{ matrix.iden-version }}
@@ -222,7 +222,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.2.1
+        uses: durandtibo/pip-install-package-action@v0.2.3
         with:
           package-name: 'objectory'
           package-version: ${{ matrix.objectory-version }}
@@ -258,7 +258,7 @@ jobs:
           pip install grizz polars==${{ matrix.polars-version }}
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.2.1
+        uses: durandtibo/pip-install-package-action@v0.2.3
         with:
           package-name: 'polars'
           package-version: ${{ matrix.polars-version }}
@@ -299,7 +299,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.2.1
+        uses: durandtibo/pip-install-package-action@v0.2.3
         with:
           package-name: 'clickhouse-connect'
           package-version: ${{ matrix.clickhouse-connect-version }}
@@ -335,7 +335,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.2.1
+        uses: durandtibo/pip-install-package-action@v0.2.3
         with:
           package-name: 'pyarrow'
           package-version: ${{ matrix.pyarrow-version }}
@@ -371,7 +371,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.2.1
+        uses: durandtibo/pip-install-package-action@v0.2.3
         with:
           package-name: 'tqdm'
           package-version: ${{ matrix.tqdm-version }}
