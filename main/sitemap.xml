@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://durandtibo.github.io/grizz/main/</loc>
+         <lastmod>2024-10-17</lastmod>
+    </url>
+    <url>
+         <loc>https://durandtibo.github.io/grizz/main/get_started/</loc>
+         <lastmod>2024-10-17</lastmod>
+    </url>
+    <url>
+         <loc>https://durandtibo.github.io/grizz/main/refs/ingestor/</loc>
+         <lastmod>2024-10-17</lastmod>
+    </url>
+    <url>
+         <loc>https://durandtibo.github.io/grizz/main/refs/transformer/</loc>
+         <lastmod>2024-10-17</lastmod>
+    </url>
+    <url>
+         <loc>https://durandtibo.github.io/grizz/main/refs/utils/</loc>
+         <lastmod>2024-10-17</lastmod>
+    </url>
+</urlset>
