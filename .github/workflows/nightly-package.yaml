@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
       - name: Checkout
@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
       - name: Checkout
@@ -72,7 +72,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
       - name: Checkout
@@ -100,7 +100,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-14, macos-13, macos-12 ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
       - name: Checkout
@@ -133,8 +133,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        coola-version: [ 0.8.4, 0.7.4, 0.7.2 ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+        coola-version: [ 0.8.4 ]
 
     steps:
       - name: Checkout
@@ -169,8 +169,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        iden-version: [ 0.1.0, 0.0.4 ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+        iden-version: [ 0.1.0 ]
 
     steps:
       - name: Checkout
@@ -205,8 +205,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
-        objectory-version: [ 0.2.0, 0.1.2, 0.1.0 ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+        objectory-version: [ 0.2.0 ]
 
     steps:
       - name: Checkout
@@ -241,7 +241,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
         polars-version: [ 1.10.0, 1.9.0, 1.8.2, 1.7.1, 1.6.0, 1.5.0, 1.4.1, 1.3.0, 1.2.1, 1.1.0, 1.0.0 ]
 
     steps:
@@ -282,7 +282,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
         clickhouse-connect-version: [ 0.8.3, 0.7.19, 0.7.0 ]
 
     steps:
@@ -354,7 +354,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.12', '3.11', '3.10', '3.9' ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
         tqdm-version: [ 4.66.5, 4.65.2 ]
 
     steps:
