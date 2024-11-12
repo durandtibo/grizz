@@ -37,7 +37,7 @@ jobs:
           poetry run make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.0
+        uses: durandtibo/pip-install-package-action@v0.3.1
         with:
           package-name: 'coola'
           package-version: ${{ matrix.coola-version }}
@@ -86,7 +86,7 @@ jobs:
           poetry run make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.0
+        uses: durandtibo/pip-install-package-action@v0.3.1
         with:
           package-name: 'iden'
           package-version: ${{ matrix.iden-version }}
@@ -135,7 +135,7 @@ jobs:
           poetry run make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.0
+        uses: durandtibo/pip-install-package-action@v0.3.1
         with:
           package-name: 'objectory'
           package-version: ${{ matrix.objectory-version }}
@@ -198,7 +198,7 @@ jobs:
           poetry run make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.0
+        uses: durandtibo/pip-install-package-action@v0.3.1
         with:
           package-name: 'polars'
           package-version: ${{ matrix.polars-version }}
@@ -252,7 +252,7 @@ jobs:
           poetry run make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.0
+        uses: durandtibo/pip-install-package-action@v0.3.1
         with:
           package-name: 'clickhouse-connect'
           package-version: ${{ matrix.clickhouse-connect-version }}
@@ -301,7 +301,7 @@ jobs:
           poetry run make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.0
+        uses: durandtibo/pip-install-package-action@v0.3.1
         with:
           package-name: 'pyarrow'
           package-version: ${{ matrix.pyarrow-version }}
@@ -350,7 +350,7 @@ jobs:
           poetry run make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.0
+        uses: durandtibo/pip-install-package-action@v0.3.1
         with:
           package-name: 'tqdm'
           package-version: ${{ matrix.tqdm-version }}
