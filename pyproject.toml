@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "grizz"
-version = "0.1.1"
+version = "0.1.2a0"
 description = "A light library to preprocess data with polars"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -69,7 +69,7 @@ pygments = "^2.18"
 pytest = "^8.3"
 pytest-cov = ">=6.0,<7.0"
 pytest-timeout = "^2.3"
-ruff = ">=0.7,<1.0"
+ruff = ">=0.8,<1.0"
 xdoctest = "^1.2"
 
 
