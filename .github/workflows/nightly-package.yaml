@@ -328,6 +328,51 @@ jobs:
           python tests/package_checks.py
 
 
+  numpy:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+        numpy-version: [
+          2.2.0,
+          2.1.3,
+          2.0.2,
+          1.26.4,
+          1.25.2,
+          1.24.3,
+          1.23.5,
+          1.22.4,
+        ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: |
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.1
+        with:
+          package-name: 'numpy'
+          package-version: ${{ matrix.numpy-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
   pyarrow:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10

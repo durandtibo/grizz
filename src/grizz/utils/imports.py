@@ -5,12 +5,15 @@ from __future__ import annotations
 __all__ = [
     "check_clickhouse_connect",
     "check_pyarrow",
+    "check_sklearn",
     "check_tqdm",
     "clickhouse_connect_available",
     "is_clickhouse_connect_available",
     "is_pyarrow_available",
+    "is_sklearn_available",
     "is_tqdm_available",
     "pyarrow_available",
+    "sklearn_available",
     "tqdm_available",
 ]
 
@@ -176,9 +179,9 @@ def pyarrow_available(fn: Callable[..., Any]) -> Callable[..., Any]:
     return decorator_package_available(fn, is_pyarrow_available)
 
 
-################
+###################
 #     sklearn     #
-################
+###################
 
 
 @lru_cache
