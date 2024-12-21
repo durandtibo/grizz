@@ -2168,4 +2168,4 @@ all = ["clickhouse-connect", "pyarrow", "scikit-learn", "tqdm"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.14"
-content-hash = "b1e1a1ec4bebca1078bb5796034a9382877e5b5f86f8dc736ab02f29e65375f8"
+content-hash = "eee793712a360d0b99f09ea445dcde5e504e915a49bce1e81d9a910e898c5692"
