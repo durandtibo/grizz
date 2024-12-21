@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import datetime
-import logging
 
 import polars as pl
 import pytest
@@ -173,36 +172,33 @@ def test_to_time_transformer_transform_ignore_missing_false(frame_time: pl.DataF
         transformer.transform(frame_time)
 
 
-def test_to_time_transformer_transform_ignore_missing_true(
-    caplog: pytest.LogCaptureFixture, frame_time: pl.DataFrame
-) -> None:
+def test_to_time_transformer_transform_ignore_missing_true(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S", ignore_missing=True)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(frame_time)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [
-                        datetime.time(hour=1, minute=1, second=1),
-                        datetime.time(hour=2, minute=2, second=2),
-                        datetime.time(hour=12, minute=0, second=1),
-                        datetime.time(hour=18, minute=18, second=18),
-                        datetime.time(hour=23, minute=59, second=59),
-                    ],
-                    "col2": ["1", "2", "3", "4", "5"],
-                    "col3": [
-                        datetime.time(hour=11, minute=11, second=11),
-                        datetime.time(hour=12, minute=12, second=12),
-                        datetime.time(hour=13, minute=13, second=13),
-                        datetime.time(hour=8, minute=8, second=8),
-                        datetime.time(hour=23, minute=59, second=59),
-                    ],
-                    "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
-                },
-                schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(hour=1, minute=1, second=1),
+                    datetime.time(hour=2, minute=2, second=2),
+                    datetime.time(hour=12, minute=0, second=1),
+                    datetime.time(hour=18, minute=18, second=18),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )

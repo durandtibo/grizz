@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import logging
-
 import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
@@ -174,26 +172,23 @@ def test_json_decode_transformer_transform_ignore_missing_false() -> None:
         transformer.transform(frame)
 
 
-def test_json_decode_transformer_transform_ignore_missing_true(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
+def test_json_decode_transformer_transform_ignore_missing_true() -> None:
     frame = pl.DataFrame(
         {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
         schema={"list": pl.String, "dict": pl.String},
     )
     transformer = JsonDecode(columns=["list", "dict", "missing"], ignore_missing=True)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(frame)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {"list": [[], [1]], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
-                schema={
-                    "list": pl.List(pl.Int64),
-                    "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
-                },
-            ),
-        )
-    assert caplog.messages[-1].startswith(
-        "1 columns are missing in the DataFrame and will be ignored:"
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"list": [[], [1]], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
+            schema={
+                "list": pl.List(pl.Int64),
+                "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+            },
+        ),
     )

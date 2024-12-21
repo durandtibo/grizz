@@ -201,35 +201,32 @@ def test_copy_columns_transformer_transform_ignore_missing_false(
         transformer.transform(dataframe)
 
 
-def test_copy_columns_transformer_transform_ignore_missing_true(
-    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_copy_columns_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = CopyColumns(
         columns=["col1", "col3", "col5"], prefix="p_", suffix="_s", ignore_missing=True
     )
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(dataframe)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1, 2, 3, 4, 5],
-                    "col2": ["1", "2", "3", "4", "5"],
-                    "col3": ["1", "2", "3", "4", "5"],
-                    "col4": ["a", "b", "c", "d", "e"],
-                    "p_col1_s": [1, 2, 3, 4, 5],
-                    "p_col3_s": ["1", "2", "3", "4", "5"],
-                },
-                schema={
-                    "col1": pl.Int64,
-                    "col2": pl.String,
-                    "col3": pl.String,
-                    "col4": pl.String,
-                    "p_col1_s": pl.Int64,
-                    "p_col3_s": pl.String,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+                "p_col1_s": [1, 2, 3, 4, 5],
+                "p_col3_s": ["1", "2", "3", "4", "5"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.String,
+                "col3": pl.String,
+                "col4": pl.String,
+                "p_col1_s": pl.Int64,
+                "p_col3_s": pl.String,
+            },
+        ),
+    )

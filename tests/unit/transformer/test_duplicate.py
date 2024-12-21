@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import logging
-
 import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
@@ -102,24 +100,23 @@ def test_drop_duplicate_transformer_transform_columns_ignore_missing_false(
 
 
 def test_drop_duplicate_transformer_transform_columns_ignore_missing_true(
-    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+    dataframe: pl.DataFrame,
 ) -> None:
     transformer = DropDuplicate(
         columns=["col1", "col2", "col5"], ignore_missing=True, keep="first", maintain_order=True
     )
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(dataframe)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1, 2, 3, 4],
-                    "col2": ["1", "2", "3", "4"],
-                    "col3": ["1", "2", "3", "1"],
-                    "col4": ["a", "a", "a", "a"],
-                }
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4],
+                "col2": ["1", "2", "3", "4"],
+                "col3": ["1", "2", "3", "1"],
+                "col4": ["a", "a", "a", "a"],
+            }
+        ),
+    )

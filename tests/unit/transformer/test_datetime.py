@@ -493,127 +493,124 @@ def test_to_datetime_transformer_transform_ignore_missing_false(dataframe: pl.Da
         transformer.transform(dataframe)
 
 
-def test_to_datetime_transformer_transform_ignore_missing_true(
-    caplog: pytest.LogCaptureFixture, dataframe: pl.DataFrame
-) -> None:
+def test_to_datetime_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = ToDatetime(columns=["col1", "col3", "col5"], ignore_missing=True)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(dataframe)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [
-                        datetime(
-                            year=2020,
-                            month=1,
-                            day=1,
-                            hour=1,
-                            minute=1,
-                            second=1,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=1,
-                            day=1,
-                            hour=2,
-                            minute=2,
-                            second=2,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=1,
-                            day=1,
-                            hour=12,
-                            minute=0,
-                            second=1,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=1,
-                            day=1,
-                            hour=18,
-                            minute=18,
-                            second=18,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=1,
-                            day=1,
-                            hour=23,
-                            minute=59,
-                            second=59,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                    ],
-                    "col2": ["1", "2", "3", "4", "5"],
-                    "col3": [
-                        datetime(
-                            year=2020,
-                            month=1,
-                            day=1,
-                            hour=11,
-                            minute=11,
-                            second=11,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=2,
-                            day=1,
-                            hour=12,
-                            minute=12,
-                            second=12,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=3,
-                            day=1,
-                            hour=13,
-                            minute=13,
-                            second=13,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=4,
-                            day=1,
-                            hour=8,
-                            minute=8,
-                            second=8,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                        datetime(
-                            year=2020,
-                            month=5,
-                            day=1,
-                            hour=23,
-                            minute=59,
-                            second=59,
-                            tzinfo=timezone(timedelta(0)),
-                        ),
-                    ],
-                    "col4": [
-                        "2020-01-01 01:01:01",
-                        "2020-01-01 02:02:02",
-                        "2020-01-01 12:00:01",
-                        "2020-01-01 18:18:18",
-                        "2020-01-01 23:59:59",
-                    ],
-                },
-                schema={
-                    "col1": pl.Datetime(time_unit="us"),
-                    "col2": pl.String,
-                    "col3": pl.Datetime(time_unit="us"),
-                    "col4": pl.String,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime(
+                        year=2020,
+                        month=1,
+                        day=1,
+                        hour=1,
+                        minute=1,
+                        second=1,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=1,
+                        day=1,
+                        hour=2,
+                        minute=2,
+                        second=2,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=1,
+                        day=1,
+                        hour=12,
+                        minute=0,
+                        second=1,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=1,
+                        day=1,
+                        hour=18,
+                        minute=18,
+                        second=18,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=1,
+                        day=1,
+                        hour=23,
+                        minute=59,
+                        second=59,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime(
+                        year=2020,
+                        month=1,
+                        day=1,
+                        hour=11,
+                        minute=11,
+                        second=11,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=2,
+                        day=1,
+                        hour=12,
+                        minute=12,
+                        second=12,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=3,
+                        day=1,
+                        hour=13,
+                        minute=13,
+                        second=13,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=4,
+                        day=1,
+                        hour=8,
+                        minute=8,
+                        second=8,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                    datetime(
+                        year=2020,
+                        month=5,
+                        day=1,
+                        hour=23,
+                        minute=59,
+                        second=59,
+                        tzinfo=timezone(timedelta(0)),
+                    ),
+                ],
+                "col4": [
+                    "2020-01-01 01:01:01",
+                    "2020-01-01 02:02:02",
+                    "2020-01-01 12:00:01",
+                    "2020-01-01 18:18:18",
+                    "2020-01-01 23:59:59",
+                ],
+            },
+            schema={
+                "col1": pl.Datetime(time_unit="us"),
+                "col2": pl.String,
+                "col3": pl.Datetime(time_unit="us"),
+                "col4": pl.String,
+            },
+        ),
+    )
