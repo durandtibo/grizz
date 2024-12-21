@@ -439,9 +439,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install arkas
+      - name: Install grizz
         run: |
-          pip install arkas
+          pip install grizz
 
       - name: Install valid package version
         uses: durandtibo/pip-install-package-action@v0.3.1
