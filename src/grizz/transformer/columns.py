@@ -92,11 +92,11 @@ class BaseColumnsTransformer(BaseTransformer):
         self._pre_transform(frame)
         missing = self.find_missing_columns(frame)
         if missing and not self._ignore_missing:
-            msg = f"{len(missing)} columns are missing in the DataFrame: {missing}"
+            msg = f"{len(missing):,} columns are missing in the DataFrame: {missing}"
             raise RuntimeError(msg)
         if missing:
             logger.warning(
-                f"{len(missing)} columns are missing in the DataFrame and will be ignored: "
+                f"{len(missing):,} columns are missing in the DataFrame and will be ignored: "
                 f"{missing}"
             )
         return self._transform(frame=frame)
