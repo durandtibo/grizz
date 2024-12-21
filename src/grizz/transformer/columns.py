@@ -88,18 +88,18 @@ class BaseColumnsTransformer(BaseTransformer):
         self._columns = tuple(columns) if columns is not None else None
         self._ignore_missing = bool(ignore_missing)
 
+    def fit(self, frame: pl.DataFrame) -> None:
+        self._pre_fit(frame)
+        self._fit(frame)
+
+    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self.fit(frame)
+        return self.transform(frame)
+
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._pre_transform(frame)
-        missing = self.find_missing_columns(frame)
-        if missing and not self._ignore_missing:
-            msg = f"{len(missing):,} columns are missing in the DataFrame: {missing}"
-            raise RuntimeError(msg)
-        if missing:
-            logger.warning(
-                f"{len(missing):,} columns are missing in the DataFrame and will be ignored: "
-                f"{missing}"
-            )
-        return self._transform(frame=frame)
+        self._check_missing_columns(frame)
+        return self._transform(frame)
 
     def find_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the columns to transform.
@@ -210,6 +210,36 @@ class BaseColumnsTransformer(BaseTransformer):
         ```
         """
         return find_missing_columns(frame, self.find_columns(frame))
+
+    def _check_missing_columns(self, frame: pl.DataFrame) -> None:
+        r"""Check if some columns are missing.
+
+        Args:
+            frame: The input DataFrame to check.
+        """
+        missing = self.find_missing_columns(frame)
+        if missing and not self._ignore_missing:
+            msg = f"{len(missing):,} columns are missing in the DataFrame: {missing}"
+            raise RuntimeError(msg)
+        if missing:
+            logger.warning(
+                f"{len(missing):,} columns are missing in the DataFrame and will be ignored: "
+                f"{missing}"
+            )
+
+    def _pre_fit(self, frame: pl.DataFrame) -> None:
+        r"""Log information about the transformation fit.
+
+        Args:
+            frame: The DataFrame to fit.
+        """
+
+    def _fit(self, frame: pl.DataFrame) -> None:
+        r"""Fit the transformer to data.
+
+        Args:
+            frame: The DataFrame to fit.
+        """
 
     @abstractmethod
     def _pre_transform(self, frame: pl.DataFrame) -> None:

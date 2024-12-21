@@ -53,6 +53,49 @@ def test_cast_transformer_str_with_kwargs() -> None:
     )
 
 
+def test_cast_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture) -> None:
+    transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+    with caplog.at_level(logging.INFO):
+        transformer.fit(dataframe)
+    assert caplog.messages[0].startswith(
+        "Skipping 'CastTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_cast_transformer_fit_transform_int32(dataframe: pl.DataFrame) -> None:
+    transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+    out = transformer.fit_transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [1, 2, 3, 4, 5],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int32, "col2": pl.String, "col3": pl.Int32, "col4": pl.String},
+        ),
+    )
+
+
+def test_cast_transformer_fit_transform_float32(dataframe: pl.DataFrame) -> None:
+    transformer = Cast(columns=["col1", "col2"], dtype=pl.Float32)
+    out = transformer.fit_transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            data={
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1, 2, 3, 4, 5],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String, "col4": pl.String},
+        ),
+    )
+
+
 def test_cast_transformer_transform_int32(dataframe: pl.DataFrame) -> None:
     transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     out = transformer.transform(dataframe)
@@ -87,7 +130,24 @@ def test_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_cast_transformer_transform_none() -> None:
+def test_cast_transformer_transform_empty() -> None:
+    transformer = Cast(columns=["col1", "col2"], dtype=pl.Float32)
+    out = transformer.transform(
+        pl.DataFrame(
+            data={"col1": [], "col2": [], "col3": [], "col4": []},
+            schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+        )
+    )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            data={"col1": [], "col2": [], "col3": [], "col4": []},
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String, "col4": pl.String},
+        ),
+    )
+
+
+def test_cast_transformer_transform_columns_none() -> None:
     transformer = Cast(columns=None, dtype=pl.Float32)
     out = transformer.transform(
         pl.DataFrame(
@@ -110,6 +170,33 @@ def test_cast_transformer_transform_none() -> None:
                 "col4": [101.0, 102.0, 103.0, 104.0, 105.0],
             },
             schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.Float32},
+        ),
+    )
+
+
+def test_cast_transformer_transform_columns_empty() -> None:
+    transformer = Cast(columns=[], dtype=pl.Float32)
+    out = transformer.transform(
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["101", "102", "103", "104", "105"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+        )
+    )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["101", "102", "103", "104", "105"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
         ),
     )
 
