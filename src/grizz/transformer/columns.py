@@ -3,9 +3,10 @@ values."""
 
 from __future__ import annotations
 
-__all__ = ["BaseColumnsTransformer"]
+__all__ = ["BaseColumnsTransformer", "check_missing_columns"]
 
 import logging
+import warnings
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
@@ -217,15 +218,9 @@ class BaseColumnsTransformer(BaseTransformer):
         Args:
             frame: The input DataFrame to check.
         """
-        missing = self.find_missing_columns(frame)
-        if missing and not self._ignore_missing:
-            msg = f"{len(missing):,} columns are missing in the DataFrame: {missing}"
-            raise RuntimeError(msg)
-        if missing:
-            logger.warning(
-                f"{len(missing):,} columns are missing in the DataFrame and will be ignored: "
-                f"{missing}"
-            )
+        check_missing_columns(
+            missing_cols=self.find_missing_columns(frame), ignore_missing=self._ignore_missing
+        )
 
     def _pre_fit(self, frame: pl.DataFrame) -> None:
         r"""Log information about the transformation fit.
@@ -259,3 +254,36 @@ class BaseColumnsTransformer(BaseTransformer):
         Returns:
             The transformed DataFrame.
         """
+
+
+def check_missing_columns(missing_cols: Sequence, ignore_missing: bool = False) -> None:
+    r"""Check if some columns are missing.
+
+    Args:
+        missing_cols: The sequence of missing columns.
+        ignore_missing: If ``False``, an exception is raised if a
+            column is missing, otherwise just a warning message is
+            shown.
+
+    Raises:
+        RuntimeError: if at least one column is missing and ``ignore_missing=False``.
+
+    Example usage:
+
+        ```pycon
+
+        >>> from grizz.transformer.columns import check_missing_columns
+        >>> check_missing_columns(["col5"], ignore_missing=True)
+
+        ```
+    """
+    if not missing_cols:
+        return
+    if not ignore_missing:
+        msg = f"{len(missing_cols):,} columns are missing in the DataFrame: {missing_cols}"
+        raise RuntimeError(msg)
+    msg = (
+        f"{len(missing_cols):,} columns are missing in the DataFrame and will be ignored: "
+        f"{missing_cols}"
+    )
+    warnings.warn(msg, RuntimeWarning, stacklevel=2)

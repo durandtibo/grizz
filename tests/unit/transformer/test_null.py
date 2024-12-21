@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import logging
-
 import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
@@ -113,25 +111,24 @@ def test_drop_null_column_transformer_transform_columns_ignore_missing_false(
 
 
 def test_drop_null_column_transformer_transform_columns_ignore_missing_true(
-    frame_col: pl.DataFrame, caplog: pytest.LogCaptureFixture
+    frame_col: pl.DataFrame,
 ) -> None:
     transformer = DropNullColumn(
         columns=["col1", "col2", "col5"], threshold=0.4, ignore_missing=True
     )
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(frame_col)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
-                    "col3": [None, None, None, None, None],
-                }
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+                "col3": [None, None, None, None, None],
+            }
+        ),
+    )
 
 
 ############################################
@@ -213,21 +210,20 @@ def test_drop_null_row_transformer_transform_columns_ignore_missing_false(
 
 
 def test_drop_null_row_transformer_transform_columns_ignore_missing_true(
-    frame_row: pl.DataFrame, caplog: pytest.LogCaptureFixture
+    frame_row: pl.DataFrame,
 ) -> None:
     transformer = DropNullRow(columns=["col1", "col2", "col5"], ignore_missing=True)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(frame_row)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": ["2020-1-1", "2020-1-31", "2020-12-31"],
-                    "col2": [1, 3, None],
-                    "col3": [None, None, None],
-                }
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-31", "2020-12-31"],
+                "col2": [1, 3, None],
+                "col3": [None, None, None],
+            }
+        ),
+    )

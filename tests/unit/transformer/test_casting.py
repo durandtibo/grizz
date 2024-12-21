@@ -226,32 +226,29 @@ def test_cast_transformer_transform_ignore_missing_false(
         transformer.transform(dataframe)
 
 
-def test_cast_transformer_transform_ignore_missing_true(
-    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_cast_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32, ignore_missing=True)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(dataframe)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
-                    "col2": ["1", "2", "3", "4", "5"],
-                    "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
-                    "col4": ["a", "b", "c", "d", "e"],
-                },
-                schema={
-                    "col1": pl.Float32,
-                    "col2": pl.String,
-                    "col3": pl.Float32,
-                    "col4": pl.String,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.String,
+                "col3": pl.Float32,
+                "col4": pl.String,
+            },
+        ),
+    )
 
 
 ############################################
@@ -403,33 +400,32 @@ def test_decimal_cast_transformer_transform_ignore_missing_false(
 
 
 def test_decimal_cast_transformer_transform_ignore_missing_true(
-    frame_decimal: pl.DataFrame, caplog: pytest.LogCaptureFixture
+    frame_decimal: pl.DataFrame,
 ) -> None:
     transformer = DecimalCast(
         columns=["col1", "col2", "col5"], dtype=pl.Float32, ignore_missing=True
     )
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(frame_decimal)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1, 2, 3, 4, 5],
-                    "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
-                    "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
-                    "col4": ["a", "b", "c", "d", "e"],
-                },
-                schema={
-                    "col1": pl.Int64,
-                    "col2": pl.Float32,
-                    "col3": pl.Decimal,
-                    "col4": pl.String,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float32,
+                "col3": pl.Decimal,
+                "col4": pl.String,
+            },
+        ),
+    )
 
 
 ##########################################
@@ -580,32 +576,29 @@ def test_float_cast_transformer_transform_ignore_missing_false(
         transformer.transform(frame_float)
 
 
-def test_float_cast_transformer_transform_ignore_missing_true(
-    frame_float: pl.DataFrame, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_float_cast_transformer_transform_ignore_missing_true(frame_float: pl.DataFrame) -> None:
     transformer = FloatCast(columns=["col1", "col2", "col5"], dtype=pl.Int32, ignore_missing=True)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(frame_float)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1, 2, 3, 4, 5],
-                    "col2": [1, 2, 3, 4, 5],
-                    "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
-                    "col4": ["a", "b", "c", "d", "e"],
-                },
-                schema={
-                    "col1": pl.Int64,
-                    "col2": pl.Int32,
-                    "col3": pl.Float64,
-                    "col4": pl.String,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1, 2, 3, 4, 5],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Int32,
+                "col3": pl.Float64,
+                "col4": pl.String,
+            },
+        ),
+    )
 
 
 ############################################
@@ -757,30 +750,29 @@ def test_integer_cast_transformer_transform_ignore_missing_false(
 
 
 def test_integer_cast_transformer_transform_ignore_missing_true(
-    frame_integer: pl.DataFrame, caplog: pytest.LogCaptureFixture
+    frame_integer: pl.DataFrame,
 ) -> None:
     transformer = IntegerCast(
         columns=["col1", "col2", "col5"], dtype=pl.Float32, ignore_missing=True
     )
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(frame_integer)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
-                    "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
-                    "col3": [1, 2, 3, 4, 5],
-                    "col4": ["a", "b", "c", "d", "e"],
-                },
-                schema={
-                    "col1": pl.Float32,
-                    "col2": pl.Float64,
-                    "col3": pl.Int64,
-                    "col4": pl.String,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1, 2, 3, 4, 5],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.Float64,
+                "col3": pl.Int64,
+                "col4": pl.String,
+            },
+        ),
+    )
