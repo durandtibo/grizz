@@ -67,8 +67,8 @@ def check_clickhouse_connect() -> None:
     """
     if not is_clickhouse_connect_available():
         msg = (
-            "`clickhouse_connect` package is required but not installed. "
-            "You can install `clickhouse_connect` package with the command:\n\n"
+            "'clickhouse_connect' package is required but not installed. "
+            "You can install 'clickhouse_connect' package with the command:\n\n"
             "pip install clickhouse-connect\n"
         )
         raise RuntimeError(msg)
@@ -142,8 +142,8 @@ def check_pyarrow() -> None:
     """
     if not is_pyarrow_available():
         msg = (
-            "`pyarrow` package is required but not installed. "
-            "You can install `pyarrow` package with the command:\n\n"
+            "'pyarrow' package is required but not installed. "
+            "You can install 'pyarrow' package with the command:\n\n"
             "pip install pyarrow\n"
         )
         raise RuntimeError(msg)
@@ -174,6 +174,81 @@ def pyarrow_available(fn: Callable[..., Any]) -> Callable[..., Any]:
     ```
     """
     return decorator_package_available(fn, is_pyarrow_available)
+
+
+################
+#     sklearn     #
+################
+
+
+@lru_cache
+def is_sklearn_available() -> bool:
+    r"""Indicate if the ``sklearn`` package is installed or not.
+
+    Returns:
+        ``True`` if ``sklearn`` is available otherwise ``False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.imports import is_sklearn_available
+    >>> is_sklearn_available()
+
+    ```
+    """
+    return package_available("sklearn")
+
+
+def check_sklearn() -> None:
+    r"""Check if the ``sklearn`` package is installed.
+
+    Raises:
+        RuntimeError: if the ``sklearn`` package is not installed.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.imports import check_sklearn
+    >>> check_sklearn()
+
+    ```
+    """
+    if not is_sklearn_available():
+        msg = (
+            "'sklearn' package is required but not installed. "
+            "You can install 'sklearn' package with the command:\n\n"
+            "pip install scikit-learn\n"
+        )
+        raise RuntimeError(msg)
+
+
+def sklearn_available(fn: Callable[..., Any]) -> Callable[..., Any]:
+    r"""Implement a decorator to execute a function only if ``sklearn``
+    package is installed.
+
+    Args:
+        fn: Specifies the function to execute.
+
+    Returns:
+        A wrapper around ``fn`` if ``sklearn`` package is installed,
+            otherwise ``None``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.imports import sklearn_available
+    >>> @sklearn_available
+    ... def my_function(n: int = 0) -> int:
+    ...     return 42 + n
+    ...
+    >>> my_function()
+
+    ```
+    """
+    return decorator_package_available(fn, is_sklearn_available)
 
 
 ################
@@ -217,8 +292,8 @@ def check_tqdm() -> None:
     """
     if not is_tqdm_available():
         msg = (
-            "`tqdm` package is required but not installed. "
-            "You can install `tqdm` package with the command:\n\n"
+            "'tqdm' package is required but not installed. "
+            "You can install 'tqdm' package with the command:\n\n"
             "pip install tqdm\n"
         )
         raise RuntimeError(msg)
