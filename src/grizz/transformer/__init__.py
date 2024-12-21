@@ -11,6 +11,8 @@ __all__ = [
     "ColumnSelectionTransformer",
     "ConcatColumns",
     "ConcatColumnsTransformer",
+    "CopyColumns",
+    "CopyColumnsTransformer",
     "DecimalCast",
     "DecimalCastTransformer",
     "Diff",
@@ -74,6 +76,8 @@ from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer as ConcatColumns
+from grizz.transformer.copy import CopyColumnsTransformer
+from grizz.transformer.copy import CopyColumnsTransformer as CopyColumns
 from grizz.transformer.datetime import ToDatetimeTransformer
 from grizz.transformer.datetime import ToDatetimeTransformer as ToDatetime
 from grizz.transformer.diff import DiffTransformer
