@@ -1,9 +1,28 @@
 from __future__ import annotations
 
+import logging
+import warnings
+
 import polars as pl
+import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import (
+    ColumnExistsError,
+    ColumnExistsWarning,
+    ColumnNotFoundError,
+    ColumnNotFoundWarning,
+)
 from grizz.transformer import Diff, TimeDiff
+
+
+@pytest.fixture
+def dataframe() -> pl.DataFrame:
+    return pl.DataFrame(
+        {"col1": [1, 2, 3, 4, 5], "col2": ["a", "b", "c", "d", "e"]},
+        schema={"col1": pl.Int64, "col2": pl.String},
+    )
+
 
 #####################################
 #     Tests for DiffTransformer     #
@@ -18,16 +37,34 @@ def test_diff_transformer_str() -> None:
     assert str(Diff(in_col="col1", out_col="diff")).startswith("DiffTransformer(")
 
 
-def test_diff_transformer_transform_int32() -> None:
-    frame = pl.DataFrame(
-        {
-            "col1": [1, 2, 3, 4, 5],
-            "col2": ["a", "b", "c", "d", "e"],
-        },
-        schema={"col1": pl.Int64, "col2": pl.String},
-    )
+def test_diff_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture) -> None:
     transformer = Diff(in_col="col1", out_col="diff")
-    out = transformer.transform(frame)
+    with caplog.at_level(logging.INFO):
+        transformer.fit(dataframe)
+    assert caplog.messages[0].startswith(
+        "Skipping 'DiffTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_diff_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+    transformer = Diff(in_col="col1", out_col="diff")
+    out = transformer.fit_transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["a", "b", "c", "d", "e"],
+                "diff": [None, 1, 1, 1, 1],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "diff": pl.Int64},
+        ),
+    )
+
+
+def test_diff_transformer_transform_int32(dataframe: pl.DataFrame) -> None:
+    transformer = Diff(in_col="col1", out_col="diff")
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -64,16 +101,9 @@ def test_diff_transformer_transform_float32() -> None:
     )
 
 
-def test_diff_transformer_transform_shift_2() -> None:
-    frame = pl.DataFrame(
-        {
-            "col1": [1, 2, 3, 4, 5],
-            "col2": ["a", "b", "c", "d", "e"],
-        },
-        schema={"col1": pl.Int64, "col2": pl.String},
-    )
+def test_diff_transformer_transform_shift_2(dataframe: pl.DataFrame) -> None:
     transformer = Diff(in_col="col1", out_col="diff", shift=2)
-    out = transformer.transform(frame)
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -103,6 +133,89 @@ def test_diff_transformer_transform_empty() -> None:
     )
 
 
+def test_diff_transformer_transform_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Diff(in_col="in", out_col="out", missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"col1": [1, 2, 3, 4, 5], "col2": ["a", "b", "c", "d", "e"]},
+            schema={"col1": pl.Int64, "col2": pl.String},
+        ),
+    )
+
+
+def test_diff_transformer_transform_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Diff(in_col="in", out_col="out")
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(dataframe)
+
+
+def test_diff_transformer_transform_missing_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Diff(in_col="in", out_col="out", missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"col1": [1, 2, 3, 4, 5], "col2": ["a", "b", "c", "d", "e"]},
+            schema={"col1": pl.Int64, "col2": pl.String},
+        ),
+    )
+
+
+def test_diff_transformer_transform_exist_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Diff(in_col="col1", out_col="col2", exist_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"col1": [1, 2, 3, 4, 5], "col2": [None, 1, 1, 1, 1]},
+            schema={"col1": pl.Int64, "col2": pl.Int64},
+        ),
+    )
+
+
+def test_diff_transformer_transform_exist_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Diff(in_col="col1", out_col="col2")
+    with pytest.raises(ColumnExistsError, match="1 column already exists in the DataFrame:"):
+        transformer.transform(dataframe)
+
+
+def test_diff_transformer_transform_exist_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Diff(in_col="col1", out_col="col2", exist_policy="warn")
+    with pytest.warns(
+        ColumnExistsWarning,
+        match="1 column already exists in the DataFrame and will be overwritten:",
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"col1": [1, 2, 3, 4, 5], "col2": [None, 1, 1, 1, 1]},
+            schema={"col1": pl.Int64, "col2": pl.Int64},
+        ),
+    )
+
+
 #########################################
 #     Tests for TimeDiffTransformer     #
 #########################################
@@ -117,6 +230,40 @@ def test_time_diff_transformer_repr() -> None:
 def test_time_diff_transformer_str() -> None:
     assert str(TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff")).startswith(
         "TimeDiffTransformer("
+    )
+
+
+def test_time_diff_transformer_fit(
+    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff")
+    with caplog.at_level(logging.INFO):
+        transformer.fit(dataframe)
+    assert caplog.messages[0].startswith(
+        "Skipping 'TimeDiffTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_time_diff_transformer_fit_transform() -> None:
+    frame = pl.DataFrame(
+        {
+            "col": ["b", "b", "b", "c", "a", "a", "a", "b", "c", "d"],
+            "time": [8, 2, 3, 4, 5, 6, 7, 1, 9, 10],
+        },
+        schema={"col": pl.String, "time": pl.Int64},
+    )
+    transformer = TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff")
+    out = transformer.fit_transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col": ["a", "a", "a", "b", "b", "b", "b", "c", "c", "d"],
+                "time": [5, 6, 7, 1, 2, 3, 8, 4, 9, 10],
+                "diff": [0, 1, 1, 0, 1, 1, 5, 0, 5, 0],
+            },
+            schema={"col": pl.String, "time": pl.Int64, "diff": pl.Int64},
+        ),
     )
 
 
