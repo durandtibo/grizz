@@ -1,11 +1,23 @@
 from __future__ import annotations
 
+import logging
+import warnings
+
 import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import JsonDecode
+
+
+@pytest.fixture
+def dataframe() -> pl.DataFrame:
+    return pl.DataFrame(
+        {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
+        schema={"list": pl.String, "dict": pl.String},
+    )
+
 
 ###########################################
 #     Tests for JsonDecodeTransformer     #
@@ -14,37 +26,59 @@ from grizz.transformer import JsonDecode
 
 def test_json_decode_transformer_repr() -> None:
     assert repr(JsonDecode(columns=["col1", "col3"])) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, ignore_missing=False)"
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise')"
     )
 
 
 def test_json_decode_transformer_repr_with_kwargs() -> None:
     assert repr(JsonDecode(columns=["col1", "col3"], strict=False)) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, ignore_missing=False, "
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise', "
         "strict=False)"
     )
 
 
 def test_json_decode_transformer_str() -> None:
     assert str(JsonDecode(columns=["col1", "col3"])) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, ignore_missing=False)"
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise')"
     )
 
 
 def test_json_decode_transformer_str_with_kwargs() -> None:
     assert str(JsonDecode(columns=["col1", "col3"], strict=False)) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, ignore_missing=False, "
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise', "
         "strict=False)"
     )
 
 
-def test_json_decode_transformer_transform() -> None:
-    frame = pl.DataFrame(
-        {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
-        schema={"list": pl.String, "dict": pl.String},
-    )
+def test_json_decode_transformer_fit(
+    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
     transformer = JsonDecode(columns=["list", "dict"])
-    out = transformer.transform(frame)
+    with caplog.at_level(logging.INFO):
+        transformer.fit(dataframe)
+    assert caplog.messages[0].startswith(
+        "Skipping 'JsonDecodeTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_json_decode_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+    transformer = JsonDecode(columns=["list", "dict"])
+    out = transformer.fit_transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"list": [[], [1]], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
+            schema={
+                "list": pl.List(pl.Int64),
+                "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+            },
+        ),
+    )
+
+
+def test_json_decode_transformer_transform(dataframe: pl.DataFrame) -> None:
+    transformer = JsonDecode(columns=["list", "dict"])
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -144,13 +178,9 @@ def test_json_decode_transformer_transform_dtype() -> None:
     )
 
 
-def test_json_decode_transformer_transform_none() -> None:
-    frame = pl.DataFrame(
-        {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
-        schema={"list": pl.String, "dict": pl.String},
-    )
+def test_json_decode_transformer_transform_columns_none(dataframe: pl.DataFrame) -> None:
     transformer = JsonDecode(columns=None)
-    out = transformer.transform(frame)
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -163,26 +193,35 @@ def test_json_decode_transformer_transform_none() -> None:
     )
 
 
-def test_json_decode_transformer_transform_ignore_missing_false() -> None:
-    frame = pl.DataFrame(
-        {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
-        schema={"list": pl.String, "dict": pl.String},
+def test_json_decode_transformer_transform_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = JsonDecode(columns=["list", "dict", "missing"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"list": [[], [1]], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
+            schema={
+                "list": pl.List(pl.Int64),
+                "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+            },
+        ),
     )
+
+
+def test_json_decode_transformer_transform_missing_policy_raise(dataframe: pl.DataFrame) -> None:
     transformer = JsonDecode(columns=["list", "dict", "missing"])
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
-        transformer.transform(frame)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(dataframe)
 
 
-def test_json_decode_transformer_transform_ignore_missing_true() -> None:
-    frame = pl.DataFrame(
-        {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
-        schema={"list": pl.String, "dict": pl.String},
-    )
-    transformer = JsonDecode(columns=["list", "dict", "missing"], ignore_missing=True)
+def test_json_decode_transformer_transform_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = JsonDecode(columns=["list", "dict", "missing"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
-        out = transformer.transform(frame)
+        out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
