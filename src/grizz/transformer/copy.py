@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.column import BaseOneToOneColumnTransformer
+from grizz.transformer.column import BaseColumnTransformer
 from grizz.transformer.columns import BaseColumnsTransformer
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CopyColumnTransformer(BaseOneToOneColumnTransformer):
+class CopyColumnTransformer(BaseColumnTransformer):
     r"""Implement a ``polars.DataFrame`` to copy a column.
 
     Args:
@@ -91,19 +91,14 @@ class CopyColumnTransformer(BaseOneToOneColumnTransformer):
     ```
     """
 
-    def _pre_fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def _fit(self, frame: pl.DataFrame) -> None:
-        pass  # no parameter to fit for this transformer.
-
-    def _pre_transform(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Copying column {self._in_col} to {self._out_col} ...")
-
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_column(frame)
         if self._in_col not in frame:
             return frame

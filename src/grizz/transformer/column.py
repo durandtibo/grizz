@@ -1,13 +1,11 @@
 r"""Contain a base class to implement ``polars.DataFrame`` transformers
-that assumes there's a 1-to-1 correspondence between the input column
-and output column."""
+that transforms a single input column and generate an output column."""
 
 from __future__ import annotations
 
-__all__ = ["BaseOneToOneColumnTransformer"]
+__all__ = ["BaseColumnTransformer"]
 
 import logging
-from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from coola.utils.format import repr_mapping_line
@@ -26,10 +24,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class BaseOneToOneColumnTransformer(BaseTransformer):
+class BaseColumnTransformer(BaseTransformer):
     r"""Define a base class to implement ``polars.DataFrame``
-    transformers that assumes there's a 1-to-1 correspondence between
-    the input column and output column.
+    transformers that transforms a single input column and generate an
+    output column.
 
     Args:
         in_col: The input column name.
@@ -79,17 +77,14 @@ class BaseOneToOneColumnTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
-        self._pre_fit(frame)
-        self._check_input_column(frame)
-        self._fit(frame)
+        pass
 
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self.fit(frame)
         return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._pre_transform(frame)
-        return self._transform(frame)
+        pass
 
     def _check_input_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the input column is missing.
@@ -106,38 +101,3 @@ class BaseOneToOneColumnTransformer(BaseTransformer):
             frame: The input DataFrame to check.
         """
         check_existing_columns(frame, columns=[self._out_col], exist_policy=self._exist_policy)
-
-    @abstractmethod
-    def _pre_fit(self, frame: pl.DataFrame) -> None:
-        r"""Log information about the transformation fit.
-
-        Args:
-            frame: The DataFrame to fit.
-        """
-
-    @abstractmethod
-    def _fit(self, frame: pl.DataFrame) -> None:
-        r"""Fit the transformer to data.
-
-        Args:
-            frame: The DataFrame to fit.
-        """
-
-    @abstractmethod
-    def _pre_transform(self, frame: pl.DataFrame) -> None:
-        r"""Log information about the transformation.
-
-        Args:
-            frame: The DataFrame to transform.
-        """
-
-    @abstractmethod
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        r"""Transform the data.
-
-        Args:
-            frame: The DataFrame to transform.
-
-        Returns:
-            The transformed DataFrame.
-        """
