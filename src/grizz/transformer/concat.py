@@ -9,8 +9,10 @@ from typing import TYPE_CHECKING
 
 import polars as pl
 import polars.selectors as cs
+from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns2 import BaseColumnsTransformer
+from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.utils.column import check_column_exist_policy, check_existing_columns
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -25,10 +27,23 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
     Args:
         columns: The columns to concatenate. The column should have
             the same type or compatible types.
-        out_column: The output column.
-        ignore_missing: If ``False``, an exception is raised if a
-            column is missing, otherwise just a warning message is
-            shown.
+        out_col: The output column.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no message is shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
 
     Example usage:
 
@@ -36,9 +51,9 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import ConcatColumns
-    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_column="col")
+    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="col")
     >>> transformer
-    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_column=col, ignore_missing=False)
+    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [11, 12, 13, 14, 15],
@@ -82,33 +97,48 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
     def __init__(
         self,
         columns: Sequence[str],
-        out_column: str,
-        ignore_missing: bool = False,
+        out_col: str,
+        exist_policy: str = "raise",
+        missing_policy: str = "raise",
     ) -> None:
-        super().__init__(columns=columns, ignore_missing=ignore_missing)
-        self._out_column = out_column
+        super().__init__(columns=columns, missing_policy=missing_policy)
+        self._out_col = out_col
+
+        check_column_exist_policy(exist_policy)
+        self._exist_policy = exist_policy
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(columns={self._columns}, "
-            f"out_column={self._out_column}, ignore_missing={self._ignore_missing})"
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "out_col": self._out_col,
+                "exist_policy": self._exist_policy,
+                "missing_policy": self._missing_policy,
+            }
         )
+        return f"{self.__class__.__qualname__}({args})"
 
-    def _pre_fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def _fit(self, frame: pl.DataFrame) -> None:
-        pass  # no parameter to fit for this transformer.
-
-    def _pre_transform(self, frame: pl.DataFrame) -> None:
-        columns = self.find_columns(frame)
-        logger.info(f"Concatenating {len(columns):,} columns to {self._out_column}...")
-
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        logger.info(
+            f"Concatenating {len(self.find_columns(frame)):,} columns to {self._out_col}..."
+        )
+        self._check_missing_columns(frame)
+        self._check_output_column(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
-            frame.select(pl.concat_list(cs.by_name(columns).alias(self._out_column)))
+            frame.select(pl.concat_list(cs.by_name(columns).alias(self._out_col)))
         )
+
+    def _check_output_column(self, frame: pl.DataFrame) -> None:
+        r"""Check if the output column already exists.
+
+        Args:
+            frame: The input DataFrame to check.
+        """
+        check_existing_columns(frame, columns=[self._out_col], exist_policy=self._exist_policy)
