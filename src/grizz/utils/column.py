@@ -2,8 +2,7 @@ r"""Contain DataFrame columns utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["find_common_columns", "find_missing_columns"]
-
+__all__ = ["check_column_exist_policy", "find_common_columns", "find_missing_columns"]
 
 from typing import TYPE_CHECKING
 
@@ -11,6 +10,33 @@ import polars as pl
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+
+def check_column_exist_policy(col_exist_policy: str) -> None:
+    r"""Check the policy on how to handle existing columns.
+
+    Args:
+        col_exist_policy: The policy on how to handle existing columns.
+
+    Raises:
+        ValueError: if ``col_exist_policy`` is not ``'ignore'``,
+            ``'warn'``, or ``'raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.column import check_column_exist_policy
+    >>> check_column_exist_policy("ignore")
+
+    ```
+    """
+    if col_exist_policy not in {"ignore", "warn", "raise"}:
+        msg = (
+            f"Incorrect 'col_exist_policy': {col_exist_policy}. The valid values are: "
+            f"'ignore', 'raise', 'warn'"
+        )
+        raise ValueError(msg)
 
 
 def find_common_columns(
