@@ -124,12 +124,13 @@ def check_existing_columns(
     existing_cols = find_common_columns(frame_or_cols=frame_or_cols, columns=columns)
     if not existing_cols:
         return
+    m = "column already exists" if len(existing_cols) == 1 else "columns already exist"
     if exist_policy == "raise":
-        msg = f"{len(existing_cols):,} columns already exist in the DataFrame: {existing_cols}"
+        msg = f"{len(existing_cols):,} {m} in the DataFrame: {existing_cols}"
         raise ColumnExistsError(msg)
     if exist_policy == "warn":
         msg = (
-            f"{len(existing_cols):,} columns already exist in the DataFrame "
+            f"{len(existing_cols):,} {m} in the DataFrame "
             f"and will be overwritten: {existing_cols}"
         )
         warnings.warn(msg, ColumnExistsWarning, stacklevel=2)
@@ -178,13 +179,14 @@ def check_missing_columns(
     missing_cols = find_missing_columns(frame_or_cols=frame_or_cols, columns=columns)
     if not missing_cols:
         return
+    m = "column is" if len(missing_cols) == 1 else "columns are"
     if missing_policy == "raise":
-        msg = f"{len(missing_cols):,} columns are missing in the DataFrame: {missing_cols}"
+        msg = f"{len(missing_cols):,} {m} missing in the DataFrame: {missing_cols}"
         raise ColumnNotFoundError(msg)
     if missing_policy == "warn":
         msg = (
-            f"{len(missing_cols):,} columns are missing in the DataFrame and will be ignored: "
-            f"{missing_cols}"
+            f"{len(missing_cols):,} {m} missing in the DataFrame and "
+            f"will be ignored: {missing_cols}"
         )
         warnings.warn(msg, ColumnNotFoundWarning, stacklevel=2)
 

@@ -78,17 +78,30 @@ def test_check_existing_columns_ignore(dataframe: pl.DataFrame) -> None:
         check_existing_columns(dataframe, columns=["col1", "col5"], exist_policy="ignore")
 
 
-def test_check_existing_columns_raise(dataframe: pl.DataFrame) -> None:
-    with pytest.raises(ColumnExistsError, match="1 columns already exist in the DataFrame:"):
+def test_check_existing_columns_raise_1(dataframe: pl.DataFrame) -> None:
+    with pytest.raises(ColumnExistsError, match="1 column already exists in the DataFrame:"):
         check_existing_columns(dataframe, columns=["col1", "col5"])
 
 
-def test_check_existing_columns_warn(dataframe: pl.DataFrame) -> None:
+def test_check_existing_columns_raise_2(dataframe: pl.DataFrame) -> None:
+    with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
+        check_existing_columns(dataframe, columns=["col1", "col3", "col5"])
+
+
+def test_check_existing_columns_warn_1(dataframe: pl.DataFrame) -> None:
     with pytest.warns(
         ColumnExistsWarning,
-        match="1 columns already exist in the DataFrame and will be overwritten:",
+        match="1 column already exists in the DataFrame and will be overwritten:",
     ):
         check_existing_columns(dataframe, columns=["col1", "col5"], exist_policy="warn")
+
+
+def test_check_existing_columns_warn_2(dataframe: pl.DataFrame) -> None:
+    with pytest.warns(
+        ColumnExistsWarning,
+        match="2 columns already exist in the DataFrame and will be overwritten:",
+    ):
+        check_existing_columns(dataframe, columns=["col1", "col3", "col5"], exist_policy="warn")
 
 
 def test_check_existing_columns_exist_policy_incorrect(dataframe: pl.DataFrame) -> None:
@@ -112,16 +125,28 @@ def test_check_missing_columns_ignore(dataframe: pl.DataFrame) -> None:
         check_missing_columns(dataframe, columns=["col1", "col5"], missing_policy="ignore")
 
 
-def test_check_missing_columns_raise(dataframe: pl.DataFrame) -> None:
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
+def test_check_missing_columns_raise_1(dataframe: pl.DataFrame) -> None:
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         check_missing_columns(dataframe, columns=["col1", "col5"])
 
 
-def test_check_missing_columns_warn(dataframe: pl.DataFrame) -> None:
+def test_check_missing_columns_raise_2(dataframe: pl.DataFrame) -> None:
+    with pytest.raises(ColumnNotFoundError, match="2 columns are missing in the DataFrame:"):
+        check_missing_columns(dataframe, columns=["col1", "col5", "col6"])
+
+
+def test_check_missing_columns_warn_1(dataframe: pl.DataFrame) -> None:
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         check_missing_columns(dataframe, columns=["col1", "col5"], missing_policy="warn")
+
+
+def test_check_missing_columns_warn_2(dataframe: pl.DataFrame) -> None:
+    with pytest.warns(
+        ColumnNotFoundWarning, match="2 columns are missing in the DataFrame and will be ignored:"
+    ):
+        check_missing_columns(dataframe, columns=["col1", "col5", "col6"], missing_policy="warn")
 
 
 #########################################
