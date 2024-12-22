@@ -277,7 +277,7 @@ def check_missing_columns(
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer.columns import check_missing_columns
+    >>> from grizz.transformer.columns2 import check_missing_columns
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],

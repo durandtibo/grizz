@@ -8,7 +8,7 @@ __all__ = ["ColumnSelectionTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns2 import BaseColumnsTransformer
 from grizz.utils.column import find_common_columns
 from grizz.utils.format import str_col_diff
 

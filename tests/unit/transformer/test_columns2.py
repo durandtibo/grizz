@@ -4,7 +4,7 @@ import polars as pl
 import pytest
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
-from grizz.transformer.columns import check_missing_columns
+from grizz.transformer.columns2 import check_missing_columns
 
 
 @pytest.fixture

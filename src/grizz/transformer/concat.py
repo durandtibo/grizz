@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 import polars.selectors as cs
 
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns2 import BaseColumnsTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
