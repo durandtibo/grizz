@@ -26,6 +26,64 @@ def test_time_to_second_transformer_str() -> None:
     assert str(TimeToSecond(in_col="time", out_col="second")).startswith("TimeToSecondTransformer(")
 
 
+def test_time_to_second_transformer_fit(caplog: pytest.LogCaptureFixture) -> None:
+    transformer = TimeToSecond(in_col="time", out_col="second")
+    with caplog.at_level(logging.INFO):
+        transformer.fit(
+            pl.DataFrame(
+                {
+                    "time": [
+                        datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                        datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                        datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                        datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                        datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+                    ],
+                    "col": ["a", "b", "c", "d", "e"],
+                },
+                schema={"time": pl.Time, "col": pl.String},
+            )
+        )
+    assert caplog.messages[0].startswith(
+        "Skipping 'TimeToSecondTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_time_to_second_transformer_fit_transform() -> None:
+    frame = pl.DataFrame(
+        {
+            "time": [
+                datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+            ],
+            "col": ["a", "b", "c", "d", "e"],
+        },
+        schema={"time": pl.Time, "col": pl.String},
+    )
+    transformer = TimeToSecond(in_col="time", out_col="second")
+    out = transformer.fit_transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "time": [
+                    datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                    datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+                ],
+                "col": ["a", "b", "c", "d", "e"],
+                "second": [1.89, 61.89, 3661.89, 1159.89, 69559.42],
+            },
+            schema={"time": pl.Time, "col": pl.String, "second": pl.Float64},
+        ),
+    )
+
+
 def test_time_to_second_transformer_transform() -> None:
     frame = pl.DataFrame(
         {
@@ -57,6 +115,98 @@ def test_time_to_second_transformer_transform() -> None:
                 "second": [1.89, 61.89, 3661.89, 1159.89, 69559.42],
             },
             schema={"time": pl.Time, "col": pl.String, "second": pl.Float64},
+        ),
+    )
+
+
+def test_time_to_second_transformer_transform_missing_policy_ignore() -> None:
+    frame = pl.DataFrame(
+        {
+            "time": [
+                datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+            ],
+            "col": ["a", "b", "c", "d", "e"],
+        },
+        schema={"time": pl.Time, "col": pl.String},
+    )
+    transformer = TimeToSecond(in_col="in", out_col="second", missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "time": [
+                    datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                    datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+                ],
+                "col": ["a", "b", "c", "d", "e"],
+            },
+            schema={"time": pl.Time, "col": pl.String},
+        ),
+    )
+
+
+def test_time_to_second_transformer_transform_missing_policy_raise() -> None:
+    frame = pl.DataFrame(
+        {
+            "time": [
+                datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+            ],
+            "col": ["a", "b", "c", "d", "e"],
+        },
+        schema={"time": pl.Time, "col": pl.String},
+    )
+    transformer = TimeToSecond(in_col="in", out_col="second")
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(frame)
+
+
+def test_time_to_second_transformer_transform_missing_policy_warn() -> None:
+    frame = pl.DataFrame(
+        {
+            "time": [
+                datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+            ],
+            "col": ["a", "b", "c", "d", "e"],
+        },
+        schema={"time": pl.Time, "col": pl.String},
+    )
+    transformer = TimeToSecond(in_col="in", out_col="second", missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "time": [
+                    datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                    datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+                ],
+                "col": ["a", "b", "c", "d", "e"],
+            },
+            schema={"time": pl.Time, "col": pl.String},
         ),
     )
 
