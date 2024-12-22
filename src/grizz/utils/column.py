@@ -154,7 +154,7 @@ def check_missing_columns(
             no message is shown.
 
     Raises:
-        ColumnExistsError: if at least one column is missing and
+        ColumnNotFoundError: if at least one column is missing and
             ``missing_policy='raise'``.
 
     Example usage:

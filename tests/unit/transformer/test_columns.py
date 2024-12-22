@@ -3,13 +3,8 @@ from __future__ import annotations
 import polars as pl
 import pytest
 
-from grizz.exceptions import (
-    ColumnExistsError,
-    ColumnExistsWarning,
-    ColumnNotFoundError,
-    ColumnNotFoundWarning,
-)
-from grizz.transformer.columns import check_existing_columns, check_missing_columns
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
+from grizz.transformer.columns import check_missing_columns
 
 
 @pytest.fixture
@@ -23,29 +18,6 @@ def dataframe() -> pl.DataFrame:
         },
         schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
     )
-
-
-############################################
-#     Tests for check_existing_columns     #
-############################################
-
-
-@pytest.mark.parametrize("exist_ok", [True, False])
-def test_check_existing_columns(dataframe: pl.DataFrame, exist_ok: bool) -> None:
-    check_existing_columns(dataframe, columns=["col10"], exist_ok=exist_ok)
-
-
-def test_check_existing_columns_exist_ok_true(dataframe: pl.DataFrame) -> None:
-    with pytest.warns(
-        ColumnExistsWarning,
-        match="1 columns already exist in the DataFrame and will be overwritten:",
-    ):
-        check_existing_columns(dataframe, columns=["col1", "col5"], exist_ok=True)
-
-
-def test_check_existing_columns_exist_ok_false(dataframe: pl.DataFrame) -> None:
-    with pytest.raises(ColumnExistsError, match="1 columns already exist in the DataFrame:"):
-        check_existing_columns(dataframe, columns=["col1", "col5"])
 
 
 ###########################################
