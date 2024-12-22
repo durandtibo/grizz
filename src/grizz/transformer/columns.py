@@ -3,7 +3,7 @@ values."""
 
 from __future__ import annotations
 
-__all__ = ["BaseColumnsTransformer", "check_missing_columns"]
+__all__ = ["BaseColumnsTransformer", "check_existing_columns", "check_missing_columns"]
 
 import logging
 import warnings
@@ -254,6 +254,51 @@ class BaseColumnsTransformer(BaseTransformer):
         Returns:
             The transformed DataFrame.
         """
+
+
+def check_existing_columns(
+    frame_or_cols: pl.DataFrame | Sequence, columns: Sequence, exist_ok: bool = False
+) -> None:
+    r"""Check if some columns already exist.
+
+    Args:
+        frame_or_cols: The DataFrame or its columns.
+        columns: The columns to check.
+        exist_ok: If ``False``, an exception is raised if a column
+            already exists, otherwise just a warning message is shown.
+
+    Raises:
+        RuntimeError: if at least one column already exists and ``exist_ok=False``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer.columns import check_existing_columns
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> check_existing_columns(frame, ["col1", "col5"], exist_ok=True)
+
+    ```
+    """
+    existing_cols = find_common_columns(frame_or_cols=frame_or_cols, columns=columns)
+    if not existing_cols:
+        return
+    if not exist_ok:
+        msg = f"{len(existing_cols):,} columns already exist in the DataFrame: {existing_cols}"
+        raise RuntimeError(msg)
+    msg = (
+        f"{len(existing_cols):,} columns already exist in the DataFrame and will be overwritten: "
+        f"{existing_cols}"
+    )
+    warnings.warn(msg, RuntimeWarning, stacklevel=2)
 
 
 def check_missing_columns(missing_cols: Sequence, ignore_missing: bool = False) -> None:
