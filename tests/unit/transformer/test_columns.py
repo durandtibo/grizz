@@ -3,6 +3,12 @@ from __future__ import annotations
 import polars as pl
 import pytest
 
+from grizz.exceptions import (
+    ColumnExistsError,
+    ColumnExistsWarning,
+    ColumnNotFoundError,
+    ColumnNotFoundWarning,
+)
 from grizz.transformer.columns import check_existing_columns, check_missing_columns
 
 
@@ -31,13 +37,14 @@ def test_check_existing_columns(dataframe: pl.DataFrame, exist_ok: bool) -> None
 
 def test_check_existing_columns_exist_ok_true(dataframe: pl.DataFrame) -> None:
     with pytest.warns(
-        RuntimeWarning, match="1 columns already exist in the DataFrame and will be overwritten:"
+        ColumnExistsWarning,
+        match="1 columns already exist in the DataFrame and will be overwritten:",
     ):
         check_existing_columns(dataframe, columns=["col1", "col5"], exist_ok=True)
 
 
 def test_check_existing_columns_exist_ok_false(dataframe: pl.DataFrame) -> None:
-    with pytest.raises(RuntimeError, match="1 columns already exist in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match="1 columns already exist in the DataFrame:"):
         check_existing_columns(dataframe, columns=["col1", "col5"])
 
 
@@ -53,11 +60,11 @@ def test_check_missing_columns(dataframe: pl.DataFrame, missing_ok: bool) -> Non
 
 def test_check_missing_columns_missing_ok_true(dataframe: pl.DataFrame) -> None:
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         check_missing_columns(dataframe, columns=["col1", "col5"], missing_ok=True)
 
 
 def test_check_missing_columns_missing_ok_false(dataframe: pl.DataFrame) -> None:
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         check_missing_columns(dataframe, columns=["col1", "col5"])

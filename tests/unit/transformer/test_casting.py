@@ -6,6 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import Cast, DecimalCast, FloatCast, IntegerCast
 
 
@@ -222,14 +223,14 @@ def test_cast_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
 def test_cast_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32, ignore_missing=True)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -395,7 +396,7 @@ def test_decimal_cast_transformer_transform_ignore_missing_false(
     frame_decimal: pl.DataFrame,
 ) -> None:
     transformer = DecimalCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame_decimal)
 
 
@@ -406,7 +407,7 @@ def test_decimal_cast_transformer_transform_ignore_missing_true(
         columns=["col1", "col2", "col5"], dtype=pl.Float32, ignore_missing=True
     )
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_decimal)
     assert_frame_equal(
@@ -572,14 +573,14 @@ def test_float_cast_transformer_transform_ignore_missing_false(
     frame_float: pl.DataFrame,
 ) -> None:
     transformer = FloatCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame_float)
 
 
 def test_float_cast_transformer_transform_ignore_missing_true(frame_float: pl.DataFrame) -> None:
     transformer = FloatCast(columns=["col1", "col2", "col5"], dtype=pl.Int32, ignore_missing=True)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_float)
     assert_frame_equal(
@@ -745,7 +746,7 @@ def test_integer_cast_transformer_transform_ignore_missing_false(
     frame_integer: pl.DataFrame,
 ) -> None:
     transformer = IntegerCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame_integer)
 
 
@@ -756,7 +757,7 @@ def test_integer_cast_transformer_transform_ignore_missing_true(
         columns=["col1", "col2", "col5"], dtype=pl.Float32, ignore_missing=True
     )
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_integer)
     assert_frame_equal(

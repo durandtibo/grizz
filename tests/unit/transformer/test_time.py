@@ -6,6 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import TimeToSecond, ToTime
 
 #############################################
@@ -168,14 +169,14 @@ def test_to_time_transformer_transform_format(frame_time: pl.DataFrame) -> None:
 
 def test_to_time_transformer_transform_ignore_missing_false(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S")
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame_time)
 
 
 def test_to_time_transformer_transform_ignore_missing_true(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S", ignore_missing=True)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_time)
     assert_frame_equal(
