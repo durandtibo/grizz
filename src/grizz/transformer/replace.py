@@ -17,7 +17,6 @@ class ReplaceTransformer(BaseTransformer):
     Args:
         orig_column: The original column name.
         final_column: The final column name.
-        *args: The positional arguments to pass to ``replace``.
         **kwargs: The keyword arguments to pass to ``replace``.
 
     Example usage:
@@ -87,12 +86,10 @@ class ReplaceTransformer(BaseTransformer):
         self,
         orig_column: str,
         final_column: str,
-        *args: Any,
         **kwargs: Any,
     ) -> None:
         self._orig_column = orig_column
         self._final_column = final_column
-        self._args = args
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
@@ -103,7 +100,7 @@ class ReplaceTransformer(BaseTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.with_columns(
-            pl.col(self._orig_column).replace(*self._args, **self._kwargs).alias(self._final_column)
+            pl.col(self._orig_column).replace(**self._kwargs).alias(self._final_column)
         )
 
 
@@ -113,7 +110,6 @@ class ReplaceStrictTransformer(BaseTransformer):
     Args:
         orig_column: The original column name.
         final_column: The final column name.
-        *args: The positional arguments to pass to ``replace``.
         **kwargs: The keyword arguments to pass to ``replace``.
 
     Example usage:
@@ -183,12 +179,10 @@ class ReplaceStrictTransformer(BaseTransformer):
         self,
         orig_column: str,
         final_column: str,
-        *args: Any,
         **kwargs: Any,
     ) -> None:
         self._orig_column = orig_column
         self._final_column = final_column
-        self._args = args
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
@@ -199,7 +193,5 @@ class ReplaceStrictTransformer(BaseTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.with_columns(
-            pl.col(self._orig_column)
-            .replace_strict(*self._args, **self._kwargs)
-            .alias(self._final_column)
+            pl.col(self._orig_column).replace_strict(**self._kwargs).alias(self._final_column)
         )
