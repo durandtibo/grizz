@@ -63,6 +63,22 @@ def test_strip_chars_transformer_fit(
     )
 
 
+def test_strip_chars_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars(columns=["col2", "col3"])
+    out = transformer.fit_transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["a", "b", "c", "d", "e"],
+                "col4": ["a ", " b", "  c  ", "d", "e"],
+            }
+        ),
+    )
+
+
 def test_strip_chars_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = StripChars(columns=["col2", "col3"])
     out = transformer.transform(dataframe)

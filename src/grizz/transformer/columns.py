@@ -8,8 +8,6 @@ __all__ = ["BaseColumnsTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-from coola.utils.format import repr_mapping_line
-
 from grizz.transformer.base import BaseTransformer
 from grizz.utils.column import (
     check_column_missing_policy,
@@ -99,15 +97,6 @@ class BaseColumnsTransformer(BaseTransformer):
 
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args})"
 
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self.fit(frame)
