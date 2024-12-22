@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from objectory import AbstractFactory
@@ -73,6 +73,61 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
     ```
     """
 
+    @abstractmethod
+    def fit(self, frame: pl.DataFrame) -> None:
+        r"""Fit the data in the ``polars.DataFrame``.
+
+        Args:
+            frame: The ``polars.DataFrame`` to fit.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import polars as pl
+        >>> from grizz.transformer import Cast
+        >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> frame = pl.DataFrame(
+        ...     {
+        ...         "col1": [1, 2, 3, 4, 5],
+        ...         "col2": ["1", "2", "3", "4", "5"],
+        ...         "col3": ["1", "2", "3", "4", "5"],
+        ...         "col4": ["a", "b", "c", "d", "e"],
+        ...     }
+        ... )
+        >>> frame
+        shape: (5, 4)
+        ┌──────┬──────┬──────┬──────┐
+        │ col1 ┆ col2 ┆ col3 ┆ col4 │
+        │ ---  ┆ ---  ┆ ---  ┆ ---  │
+        │ i64  ┆ str  ┆ str  ┆ str  │
+        ╞══════╪══════╪══════╪══════╡
+        │ 1    ┆ 1    ┆ 1    ┆ a    │
+        │ 2    ┆ 2    ┆ 2    ┆ b    │
+        │ 3    ┆ 3    ┆ 3    ┆ c    │
+        │ 4    ┆ 4    ┆ 4    ┆ d    │
+        │ 5    ┆ 5    ┆ 5    ┆ e    │
+        └──────┴──────┴──────┴──────┘
+        >>> transformer.fit(frame)
+        >>> out = transformer.transform(frame)
+        >>> out
+        shape: (5, 4)
+        ┌──────┬──────┬──────┬──────┐
+        │ col1 ┆ col2 ┆ col3 ┆ col4 │
+        │ ---  ┆ ---  ┆ ---  ┆ ---  │
+        │ i32  ┆ str  ┆ i32  ┆ str  │
+        ╞══════╪══════╪══════╪══════╡
+        │ 1    ┆ 1    ┆ 1    ┆ a    │
+        │ 2    ┆ 2    ┆ 2    ┆ b    │
+        │ 3    ┆ 3    ┆ 3    ┆ c    │
+        │ 4    ┆ 4    ┆ 4    ┆ d    │
+        │ 5    ┆ 5    ┆ 5    ┆ e    │
+        └──────┴──────┴──────┴──────┘
+
+        ```
+        """
+
+    @abstractmethod
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         r"""Transform the data in the ``polars.DataFrame``.
 
