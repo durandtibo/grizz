@@ -2,11 +2,19 @@ r"""Contain DataFrame columns utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["check_column_exist_policy", "find_common_columns", "find_missing_columns"]
+__all__ = [
+    "check_column_exist_policy",
+    "check_existing_columns",
+    "find_common_columns",
+    "find_missing_columns",
+]
 
+import warnings
 from typing import TYPE_CHECKING
 
 import polars as pl
+
+from grizz.exceptions import ColumnExistsError, ColumnExistsWarning
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -37,6 +45,60 @@ def check_column_exist_policy(col_exist_policy: str) -> None:
             f"'ignore', 'raise', 'warn'"
         )
         raise ValueError(msg)
+
+
+def check_existing_columns(
+    frame_or_cols: pl.DataFrame | Sequence, columns: Sequence, col_exist_policy: str = "raise"
+) -> None:
+    r"""Check if some columns already exist.
+
+    Args:
+        frame_or_cols: The DataFrame or its columns.
+        columns: The columns to check.
+        col_exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no message is shown.
+
+    Raises:
+        ColumnExistsError: if at least one column already exists and
+            ``col_exist_policy='raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.column import check_existing_columns
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> check_existing_columns(frame, ["col1", "col5"], exist_ok=True)
+
+    ```
+    """
+    check_column_exist_policy(col_exist_policy)
+    existing_cols = find_common_columns(frame_or_cols=frame_or_cols, columns=columns)
+    if not existing_cols:
+        return
+    if col_exist_policy == "raise":
+        msg = f"{len(existing_cols):,} columns already exist in the DataFrame: {existing_cols}"
+        raise ColumnExistsError(msg)
+    if col_exist_policy == "warn":
+        msg = (
+            f"{len(existing_cols):,} columns already exist in the DataFrame "
+            f"and will be overwritten: {existing_cols}"
+        )
+        warnings.warn(msg, ColumnExistsWarning, stacklevel=2)
 
 
 def find_common_columns(
