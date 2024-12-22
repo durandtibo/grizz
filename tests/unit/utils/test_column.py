@@ -3,7 +3,11 @@ from __future__ import annotations
 import polars as pl
 import pytest
 
-from grizz.utils.column import find_common_columns, find_missing_columns
+from grizz.utils.column import (
+    check_column_exist_policy,
+    find_common_columns,
+    find_missing_columns,
+)
 
 
 @pytest.fixture
@@ -15,6 +19,21 @@ def dataframe() -> pl.DataFrame:
             "col3": ["a ", " b", "  c  ", "d", "e"],
         }
     )
+
+
+###############################################
+#     Tests for check_column_exist_policy     #
+###############################################
+
+
+@pytest.mark.parametrize("nan_policy", ["ignore", "raise", "warn"])
+def test_check_column_exist_policy_valid(nan_policy: str) -> None:
+    check_column_exist_policy(nan_policy)
+
+
+def test_check_column_exist_policy_incorrect() -> None:
+    with pytest.raises(ValueError, match="Incorrect 'col_exist_policy': incorrect"):
+        check_column_exist_policy("incorrect")
 
 
 #########################################
