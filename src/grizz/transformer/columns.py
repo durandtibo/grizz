@@ -10,6 +10,12 @@ import warnings
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
+from grizz.exceptions import (
+    ColumnExistsError,
+    ColumnExistsWarning,
+    ColumnNotFoundError,
+    ColumnNotFoundWarning,
+)
 from grizz.transformer.base import BaseTransformer
 from grizz.utils.column import find_common_columns, find_missing_columns
 
@@ -293,12 +299,12 @@ def check_existing_columns(
         return
     if not exist_ok:
         msg = f"{len(existing_cols):,} columns already exist in the DataFrame: {existing_cols}"
-        raise RuntimeError(msg)
+        raise ColumnExistsError(msg)
     msg = (
         f"{len(existing_cols):,} columns already exist in the DataFrame and will be overwritten: "
         f"{existing_cols}"
     )
-    warnings.warn(msg, RuntimeWarning, stacklevel=2)
+    warnings.warn(msg, ColumnExistsWarning, stacklevel=2)
 
 
 def check_missing_columns(
@@ -339,9 +345,9 @@ def check_missing_columns(
         return
     if not missing_ok:
         msg = f"{len(missing_cols):,} columns are missing in the DataFrame: {missing_cols}"
-        raise RuntimeError(msg)
+        raise ColumnNotFoundError(msg)
     msg = (
         f"{len(missing_cols):,} columns are missing in the DataFrame and will be ignored: "
         f"{missing_cols}"
     )
-    warnings.warn(msg, RuntimeWarning, stacklevel=2)
+    warnings.warn(msg, ColumnNotFoundWarning, stacklevel=2)

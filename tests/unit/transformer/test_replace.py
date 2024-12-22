@@ -38,9 +38,9 @@ def test_replace_transformer_transform_same_column() -> None:
     assert_frame_equal(out, pl.DataFrame({"col": ["1", "2", "3", "d", "e"]}))
 
 
-#######################################################
+##############################################
 #     Tests for ReplaceStrictTransformer     #
-#######################################################
+##############################################
 
 
 def test_replace_strict_transformer_repr() -> None:

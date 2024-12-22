@@ -4,6 +4,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import DropNullColumn, DropNullRow
 
 ###############################################
@@ -106,7 +107,7 @@ def test_drop_null_column_transformer_transform_columns_ignore_missing_false(
     frame_col: pl.DataFrame,
 ) -> None:
     transformer = DropNullColumn(columns=["col1", "col2", "col5"], threshold=0.4)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame_col)
 
 
@@ -117,7 +118,7 @@ def test_drop_null_column_transformer_transform_columns_ignore_missing_true(
         columns=["col1", "col2", "col5"], threshold=0.4, ignore_missing=True
     )
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_col)
     assert_frame_equal(
@@ -205,7 +206,7 @@ def test_drop_null_row_transformer_transform_columns_ignore_missing_false(
     frame_row: pl.DataFrame,
 ) -> None:
     transformer = DropNullRow(columns=["col1", "col2", "col5"])
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame_row)
 
 
@@ -214,7 +215,7 @@ def test_drop_null_row_transformer_transform_columns_ignore_missing_true(
 ) -> None:
     transformer = DropNullRow(columns=["col1", "col2", "col5"], ignore_missing=True)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_row)
     assert_frame_equal(

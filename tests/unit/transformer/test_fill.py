@@ -4,6 +4,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import FillNan, FillNull
 
 
@@ -115,14 +116,14 @@ def test_fill_nan_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNan(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
 def test_fill_nan_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = FillNan(columns=["col1", "col4", "col5"], ignore_missing=True, value=100)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -262,14 +263,14 @@ def test_fill_null_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNull(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
 def test_fill_null_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = FillNull(columns=["col1", "col4", "col5"], ignore_missing=True, value=100)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

@@ -4,6 +4,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import DropDuplicate
 
 ##############################################
@@ -95,7 +96,7 @@ def test_drop_duplicate_transformer_transform_columns_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DropDuplicate(columns=["col1", "col2", "col5"])
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -106,7 +107,7 @@ def test_drop_duplicate_transformer_transform_columns_ignore_missing_true(
         columns=["col1", "col2", "col5"], ignore_missing=True, keep="first", maintain_order=True
     )
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

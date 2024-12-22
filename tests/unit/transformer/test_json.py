@@ -4,6 +4,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import JsonDecode
 
 ###########################################
@@ -168,7 +169,7 @@ def test_json_decode_transformer_transform_ignore_missing_false() -> None:
         schema={"list": pl.String, "dict": pl.String},
     )
     transformer = JsonDecode(columns=["list", "dict", "missing"])
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(frame)
 
 
@@ -179,7 +180,7 @@ def test_json_decode_transformer_transform_ignore_missing_true() -> None:
     )
     transformer = JsonDecode(columns=["list", "dict", "missing"], ignore_missing=True)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame)
     assert_frame_equal(

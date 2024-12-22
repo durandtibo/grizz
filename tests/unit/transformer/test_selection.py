@@ -4,6 +4,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import ColumnSelection
 
 ################################################
@@ -48,14 +49,14 @@ def test_column_selection_transformer_transform_empty_row() -> None:
 
 def test_column_selection_transformer_transform_empty() -> None:
     transformer = ColumnSelection(columns=["col1", "col2"])
-    with pytest.raises(RuntimeError, match=r"2 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"2 columns are missing in the DataFrame:"):
         transformer.transform(pl.DataFrame({}))
 
 
 def test_column_selection_transformer_transform_ignore_missing_true() -> None:
     transformer = ColumnSelection(columns=["col"], ignore_missing=True)
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(pl.DataFrame({}))
     assert_frame_equal(out, pl.DataFrame({}))

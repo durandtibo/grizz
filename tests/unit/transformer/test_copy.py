@@ -6,6 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import CopyColumns
 
 
@@ -197,7 +198,7 @@ def test_copy_columns_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = CopyColumns(columns=["col1", "col3", "col5"], prefix="p_", suffix="_s")
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -206,7 +207,7 @@ def test_copy_columns_transformer_transform_ignore_missing_true(dataframe: pl.Da
         columns=["col1", "col3", "col5"], prefix="p_", suffix="_s", ignore_missing=True
     )
     with pytest.warns(
-        RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
