@@ -103,7 +103,7 @@ class CopyColumnTransformer(BaseColumnTransformer):
         if self._in_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column is missing"
+                f"because the input column ({self._in_col}) is missing"
             )
             return frame
         self._check_output_column(frame)
