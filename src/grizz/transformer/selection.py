@@ -8,12 +8,11 @@ __all__ = ["ColumnSelectionTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-from grizz.transformer.columns2 import BaseColumnsTransformer
+from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.column import find_common_columns
 from grizz.utils.format import str_col_diff
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
 
     import polars as pl
 
@@ -27,8 +26,14 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
 
     Args:
         columns: The columns to keep.
-        ignore_missing: If ``False``, an exception is raised if a
-            column is missing, otherwise a warning message is shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
 
     Example usage:
 
@@ -38,7 +43,7 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import ColumnSelection
     >>> transformer = ColumnSelection(columns=["col1", "col2"])
     >>> transformer
-    ColumnSelectionTransformer(columns=('col1', 'col2'), ignore_missing=False)
+    ColumnSelectionTransformer(columns=('col1', 'col2'), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
@@ -64,20 +69,15 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
     ```
     """
 
-    def __init__(self, columns: Sequence[str], ignore_missing: bool = False) -> None:
-        super().__init__(columns, ignore_missing)
-
-    def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(columns={self._columns}, "
-            f"ignore_missing={self._ignore_missing})"
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
         )
 
-    def _pre_transform(self, frame: pl.DataFrame) -> None:
-        columns = self.find_columns(frame)
-        logger.info(f"Selecting {len(columns):,} columns...")
-
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        logger.info(f"Selecting {len(self.find_columns(frame)):,} columns...")
+        self._check_missing_columns(frame)
         columns = find_common_columns(frame, self._columns)
         initial_shape = frame.shape
         out = frame.select(columns)
