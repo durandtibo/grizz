@@ -77,7 +77,7 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Selecting {len(self.find_columns(frame)):,} columns...")
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = find_common_columns(frame, self._columns)
         initial_shape = frame.shape
         out = frame.select(columns)

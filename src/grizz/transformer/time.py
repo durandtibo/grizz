@@ -228,7 +228,7 @@ class ToTimeTransformer(BaseColumnsTransformer):
         logger.info(
             f"Converting {len(self.find_columns(frame)):,} columns to time ({self._format})..."
         )
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select(

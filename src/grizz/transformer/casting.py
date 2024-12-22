@@ -122,7 +122,7 @@ class CastTransformer(BaseColumnsTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Casting {len(self.find_columns(frame)):,} columns to {self._dtype}...")
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return self._transform(frame, columns)
 

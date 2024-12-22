@@ -207,7 +207,7 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
             f"Copying {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
             f"suffix={self._suffix!r} ..."
         )
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select(pl.col(columns)).rename(lambda name: f"{self._prefix}{name}{self._suffix}")

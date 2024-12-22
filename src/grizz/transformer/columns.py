@@ -218,8 +218,8 @@ class BaseColumnsTransformer(BaseTransformer):
         """
         return find_missing_columns(frame, self.find_columns(frame))
 
-    def _check_missing_columns(self, frame: pl.DataFrame) -> None:
-        r"""Check if some columns are missing.
+    def _check_input_columns(self, frame: pl.DataFrame) -> None:
+        r"""Check if some input columns are missing.
 
         Args:
             frame: The input DataFrame to check.
