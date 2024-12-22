@@ -11,11 +11,10 @@ import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.column import BaseColumnTransformer
-from grizz.transformer.columns2 import BaseColumnsTransformer
+from grizz.transformer.columns import BaseColumnsTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-
 
 logger = logging.getLogger(__name__)
 
@@ -118,9 +117,14 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
             columns.
         prefix: The column name prefix for the copied columns.
         suffix: The column name suffix for the copied columns.
-        ignore_missing: If ``False``, an exception is raised if a
-            column is missing, otherwise just a warning message is
-            shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
 
     Example usage:
 
@@ -130,7 +134,7 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import CopyColumns
     >>> transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="_raw")
     >>> transformer
-    CopyColumnsTransformer(columns=('col1', 'col3'), prefix='', suffix='_raw', ignore_missing=False)
+    CopyColumnsTransformer(columns=('col1', 'col3'), prefix='', suffix='_raw', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -175,9 +179,9 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
         columns: Sequence[str] | None,
         prefix: str,
         suffix: str,
-        ignore_missing: bool = False,
+        missing_policy: str = "raise",
     ) -> None:
-        super().__init__(columns, ignore_missing)
+        super().__init__(columns=columns, missing_policy=missing_policy)
         self._prefix = prefix
         self._suffix = suffix
 
@@ -187,28 +191,23 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
                 "columns": self._columns,
                 "prefix": self._prefix,
                 "suffix": self._suffix,
-                "ignore_missing": self._ignore_missing,
+                "missing_policy": self._missing_policy,
             }
         )
         return f"{self.__class__.__qualname__}({args})"
 
-    def _pre_fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def _fit(self, frame: pl.DataFrame) -> None:
-        pass  # no parameter to fit for this transformer.
-
-    def _pre_transform(self, frame: pl.DataFrame) -> None:
-        columns = self.find_columns(frame)
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Copying {len(columns):,} columns | prefix={self._prefix!r} | "
+            f"Copying {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
             f"suffix={self._suffix!r} ..."
         )
-
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self._check_missing_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select(pl.col(columns)).rename(lambda name: f"{self._prefix}{name}{self._suffix}")

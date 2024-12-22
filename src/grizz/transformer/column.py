@@ -1,5 +1,5 @@
 r"""Contain a base class to implement ``polars.DataFrame`` transformers
-that transforms a single input column and generate an output column."""
+that transform a single input column and generate an output column."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class BaseColumnTransformer(BaseTransformer):
     r"""Define a base class to implement ``polars.DataFrame``
-    transformers that transforms a single input column and generate an
+    transformers that transform a single input column and generate an
     output column.
 
     Args:
@@ -39,7 +39,7 @@ class BaseColumnTransformer(BaseTransformer):
             If ``'warn'``, a warning is raised if at least one column
             already exist and the existing columns are overwritten.
             If ``'ignore'``, the existing columns are overwritten and
-            no message is shown.
+            no warning message is shown.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -47,7 +47,7 @@ class BaseColumnTransformer(BaseTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no message is shown.
+            no warning message is shown.
     """
 
     def __init__(

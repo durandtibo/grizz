@@ -240,13 +240,13 @@ def test_copy_column_transformer_transform_exist_policy_warn(
 
 def test_copy_columns_transformer_repr() -> None:
     assert repr(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
-        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', ignore_missing=False)"
+        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', missing_policy='raise')"
     )
 
 
 def test_copy_columns_transformer_str() -> None:
     assert str(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
-        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', ignore_missing=False)"
+        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', missing_policy='raise')"
     )
 
 
@@ -404,20 +404,50 @@ def test_copy_columns_transformer_transform_columns_empty() -> None:
     )
 
 
-def test_copy_columns_transformer_transform_ignore_missing_false(
+def test_copy_columns_transformer_transform_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = CopyColumns(
+        columns=["col1", "col3", "col5"], prefix="p_", suffix="_s", missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+                "p_col1_s": [1, 2, 3, 4, 5],
+                "p_col3_s": ["1", "2", "3", "4", "5"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.String,
+                "col3": pl.String,
+                "col4": pl.String,
+                "p_col1_s": pl.Int64,
+                "p_col3_s": pl.String,
+            },
+        ),
+    )
+
+
+def test_copy_columns_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = CopyColumns(columns=["col1", "col3", "col5"], prefix="p_", suffix="_s")
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
-def test_copy_columns_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
+def test_copy_columns_transformer_transform_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = CopyColumns(
-        columns=["col1", "col3", "col5"], prefix="p_", suffix="_s", ignore_missing=True
+        columns=["col1", "col3", "col5"], prefix="p_", suffix="_s", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
