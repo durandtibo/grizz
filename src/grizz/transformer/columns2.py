@@ -42,7 +42,7 @@ class BaseColumnsTransformer(BaseTransformer):
     >>> from grizz.transformer import StripChars
     >>> transformer = StripChars(columns=["col2", "col3"])
     >>> transformer
-    StripCharsTransformer(columns=('col2', 'col3'), ignore_missing=False)
+    StripCharsTransformer(columns=('col2', 'col3'), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],

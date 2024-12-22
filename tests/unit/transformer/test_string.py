@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import logging
+import warnings
+
 import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
@@ -27,25 +30,36 @@ def dataframe() -> pl.DataFrame:
 
 def test_strip_chars_transformer_repr() -> None:
     assert repr(StripChars(columns=["col1", "col3"])) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise')"
     )
 
 
 def test_strip_chars_transformer_repr_with_kwargs() -> None:
     assert repr(StripChars(columns=["col1", "col3"], characters=None)) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False, characters=None)"
+        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise', characters=None)"
     )
 
 
 def test_strip_chars_transformer_str() -> None:
     assert str(StripChars(columns=["col1", "col3"])) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise')"
     )
 
 
 def test_strip_chars_transformer_str_with_kwargs() -> None:
     assert str(StripChars(columns=["col1", "col3"], characters=None)) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), ignore_missing=False, characters=None)"
+        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise', characters=None)"
+    )
+
+
+def test_strip_chars_transformer_fit(
+    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = StripChars(columns=["col1", "col3"])
+    with caplog.at_level(logging.INFO):
+        transformer.fit(dataframe)
+    assert caplog.messages[0].startswith(
+        "Skipping 'StripCharsTransformer.fit' as there are no parameters available to fit"
     )
 
 
@@ -118,18 +132,36 @@ def test_strip_chars_transformer_transform_empty_row() -> None:
     assert_frame_equal(out, pl.DataFrame({"col": []}, schema={"col": pl.String}))
 
 
-def test_strip_chars_transformer_transform_ignore_missing_false(
+def test_strip_chars_transformer_transform_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars(columns=["col2", "col3", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["a", "b", "c", "d", "e"],
+                "col4": ["a ", " b", "  c  ", "d", "e"],
+            }
+        ),
+    )
+
+
+def test_strip_chars_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = StripChars(columns=["col2", "col3", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
-def test_strip_chars_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
-    transformer = StripChars(columns=["col2", "col3", "col5"], ignore_missing=True)
+def test_strip_chars_transformer_transform_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars(columns=["col2", "col3", "col5"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
