@@ -128,7 +128,7 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
         logger.info(
             f"Concatenating {len(self.find_columns(frame)):,} columns to {self._out_col}..."
         )
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         self._check_output_column(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(

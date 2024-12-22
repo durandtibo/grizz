@@ -123,7 +123,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
             f"Checking columns and dropping the columns that have too "
             f"many null values (threshold={self._threshold})..."
         )
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         if frame.is_empty():
             return frame
         columns = self.find_common_columns(frame)
@@ -216,7 +216,7 @@ class DropNullRowTransformer(BaseColumnsTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info("Dropping all rows that contain null values....")
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))

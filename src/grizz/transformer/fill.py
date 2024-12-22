@@ -103,7 +103,7 @@ class FillNanTransformer(BaseColumnsTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select((cs.by_name(columns) & cs.float()).fill_nan(**self._kwargs))
@@ -192,6 +192,6 @@ class FillNullTransformer(BaseColumnsTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(frame.select(cs.by_name(columns).fill_null(**self._kwargs)))

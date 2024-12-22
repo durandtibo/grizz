@@ -107,7 +107,7 @@ class DropDuplicateTransformer(BaseColumnsTransformer):
             f"Dropping duplicate rows by checking {len(self.find_common_columns(frame)):,} "
             "columns...."
         )
-        self._check_missing_columns(frame)
+        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.unique(subset=cs.by_name(columns), **self._kwargs)
