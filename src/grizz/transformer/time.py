@@ -12,7 +12,7 @@ import polars as pl
 import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.base import BaseTransformer
+from grizz.transformer.column import BaseColumnTransformer
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
 
@@ -23,13 +23,29 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class TimeToSecondTransformer(BaseTransformer):
+class TimeToSecondTransformer(BaseColumnTransformer):
     r"""Implement a transformer to convert a column with time values to
     seconds.
 
     Args:
         in_col: The input column with the time value to convert.
         out_col: The output column with the time in seconds.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message is shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
 
     Example usage:
 
@@ -40,7 +56,7 @@ class TimeToSecondTransformer(BaseTransformer):
     >>> from grizz.transformer import TimeToSecond
     >>> transformer = TimeToSecond(in_col="time", out_col="second")
     >>> transformer
-    TimeToSecondTransformer(in_col=time, out_col=second)
+    TimeToSecondTransformer(in_col='time', out_col='second', exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "time": [
@@ -85,15 +101,22 @@ class TimeToSecondTransformer(BaseTransformer):
     ```
     """
 
-    def __init__(self, in_col: str, out_col: str) -> None:
-        self._in_col = in_col
-        self._out_col = out_col
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(in_col={self._in_col}, out_col={self._out_col})"
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
+        )
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Converting time column ({self._in_col}) to seconds ({self._out_col})...")
+        self._check_input_column(frame)
+        if self._in_col not in frame:
+            logger.info(
+                f"Skipping '{self.__class__.__qualname__}.transform' "
+                f"because the input column ({self._in_col}) is missing"
+            )
+            return frame
+        self._check_output_column(frame)
         return frame.with_columns(
             frame.select(
                 pl.col(self._in_col)
