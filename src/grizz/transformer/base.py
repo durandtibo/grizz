@@ -33,7 +33,7 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
     >>> from grizz.transformer import Cast
     >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
-    CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
+    CastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -194,7 +194,7 @@ def setup_transformer(
     ...     }
     ... )
     >>> transformer
-    CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)
+    CastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')
 
     ```
     """

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import warnings
 
 import polars as pl
 import pytest
@@ -30,26 +31,26 @@ def dataframe() -> pl.DataFrame:
 
 def test_cast_transformer_repr() -> None:
     assert repr(Cast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_cast_transformer_repr_with_kwargs() -> None:
     assert repr(Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
 
 def test_cast_transformer_str() -> None:
     assert str(Cast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_cast_transformer_str_with_kwargs() -> None:
     assert str(Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
@@ -219,18 +220,42 @@ def test_cast_transformer_transform_strict_false(dataframe: pl.DataFrame) -> Non
     )
 
 
-def test_cast_transformer_transform_ignore_missing_false(
+def test_cast_transformer_transform_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32, missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.String,
+                "col3": pl.Float32,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
-def test_cast_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
-    transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32, ignore_missing=True)
+def test_cast_transformer_transform_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32, missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -272,26 +297,26 @@ def frame_decimal() -> pl.DataFrame:
 
 def test_decimal_cast_transformer_repr() -> None:
     assert repr(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_decimal_cast_transformer_repr_with_kwargs() -> None:
     assert repr(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
 
 def test_decimal_cast_transformer_str() -> None:
     assert str(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_decimal_cast_transformer_str_with_kwargs() -> None:
     assert str(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
@@ -392,22 +417,50 @@ def test_decimal_cast_transformer_transform_strict_false(frame_decimal: pl.DataF
     )
 
 
-def test_decimal_cast_transformer_transform_ignore_missing_false(
-    frame_decimal: pl.DataFrame,
-) -> None:
-    transformer = DecimalCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
-        transformer.transform(frame_decimal)
-
-
-def test_decimal_cast_transformer_transform_ignore_missing_true(
+def test_decimal_cast_transformer_transform_missing_policy_ignore(
     frame_decimal: pl.DataFrame,
 ) -> None:
     transformer = DecimalCast(
-        columns=["col1", "col2", "col5"], dtype=pl.Float32, ignore_missing=True
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame_decimal)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float32,
+                "col3": pl.Decimal,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_decimal_cast_transformer_transform_missing_policy_raise(
+    frame_decimal: pl.DataFrame,
+) -> None:
+    transformer = DecimalCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(frame_decimal)
+
+
+def test_decimal_cast_transformer_transform_missing_policy_warn(
+    frame_decimal: pl.DataFrame,
+) -> None:
+    transformer = DecimalCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_decimal)
     assert_frame_equal(
@@ -449,26 +502,26 @@ def frame_float() -> pl.DataFrame:
 
 def test_float_cast_transformer_repr() -> None:
     assert repr(FloatCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_float_cast_transformer_repr_with_kwargs() -> None:
     assert repr(FloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
 
 def test_float_cast_transformer_str() -> None:
     assert str(FloatCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_float_cast_transformer_str_with_kwargs() -> None:
     assert str(FloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
@@ -569,18 +622,44 @@ def test_float_cast_transformer_transform_strict_false(frame_float: pl.DataFrame
     )
 
 
-def test_float_cast_transformer_transform_ignore_missing_false(
+def test_float_cast_transformer_transform_missing_policy_ignore(frame_float: pl.DataFrame) -> None:
+    transformer = FloatCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Int32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame_float)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1, 2, 3, 4, 5],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Int32,
+                "col3": pl.Float64,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_float_cast_transformer_transform_missing_policy_raise(
     frame_float: pl.DataFrame,
 ) -> None:
     transformer = FloatCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(frame_float)
 
 
-def test_float_cast_transformer_transform_ignore_missing_true(frame_float: pl.DataFrame) -> None:
-    transformer = FloatCast(columns=["col1", "col2", "col5"], dtype=pl.Int32, ignore_missing=True)
+def test_float_cast_transformer_transform_missing_policy_warn(frame_float: pl.DataFrame) -> None:
+    transformer = FloatCast(columns=["col1", "col2", "col5"], dtype=pl.Int32, missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_float)
     assert_frame_equal(
@@ -622,26 +701,26 @@ def frame_integer() -> pl.DataFrame:
 
 def test_integer_cast_transformer_repr() -> None:
     assert repr(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_integer_cast_transformer_repr_with_kwargs() -> None:
     assert repr(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
 
 def test_integer_cast_transformer_str() -> None:
     assert str(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False)"
+        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')"
     )
 
 
 def test_integer_cast_transformer_str_with_kwargs() -> None:
     assert str(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, ignore_missing=False, "
+        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise', "
         "strict=False)"
     )
 
@@ -742,22 +821,50 @@ def test_integer_cast_transformer_transform_strict_false(frame_integer: pl.DataF
     )
 
 
-def test_integer_cast_transformer_transform_ignore_missing_false(
-    frame_integer: pl.DataFrame,
-) -> None:
-    transformer = IntegerCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
-        transformer.transform(frame_integer)
-
-
-def test_integer_cast_transformer_transform_ignore_missing_true(
+def test_integer_cast_transformer_transform_missing_policy_ignore(
     frame_integer: pl.DataFrame,
 ) -> None:
     transformer = IntegerCast(
-        columns=["col1", "col2", "col5"], dtype=pl.Float32, ignore_missing=True
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame_integer)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1, 2, 3, 4, 5],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.Float64,
+                "col3": pl.Int64,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_integer_cast_transformer_transform_missing_policy_raise(
+    frame_integer: pl.DataFrame,
+) -> None:
+    transformer = IntegerCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(frame_integer)
+
+
+def test_integer_cast_transformer_transform_missing_policy_warn(
+    frame_integer: pl.DataFrame,
+) -> None:
+    transformer = IntegerCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_integer)
     assert_frame_equal(
