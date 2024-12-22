@@ -11,7 +11,7 @@ import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.column import BaseColumnTransformer
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns2 import BaseColumnsTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

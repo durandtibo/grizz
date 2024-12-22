@@ -12,7 +12,7 @@ import polars as pl
 import polars.selectors as cs
 
 from grizz.transformer.base import BaseTransformer
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns2 import BaseColumnsTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
