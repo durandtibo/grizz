@@ -5,10 +5,17 @@ import warnings
 import polars as pl
 import pytest
 
-from grizz.exceptions import ColumnExistsError, ColumnExistsWarning
+from grizz.exceptions import (
+    ColumnExistsError,
+    ColumnExistsWarning,
+    ColumnNotFoundError,
+    ColumnNotFoundWarning,
+)
 from grizz.utils.column import (
     check_column_exist_policy,
+    check_column_missing_policy,
     check_existing_columns,
+    check_missing_columns,
     find_common_columns,
     find_missing_columns,
 )
@@ -30,14 +37,29 @@ def dataframe() -> pl.DataFrame:
 ###############################################
 
 
-@pytest.mark.parametrize("nan_policy", ["ignore", "raise", "warn"])
-def test_check_column_exist_policy_valid(nan_policy: str) -> None:
-    check_column_exist_policy(nan_policy)
+@pytest.mark.parametrize("policy", ["ignore", "raise", "warn"])
+def test_check_column_exist_policy_valid(policy: str) -> None:
+    check_column_exist_policy(policy)
 
 
 def test_check_column_exist_policy_incorrect() -> None:
     with pytest.raises(ValueError, match="Incorrect 'col_exist_policy': incorrect"):
         check_column_exist_policy("incorrect")
+
+
+#################################################
+#     Tests for check_column_missing_policy     #
+#################################################
+
+
+@pytest.mark.parametrize("policy", ["ignore", "raise", "warn"])
+def test_check_column_missing_policy_valid(policy: str) -> None:
+    check_column_missing_policy(policy)
+
+
+def test_check_column_missing_policy_incorrect() -> None:
+    with pytest.raises(ValueError, match="Incorrect 'col_missing_policy': incorrect"):
+        check_column_missing_policy("incorrect")
 
 
 ############################################
@@ -50,18 +72,18 @@ def test_check_existing_columns(dataframe: pl.DataFrame, col_exist_policy: str) 
     check_existing_columns(dataframe, columns=["col10"], col_exist_policy=col_exist_policy)
 
 
-def test_check_existing_columns_col_exist_policy_ignore(dataframe: pl.DataFrame) -> None:
+def test_check_existing_columns_ignore(dataframe: pl.DataFrame) -> None:
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         check_existing_columns(dataframe, columns=["col1", "col5"], col_exist_policy="ignore")
 
 
-def test_check_existing_columns_col_exist_policy_raise(dataframe: pl.DataFrame) -> None:
+def test_check_existing_columns_raise(dataframe: pl.DataFrame) -> None:
     with pytest.raises(ColumnExistsError, match="1 columns already exist in the DataFrame:"):
         check_existing_columns(dataframe, columns=["col1", "col5"])
 
 
-def test_check_existing_columns_col_exist_policy_warn(dataframe: pl.DataFrame) -> None:
+def test_check_existing_columns_warn(dataframe: pl.DataFrame) -> None:
     with pytest.warns(
         ColumnExistsWarning,
         match="1 columns already exist in the DataFrame and will be overwritten:",
@@ -72,6 +94,36 @@ def test_check_existing_columns_col_exist_policy_warn(dataframe: pl.DataFrame) -
 def test_check_existing_columns_col_exist_policy_incorrect(dataframe: pl.DataFrame) -> None:
     with pytest.raises(ValueError, match="Incorrect 'col_exist_policy': incorrect"):
         check_existing_columns(dataframe, columns=["col1", "col5"], col_exist_policy="incorrect")
+
+
+###########################################
+#     Tests for check_missing_columns     #
+###########################################
+
+
+@pytest.mark.parametrize("col_missing_policy", ["ignore", "raise", "warn"])
+def test_check_missing_columns(dataframe: pl.DataFrame, col_missing_policy: str) -> None:
+    check_missing_columns(
+        dataframe, columns=["col1", "col3"], col_missing_policy=col_missing_policy
+    )
+
+
+def test_check_missing_columns_ignore(dataframe: pl.DataFrame) -> None:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        check_missing_columns(dataframe, columns=["col1", "col5"], col_missing_policy="ignore")
+
+
+def test_check_missing_columns_raise(dataframe: pl.DataFrame) -> None:
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
+        check_missing_columns(dataframe, columns=["col1", "col5"])
+
+
+def test_check_missing_columns_warn(dataframe: pl.DataFrame) -> None:
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
+        check_missing_columns(dataframe, columns=["col1", "col5"], col_missing_policy="warn")
 
 
 #########################################
