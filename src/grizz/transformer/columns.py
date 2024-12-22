@@ -8,8 +8,6 @@ __all__ = ["BaseColumnsTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-from coola.utils.format import repr_mapping_line
-
 from grizz.transformer.base import BaseTransformer
 from grizz.utils.column import (
     check_column_missing_policy,
@@ -31,8 +29,8 @@ class BaseColumnsTransformer(BaseTransformer):
     transformers that transform DataFrames by using multiple columns.
 
     Args:
-        in_col: The input column name.
-        out_col: The output column name.
+        columns: The columns to prepare. If ``None``, it processes all
+            the columns of type string.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -41,6 +39,53 @@ class BaseColumnsTransformer(BaseTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message is shown.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import StripChars
+    >>> transformer = StripChars(columns=["col2", "col3"])
+    >>> transformer
+    StripCharsTransformer(columns=('col2', 'col3'), missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬───────┬───────┐
+    │ col1 ┆ col2 ┆ col3  ┆ col4  │
+    │ ---  ┆ ---  ┆ ---   ┆ ---   │
+    │ i64  ┆ str  ┆ str   ┆ str   │
+    ╞══════╪══════╪═══════╪═══════╡
+    │ 1    ┆ 1    ┆ a     ┆ a     │
+    │ 2    ┆ 2    ┆  b    ┆  b    │
+    │ 3    ┆ 3    ┆   c   ┆   c   │
+    │ 4    ┆ 4    ┆ d     ┆ d     │
+    │ 5    ┆ 5    ┆ e     ┆ e     │
+    └──────┴──────┴───────┴───────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬───────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4  │
+    │ ---  ┆ ---  ┆ ---  ┆ ---   │
+    │ i64  ┆ str  ┆ str  ┆ str   │
+    ╞══════╪══════╪══════╪═══════╡
+    │ 1    ┆ 1    ┆ a    ┆ a     │
+    │ 2    ┆ 2    ┆ b    ┆  b    │
+    │ 3    ┆ 3    ┆ c    ┆   c   │
+    │ 4    ┆ 4    ┆ d    ┆ d     │
+    │ 5    ┆ 5    ┆ e    ┆ e     │
+    └──────┴──────┴──────┴───────┘
+
+    ```
     """
 
     def __init__(
@@ -52,15 +97,6 @@ class BaseColumnsTransformer(BaseTransformer):
 
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args})"
 
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self.fit(frame)
