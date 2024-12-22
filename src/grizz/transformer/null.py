@@ -10,8 +10,9 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 import polars.selectors as cs
+from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns2 import BaseColumnsTransformer
+from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.utils.format import str_col_diff, str_kwargs, str_row_diff
 
 if TYPE_CHECKING:
@@ -33,9 +34,14 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
             or equal to this threshold value, the column is removed.
             If set to ``1.0``, it removes all the columns that have
             only null values.
-        ignore_missing: If ``False``, an exception is raised if a
-            column is missing, otherwise just a warning message is
-            shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
         **kwargs: The keyword arguments for ``cast``.
 
     Example usage:
@@ -46,7 +52,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import DropNullColumn
     >>> transformer = DropNullColumn()
     >>> transformer
-    DropNullColumnTransformer(columns=None, threshold=1.0, ignore_missing=False)
+    DropNullColumnTransformer(columns=None, threshold=1.0, missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
@@ -89,26 +95,35 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
         self,
         columns: Sequence[str] | None = None,
         threshold: float = 1.0,
-        ignore_missing: bool = False,
+        missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        super().__init__(columns, ignore_missing)
+        super().__init__(columns=columns, missing_policy=missing_policy)
         self._threshold = threshold
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(columns={self._columns}, threshold={self._threshold}, "
-            f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "threshold": self._threshold,
+                "missing_policy": self._missing_policy,
+            }
+        )
+        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
         )
 
-    def _pre_transform(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Checking columns and dropping the columns that have too "
             f"many null values (threshold={self._threshold})..."
         )
-
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self._check_missing_columns(frame)
         if frame.is_empty():
             return frame
         columns = self.find_common_columns(frame)
@@ -138,9 +153,14 @@ class DropNullRowTransformer(BaseColumnsTransformer):
     Args:
         columns: The columns to check. If set to ``None`` (default),
             use all columns.
-        ignore_missing: If ``False``, an exception is raised if a
-            column is missing, otherwise just a warning message is
-            shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
 
     Example usage:
 
@@ -150,7 +170,7 @@ class DropNullRowTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import DropNullRow
     >>> transformer = DropNullRow()
     >>> transformer
-    DropNullRowTransformer(columns=None, ignore_missing=False)
+    DropNullRowTransformer(columns=None, missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
@@ -188,16 +208,15 @@ class DropNullRowTransformer(BaseColumnsTransformer):
     ```
     """
 
-    def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(columns={self._columns}, "
-            f"ignore_missing={self._ignore_missing})"
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
         )
 
-    def _pre_transform(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info("Dropping all rows that contain null values....")
-
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self._check_missing_columns(frame)
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))

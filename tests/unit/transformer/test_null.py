@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import logging
+import warnings
+
 import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
@@ -25,27 +28,52 @@ def frame_col() -> pl.DataFrame:
 
 def test_drop_null_column_transformer_repr() -> None:
     assert repr(DropNullColumn(columns=["col1", "col3"])) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, ignore_missing=False)"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise')"
     )
 
 
 def test_drop_null_column_transformer_repr_with_kwargs() -> None:
     assert repr(DropNullColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, ignore_missing=False, "
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise', "
         "strict=False)"
     )
 
 
 def test_drop_null_column_transformer_str() -> None:
     assert str(DropNullColumn(columns=["col1", "col3"])) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, ignore_missing=False)"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise')"
     )
 
 
 def test_drop_null_column_transformer_str_with_kwargs() -> None:
     assert str(DropNullColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, ignore_missing=False, "
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise', "
         "strict=False)"
+    )
+
+
+def test_drop_null_column_transformer_fit(
+    frame_col: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = DropNullColumn()
+    with caplog.at_level(logging.INFO):
+        transformer.fit(frame_col)
+    assert caplog.messages[0].startswith(
+        "Skipping 'DropNullColumnTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_drop_null_column_transformer_fit_transform(frame_col: pl.DataFrame) -> None:
+    transformer = DropNullColumn()
+    out = transformer.fit_transform(frame_col)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+                "col2": [1, None, 3, None, 5],
+            }
+        ),
     )
 
 
@@ -103,22 +131,42 @@ def test_drop_null_column_transformer_transform_empty() -> None:
     assert_frame_equal(out, pl.DataFrame({}))
 
 
-def test_drop_null_column_transformer_transform_columns_ignore_missing_false(
-    frame_col: pl.DataFrame,
-) -> None:
-    transformer = DropNullColumn(columns=["col1", "col2", "col5"], threshold=0.4)
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
-        transformer.transform(frame_col)
-
-
-def test_drop_null_column_transformer_transform_columns_ignore_missing_true(
+def test_drop_null_column_transformer_transform_missing_policy_ignore(
     frame_col: pl.DataFrame,
 ) -> None:
     transformer = DropNullColumn(
-        columns=["col1", "col2", "col5"], threshold=0.4, ignore_missing=True
+        columns=["col1", "col2", "col5"], threshold=0.4, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame_col)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+                "col3": [None, None, None, None, None],
+            }
+        ),
+    )
+
+
+def test_drop_null_column_transformer_transform_missing_policy_raise(
+    frame_col: pl.DataFrame,
+) -> None:
+    transformer = DropNullColumn(columns=["col1", "col2", "col5"], threshold=0.4)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(frame_col)
+
+
+def test_drop_null_column_transformer_transform_missing_policy_warn(
+    frame_col: pl.DataFrame,
+) -> None:
+    transformer = DropNullColumn(
+        columns=["col1", "col2", "col5"], threshold=0.4, missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_col)
     assert_frame_equal(
@@ -150,13 +198,39 @@ def frame_row() -> pl.DataFrame:
 
 def test_drop_null_row_transformer_repr() -> None:
     assert repr(DropNullRow(columns=["col1", "col3"])) == (
-        "DropNullRowTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+        "DropNullRowTransformer(columns=('col1', 'col3'), missing_policy='raise')"
     )
 
 
 def test_drop_null_row_transformer_str() -> None:
     assert str(DropNullRow(columns=["col1", "col3"])) == (
-        "DropNullRowTransformer(columns=('col1', 'col3'), ignore_missing=False)"
+        "DropNullRowTransformer(columns=('col1', 'col3'), missing_policy='raise')"
+    )
+
+
+def test_drop_null_row_transformer_fit(
+    frame_row: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = DropNullRow()
+    with caplog.at_level(logging.INFO):
+        transformer.fit(frame_row)
+    assert caplog.messages[0].startswith(
+        "Skipping 'DropNullRowTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_drop_null_row_transformer_fit_transform(frame_row: pl.DataFrame) -> None:
+    transformer = DropNullRow()
+    out = transformer.fit_transform(frame_row)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-31", "2020-12-31"],
+                "col2": [1, 3, None],
+                "col3": [None, None, None],
+            }
+        ),
     )
 
 
@@ -202,20 +276,39 @@ def test_drop_null_row_transformer_transform_empty() -> None:
     assert_frame_equal(out, pl.DataFrame({}))
 
 
-def test_drop_null_row_transformer_transform_columns_ignore_missing_false(
+def test_drop_null_row_transformer_transform_missing_policy_ignore(
+    frame_row: pl.DataFrame,
+) -> None:
+    transformer = DropNullRow(columns=["col1", "col2", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame_row)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-31", "2020-12-31"],
+                "col2": [1, 3, None],
+                "col3": [None, None, None],
+            }
+        ),
+    )
+
+
+def test_drop_null_row_transformer_transform_missing_policy_raise(
     frame_row: pl.DataFrame,
 ) -> None:
     transformer = DropNullRow(columns=["col1", "col2", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(frame_row)
 
 
-def test_drop_null_row_transformer_transform_columns_ignore_missing_true(
+def test_drop_null_row_transformer_transform_missing_policy_warn(
     frame_row: pl.DataFrame,
 ) -> None:
-    transformer = DropNullRow(columns=["col1", "col2", "col5"], ignore_missing=True)
+    transformer = DropNullRow(columns=["col1", "col2", "col5"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_row)
     assert_frame_equal(
