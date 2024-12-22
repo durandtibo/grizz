@@ -5,6 +5,7 @@ from __future__ import annotations
 
 __all__ = ["FunctionTransformer"]
 
+import logging
 from typing import TYPE_CHECKING
 
 from grizz.transformer.base import BaseTransformer
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     import polars as pl
+
+logger = logging.getLogger(__name__)
 
 
 class FunctionTransformer(BaseTransformer):
@@ -61,6 +64,16 @@ class FunctionTransformer(BaseTransformer):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(func={self._func})"
+
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
+        )
+
+    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self.fit(frame)
+        return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         return self._func(frame)
