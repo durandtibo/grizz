@@ -8,11 +8,20 @@ __all__ = ["BaseOneToOneColumnTransformer"]
 
 import logging
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
-import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.base import BaseTransformer
+from grizz.utils.column import (
+    check_column_exist_policy,
+    check_column_missing_policy,
+    check_existing_columns,
+    check_missing_columns,
+)
+
+if TYPE_CHECKING:
+    import polars as pl
 
 logger = logging.getLogger(__name__)
 
@@ -25,37 +34,53 @@ class BaseOneToOneColumnTransformer(BaseTransformer):
     Args:
         in_col: The input column name.
         out_col: The output column name.
-        overwrite: If ``False``, raise an error if the output column
-            already exists, otherwise the column is overwritten.
-        ignore_missing: If ``True``, this transformer is skipped if the
-            input column is missing.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no message is shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no message is shown.
     """
 
     def __init__(
         self,
         in_col: str,
         out_col: str,
-        overwrite: bool = False,
-        ignore_missing: bool = False,
+        exist_policy: str = "raise",
+        missing_policy: str = "raise",
     ) -> None:
         self._in_col = in_col
         self._out_col = out_col
-        self._overwrite = overwrite
-        self._ignore_missing = ignore_missing
+
+        check_column_exist_policy(exist_policy)
+        self._exist_policy = exist_policy
+        check_column_missing_policy(missing_policy)
+        self._missing_policy = missing_policy
 
     def __repr__(self) -> str:
         args = repr_mapping_line(
             {
                 "in_col": self._in_col,
                 "out_col": self._out_col,
-                "overwrite": self._overwrite,
-                "ignore_missing": self._ignore_missing,
+                "exist_policy": self._exist_policy,
+                "missing_policy": self._missing_policy,
             }
         )
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
         self._pre_fit(frame)
+        self._check_input_column(frame)
         self._fit(frame)
 
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
@@ -64,18 +89,23 @@ class BaseOneToOneColumnTransformer(BaseTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._pre_transform(frame)
-        self._check_out_col(frame)
-        return frame.with_columns(
-            self._transform(frame.select(pl.col(self._in_col))).to_frame(self._out_col)
-        )
+        return self._transform(frame)
 
-    def _check_out_col(self, frame: pl.DataFrame) -> None:
-        if self._out_col in frame and not self._overwrite:
-            msg = (
-                f"Output column '{self._out_col}' already exists. Use `overwrite=True` "
-                f"to overwrite the output column"
-            )
-            raise RuntimeError(msg)
+    def _check_input_column(self, frame: pl.DataFrame) -> None:
+        r"""Check if the input column is missing.
+
+        Args:
+            frame: The input DataFrame to check.
+        """
+        check_missing_columns(frame, columns=[self._in_col], missing_policy=self._missing_policy)
+
+    def _check_output_column(self, frame: pl.DataFrame) -> None:
+        r"""Check if the output column already exists.
+
+        Args:
+            frame: The input DataFrame to check.
+        """
+        check_existing_columns(frame, columns=[self._out_col], exist_policy=self._exist_policy)
 
     @abstractmethod
     def _pre_fit(self, frame: pl.DataFrame) -> None:
@@ -102,12 +132,12 @@ class BaseOneToOneColumnTransformer(BaseTransformer):
         """
 
     @abstractmethod
-    def _transform(self, frame: pl.Series) -> pl.Series:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         r"""Transform the data.
 
         Args:
-            frame: The Series to transform.
+            frame: The DataFrame to transform.
 
         Returns:
-            The transformed Series.
+            The transformed DataFrame.
         """
