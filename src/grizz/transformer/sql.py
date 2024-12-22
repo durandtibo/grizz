@@ -69,6 +69,16 @@ class SqlTransformer(BaseTransformer):
         args = repr_indent(repr_mapping({"query": self._query}))
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
+        )
+
+    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self.fit(frame)
+        return self.transform(frame)
+
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Executing the following SQL query:\n{self._query}")
         initial_shape = frame.shape
