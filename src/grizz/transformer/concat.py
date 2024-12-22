@@ -94,6 +94,15 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
             f"out_column={self._out_column}, ignore_missing={self._ignore_missing})"
         )
 
+    def _pre_fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
+        )
+
+    def _fit(self, frame: pl.DataFrame) -> None:
+        pass  # no parameter to fit for this transformer.
+
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
         logger.info(f"Concatenating {len(columns):,} columns to {self._out_column}...")

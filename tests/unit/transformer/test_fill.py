@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import logging
-
 import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import FillNan, FillNull
 
 
@@ -117,36 +116,33 @@ def test_fill_nan_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNan(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
-def test_fill_nan_transformer_transform_ignore_missing_true(
-    caplog: pytest.LogCaptureFixture, dataframe: pl.DataFrame
-) -> None:
+def test_fill_nan_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = FillNan(columns=["col1", "col4", "col5"], ignore_missing=True, value=100)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(dataframe)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1, 2, 3, 4, None],
-                    "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
-                    "col3": ["a", "b", "c", "d", None],
-                    "col4": [1.2, 100.0, 3.2, None, 5.2],
-                },
-                schema={
-                    "col1": pl.Int64,
-                    "col2": pl.Float64,
-                    "col3": pl.String,
-                    "col4": pl.Float64,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float64,
+                "col3": pl.String,
+                "col4": pl.Float64,
+            },
+        ),
+    )
 
 
 def test_fill_nan_transformer_find_columns(dataframe: pl.DataFrame) -> None:
@@ -267,36 +263,33 @@ def test_fill_null_transformer_transform_ignore_missing_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNull(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="1 columns are missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
-def test_fill_null_transformer_transform_ignore_missing_true(
-    caplog: pytest.LogCaptureFixture, dataframe: pl.DataFrame
-) -> None:
+def test_fill_null_transformer_transform_ignore_missing_true(dataframe: pl.DataFrame) -> None:
     transformer = FillNull(columns=["col1", "col4", "col5"], ignore_missing=True, value=100)
-    with caplog.at_level(logging.WARNING):
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 columns are missing in the DataFrame and will be ignored:"
+    ):
         out = transformer.transform(dataframe)
-        assert_frame_equal(
-            out,
-            pl.DataFrame(
-                {
-                    "col1": [1, 2, 3, 4, 100],
-                    "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
-                    "col3": ["a", "b", "c", "d", None],
-                    "col4": [1.2, float("nan"), 3.2, 100.0, 5.2],
-                },
-                schema={
-                    "col1": pl.Int64,
-                    "col2": pl.Float64,
-                    "col3": pl.String,
-                    "col4": pl.Float64,
-                },
-            ),
-        )
-        assert caplog.messages[-1].startswith(
-            "1 columns are missing in the DataFrame and will be ignored:"
-        )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 100],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, float("nan"), 3.2, 100.0, 5.2],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float64,
+                "col3": pl.String,
+                "col4": pl.Float64,
+            },
+        ),
+    )
 
 
 def test_fill_null_transformer_find_columns(dataframe: pl.DataFrame) -> None:

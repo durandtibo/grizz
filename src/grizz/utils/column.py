@@ -2,15 +2,193 @@ r"""Contain DataFrame columns utility functions."""
 
 from __future__ import annotations
 
-__all__ = ["find_common_columns", "find_missing_columns"]
+__all__ = [
+    "check_column_exist_policy",
+    "check_column_missing_policy",
+    "check_existing_columns",
+    "check_missing_columns",
+    "find_common_columns",
+    "find_missing_columns",
+]
 
-
+import warnings
 from typing import TYPE_CHECKING
 
 import polars as pl
 
+from grizz.exceptions import (
+    ColumnExistsError,
+    ColumnExistsWarning,
+    ColumnNotFoundError,
+    ColumnNotFoundWarning,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+
+def check_column_exist_policy(exist_policy: str) -> None:
+    r"""Check the policy on how to handle existing columns.
+
+    Args:
+        exist_policy: The policy on how to handle existing columns.
+
+    Raises:
+        ValueError: if ``exist_policy`` is not ``'ignore'``,
+            ``'warn'``, or ``'raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.column import check_column_exist_policy
+    >>> check_column_exist_policy("ignore")
+
+    ```
+    """
+    if exist_policy not in {"ignore", "warn", "raise"}:
+        msg = (
+            f"Incorrect 'exist_policy': {exist_policy}. The valid values are: "
+            f"'ignore', 'raise', 'warn'"
+        )
+        raise ValueError(msg)
+
+
+def check_column_missing_policy(missing_policy: str) -> None:
+    r"""Check the policy on how to handle missing columns.
+
+    Args:
+        missing_policy: The policy on how to handle missing columns.
+
+    Raises:
+        ValueError: if ``missing_policy`` is not ``'ignore'``,
+            ``'warn'``, or ``'raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.column import check_column_missing_policy
+    >>> check_column_missing_policy("ignore")
+
+    ```
+    """
+    if missing_policy not in {"ignore", "warn", "raise"}:
+        msg = (
+            f"Incorrect 'missing_policy': {missing_policy}. The valid values are: "
+            f"'ignore', 'raise', 'warn'"
+        )
+        raise ValueError(msg)
+
+
+def check_existing_columns(
+    frame_or_cols: pl.DataFrame | Sequence, columns: Sequence, exist_policy: str = "raise"
+) -> None:
+    r"""Check if some columns already exist.
+
+    Args:
+        frame_or_cols: The DataFrame or its columns.
+        columns: The columns to check.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no message is shown.
+
+    Raises:
+        ColumnExistsError: if at least one column already exists and
+            ``exist_policy='raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.column import check_existing_columns
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> check_existing_columns(frame, ["col1", "col5"], exist_policy="warn")
+
+    ```
+    """
+    check_column_exist_policy(exist_policy)
+    existing_cols = find_common_columns(frame_or_cols=frame_or_cols, columns=columns)
+    if not existing_cols:
+        return
+    m = "column already exists" if len(existing_cols) == 1 else "columns already exist"
+    if exist_policy == "raise":
+        msg = f"{len(existing_cols):,} {m} in the DataFrame: {existing_cols}"
+        raise ColumnExistsError(msg)
+    if exist_policy == "warn":
+        msg = (
+            f"{len(existing_cols):,} {m} in the DataFrame "
+            f"and will be overwritten: {existing_cols}"
+        )
+        warnings.warn(msg, ColumnExistsWarning, stacklevel=2)
+
+
+def check_missing_columns(
+    frame_or_cols: pl.DataFrame | Sequence, columns: Sequence, missing_policy: str = "raise"
+) -> None:
+    r"""Check if some columns are missing.
+
+    Args:
+        frame_or_cols: The DataFrame or its columns.
+        columns: The columns to check.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ingored and
+            no message is shown.
+
+    Raises:
+        ColumnNotFoundError: if at least one column is missing and
+            ``missing_policy='raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.column import check_missing_columns
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> check_missing_columns(frame, ["col1", "col5"], missing_policy="warn")
+
+    ```
+    """
+    check_column_missing_policy(missing_policy)
+    missing_cols = find_missing_columns(frame_or_cols=frame_or_cols, columns=columns)
+    if not missing_cols:
+        return
+    m = "column is" if len(missing_cols) == 1 else "columns are"
+    if missing_policy == "raise":
+        msg = f"{len(missing_cols):,} {m} missing in the DataFrame: {missing_cols}"
+        raise ColumnNotFoundError(msg)
+    if missing_policy == "warn":
+        msg = (
+            f"{len(missing_cols):,} {m} missing in the DataFrame and "
+            f"will be ignored: {missing_cols}"
+        )
+        warnings.warn(msg, ColumnNotFoundWarning, stacklevel=2)
 
 
 def find_common_columns(

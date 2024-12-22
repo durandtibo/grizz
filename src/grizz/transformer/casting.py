@@ -104,9 +104,18 @@ class CastTransformer(BaseColumnsTransformer):
             f"ignore_missing={self._ignore_missing}{str_kwargs(self._kwargs)})"
         )
 
+    def _pre_fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
+        )
+
+    def _fit(self, frame: pl.DataFrame) -> None:
+        pass  # no parameter to fit for this transformer.
+
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"Converting {len(columns):,} columns to {self._dtype}...")
+        logger.info(f"Casting {len(columns):,} columns to {self._dtype}...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
@@ -184,7 +193,7 @@ class DecimalCastTransformer(CastTransformer):
 
     def _pre_transform(self, frame: pl.DataFrame) -> None:
         columns = self.find_columns(frame)
-        logger.info(f"Converting {len(columns):,} columns to {self._dtype}...")
+        logger.info(f"Casting {len(columns):,} columns to {self._dtype}...")
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
