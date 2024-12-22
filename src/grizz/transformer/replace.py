@@ -4,19 +4,40 @@ from __future__ import annotations
 
 __all__ = ["ReplaceStrictTransformer", "ReplaceTransformer"]
 
+import logging
 from typing import Any
 
 import polars as pl
+from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.base import BaseTransformer
+from grizz.transformer.column import BaseColumnTransformer
+from grizz.utils.format import str_kwargs
+
+logger = logging.getLogger(__name__)
 
 
-class ReplaceTransformer(BaseTransformer):
+class ReplaceTransformer(BaseColumnTransformer):
     r"""Replace the values in a column by the values in a mapping.
 
     Args:
-        orig_column: The original column name.
-        final_column: The final column name.
+        in_col: The input column name.
+        out_col: The output column name.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message is shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
         **kwargs: The keyword arguments to pass to ``replace``.
 
     Example usage:
@@ -25,11 +46,9 @@ class ReplaceTransformer(BaseTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import Replace
-    >>> transformer = Replace(
-    ...     orig_column="old", final_column="new", old={"a": 1, "b": 2, "c": 3}
-    ... )
+    >>> transformer = Replace(in_col="old", out_col="new", old={"a": 1, "b": 2, "c": 3})
     >>> transformer
-    ReplaceTransformer(orig_column=old, final_column=new)
+    ReplaceTransformer(in_col='old', out_col='new', exist_policy='raise', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3})
     >>> frame = pl.DataFrame({"old": ["a", "b", "c", "d", "e"]})
     >>> frame
     shape: (5, 1)
@@ -59,8 +78,8 @@ class ReplaceTransformer(BaseTransformer):
     │ e   ┆ e   │
     └─────┴─────┘
     >>> transformer = Replace(
-    ...     orig_column="old",
-    ...     final_column="new",
+    ...     in_col="old",
+    ...     out_col="new",
     ...     old={"a": 1, "b": 2, "c": 3},
     ...     default=None,
     ... )
@@ -84,32 +103,75 @@ class ReplaceTransformer(BaseTransformer):
 
     def __init__(
         self,
-        orig_column: str,
-        final_column: str,
+        in_col: str,
+        out_col: str,
+        exist_policy: str = "raise",
+        missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        self._orig_column = orig_column
-        self._final_column = final_column
+        super().__init__(
+            in_col=in_col,
+            out_col=out_col,
+            exist_policy=exist_policy,
+            missing_policy=missing_policy,
+        )
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(orig_column={self._orig_column}, "
-            f"final_column={self._final_column})"
+        args = repr_mapping_line(
+            {
+                "in_col": self._in_col,
+                "out_col": self._out_col,
+                "exist_policy": self._exist_policy,
+                "missing_policy": self._missing_policy,
+            }
+        )
+        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
         )
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        return frame.with_columns(
-            pl.col(self._orig_column).replace(**self._kwargs).alias(self._final_column)
+        logger.info(
+            f"Replacing values from column {self._in_col} and "
+            f"saving output in {self._out_col} ..."
         )
+        self._check_input_column(frame)
+        if self._in_col not in frame:
+            logger.info(
+                f"Skipping '{self.__class__.__qualname__}.transform' "
+                f"because the input column ({self._in_col}) is missing"
+            )
+            return frame
+        self._check_output_column(frame)
+        return frame.with_columns(pl.col(self._in_col).replace(**self._kwargs).alias(self._out_col))
 
 
-class ReplaceStrictTransformer(BaseTransformer):
+class ReplaceStrictTransformer(BaseColumnTransformer):
     r"""Replace the values in a column by the values in a mapping.
 
     Args:
-        orig_column: The original column name.
-        final_column: The final column name.
+        in_col: The input column name.
+        out_col: The output column name.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message is shown.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message is shown.
         **kwargs: The keyword arguments to pass to ``replace``.
 
     Example usage:
@@ -119,10 +181,10 @@ class ReplaceStrictTransformer(BaseTransformer):
     >>> import polars as pl
     >>> from grizz.transformer import ReplaceStrict
     >>> transformer = ReplaceStrict(
-    ...     orig_column="old", final_column="new", old={"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+    ...     in_col="old", out_col="new", old={"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
     ... )
     >>> transformer
-    ReplaceStrictTransformer(orig_column=old, final_column=new)
+    ReplaceStrictTransformer(in_col='old', out_col='new', exist_policy='raise', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
     >>> frame = pl.DataFrame({"old": ["a", "b", "c", "d", "e"]})
     >>> frame
     shape: (5, 1)
@@ -152,8 +214,8 @@ class ReplaceStrictTransformer(BaseTransformer):
     │ e   ┆ 5   │
     └─────┴─────┘
     >>> transformer = ReplaceStrict(
-    ...     orig_column="old",
-    ...     final_column="new",
+    ...     in_col="old",
+    ...     out_col="new",
     ...     old={"a": 1, "b": 2, "c": 3},
     ...     default=None,
     ... )
@@ -177,21 +239,50 @@ class ReplaceStrictTransformer(BaseTransformer):
 
     def __init__(
         self,
-        orig_column: str,
-        final_column: str,
+        in_col: str,
+        out_col: str,
+        exist_policy: str = "raise",
+        missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        self._orig_column = orig_column
-        self._final_column = final_column
+        super().__init__(
+            in_col=in_col,
+            out_col=out_col,
+            exist_policy=exist_policy,
+            missing_policy=missing_policy,
+        )
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__qualname__}(orig_column={self._orig_column}, "
-            f"final_column={self._final_column})"
+        args = repr_mapping_line(
+            {
+                "in_col": self._in_col,
+                "out_col": self._out_col,
+                "exist_policy": self._exist_policy,
+                "missing_policy": self._missing_policy,
+            }
+        )
+        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+
+    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+        logger.info(
+            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
+            f"available to fit"
         )
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        logger.info(
+            f"Replacing values from column {self._in_col} and "
+            f"saving output in {self._out_col} ..."
+        )
+        self._check_input_column(frame)
+        if self._in_col not in frame:
+            logger.info(
+                f"Skipping '{self.__class__.__qualname__}.transform' "
+                f"because the input column ({self._in_col}) is missing"
+            )
+            return frame
+        self._check_output_column(frame)
         return frame.with_columns(
-            pl.col(self._orig_column).replace_strict(**self._kwargs).alias(self._final_column)
+            pl.col(self._in_col).replace_strict(**self._kwargs).alias(self._out_col)
         )
