@@ -98,6 +98,15 @@ class SequentialTransformer(BaseTransformer):
             args = f"\n  {str_indent(str_sequence(self._transformers))}\n"
         return f"{self.__class__.__qualname__}({args})"
 
+    def fit(self, frame: pl.DataFrame) -> None:
+        for transformer in self._transformers:
+            transformer.fit(frame)
+
+    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        for transformer in self._transformers:
+            frame = transformer.fit_transform(frame)
+        return frame
+
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         for transformer in self._transformers:
             frame = transformer.transform(frame)
