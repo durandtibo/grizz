@@ -3,6 +3,7 @@ r"""Contain ``polars.DataFrame`` transformers."""
 from __future__ import annotations
 
 __all__ = [
+    "BaseColumnTransformer",
     "BaseColumnsTransformer",
     "BaseTransformer",
     "Cast",
@@ -11,6 +12,8 @@ __all__ = [
     "ColumnSelectionTransformer",
     "ConcatColumns",
     "ConcatColumnsTransformer",
+    "CopyColumn",
+    "CopyColumnTransformer",
     "CopyColumns",
     "CopyColumnsTransformer",
     "DecimalCast",
@@ -73,11 +76,14 @@ from grizz.transformer.casting import FloatCastTransformer
 from grizz.transformer.casting import FloatCastTransformer as FloatCast
 from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
+from grizz.transformer.column import BaseColumnTransformer
 from grizz.transformer.columns import BaseColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer as ConcatColumns
 from grizz.transformer.copy import CopyColumnsTransformer
 from grizz.transformer.copy import CopyColumnsTransformer as CopyColumns
+from grizz.transformer.copy import CopyColumnTransformer
+from grizz.transformer.copy import CopyColumnTransformer as CopyColumn
 from grizz.transformer.datetime import ToDatetimeTransformer
 from grizz.transformer.datetime import ToDatetimeTransformer as ToDatetime
 from grizz.transformer.diff import DiffTransformer

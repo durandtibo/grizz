@@ -150,7 +150,7 @@ def check_missing_columns(
             is raised if at least one column is missing.
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
-            If ``'ignore'``, the missing columns are ingored and
+            If ``'ignore'``, the missing columns are ignored and
             no message is shown.
 
     Raises:
