@@ -219,7 +219,7 @@ class BaseColumnsTransformer(BaseTransformer):
             frame: The input DataFrame to check.
         """
         check_missing_columns(
-            missing_cols=self.find_missing_columns(frame), ignore_missing=self._ignore_missing
+            frame_or_cols=frame, columns=self.find_columns(frame), missing_ok=self._ignore_missing
         )
 
     def _pre_fit(self, frame: pl.DataFrame) -> None:
@@ -301,30 +301,43 @@ def check_existing_columns(
     warnings.warn(msg, RuntimeWarning, stacklevel=2)
 
 
-def check_missing_columns(missing_cols: Sequence, ignore_missing: bool = False) -> None:
+def check_missing_columns(
+    frame_or_cols: pl.DataFrame | Sequence, columns: Sequence, missing_ok: bool = False
+) -> None:
     r"""Check if some columns are missing.
 
     Args:
-        missing_cols: The sequence of missing columns.
-        ignore_missing: If ``False``, an exception is raised if a
+        frame_or_cols: The DataFrame or its columns.
+        columns: The columns to check.
+        missing_ok: If ``False``, an exception is raised if a
             column is missing, otherwise just a warning message is
             shown.
 
     Raises:
-        RuntimeError: if at least one column is missing and ``ignore_missing=False``.
+        RuntimeError: if at least one column is missing and ``missing_ok=False``.
 
     Example usage:
 
-        ```pycon
+    ```pycon
 
-        >>> from grizz.transformer.columns import check_missing_columns
-        >>> check_missing_columns(["col5"], ignore_missing=True)
+    >>> import polars as pl
+    >>> from grizz.transformer.columns import check_missing_columns
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> check_missing_columns(frame, ["col1", "col5"], missing_ok=True)
 
-        ```
+    ```
     """
+    missing_cols = find_missing_columns(frame_or_cols=frame_or_cols, columns=columns)
     if not missing_cols:
         return
-    if not ignore_missing:
+    if not missing_ok:
         msg = f"{len(missing_cols):,} columns are missing in the DataFrame: {missing_cols}"
         raise RuntimeError(msg)
     msg = (

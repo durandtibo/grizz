@@ -46,18 +46,18 @@ def test_check_existing_columns_exist_ok_false(dataframe: pl.DataFrame) -> None:
 ###########################################
 
 
-@pytest.mark.parametrize("ignore_missing", [True, False])
-def test_check_missing_columns_no_missing(ignore_missing: bool) -> None:
-    check_missing_columns(missing_cols=[], ignore_missing=ignore_missing)
+@pytest.mark.parametrize("missing_ok", [True, False])
+def test_check_missing_columns(dataframe: pl.DataFrame, missing_ok: bool) -> None:
+    check_missing_columns(dataframe, columns=["col1", "col4"], missing_ok=missing_ok)
 
 
-def test_check_missing_columns_missing_ignore_missing_true() -> None:
+def test_check_missing_columns_missing_ok_true(dataframe: pl.DataFrame) -> None:
     with pytest.warns(
         RuntimeWarning, match="1 columns are missing in the DataFrame and will be ignored:"
     ):
-        check_missing_columns(missing_cols=["col5"], ignore_missing=True)
+        check_missing_columns(dataframe, columns=["col1", "col5"], missing_ok=True)
 
 
-def test_check_missing_columns_missing_ignore_missing_false() -> None:
+def test_check_missing_columns_missing_ok_false(dataframe: pl.DataFrame) -> None:
     with pytest.raises(RuntimeError, match="1 columns are missing in the DataFrame:"):
-        check_missing_columns(missing_cols=["col5"])
+        check_missing_columns(dataframe, columns=["col1", "col5"])
