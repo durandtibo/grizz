@@ -76,15 +76,9 @@ class BaseColumnTransformer(BaseTransformer):
         )
         return f"{self.__class__.__qualname__}({args})"
 
-    def fit(self, frame: pl.DataFrame) -> None:
-        pass
-
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self.fit(frame)
         return self.transform(frame)
-
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        pass
 
     def _check_input_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the input column is missing.
