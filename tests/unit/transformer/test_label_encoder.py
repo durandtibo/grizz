@@ -62,6 +62,7 @@ def test_label_encoder_transformer_fit(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(list(transformer._encoder.classes_), ["amsterdam", "paris", "tokyo"])
 
 
+@sklearn_available
 def test_label_encoder_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -72,6 +73,7 @@ def test_label_encoder_transformer_fit_missing_policy_ignore(
     assert not hasattr(transformer._encoder, "classes_")
 
 
+@sklearn_available
 def test_label_encoder_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -80,6 +82,7 @@ def test_label_encoder_transformer_fit_missing_policy_raise(
         transformer.fit(dataframe)
 
 
+@sklearn_available
 def test_label_encoder_transformer_fit_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -148,6 +151,7 @@ def test_label_encoder_transformer_transform_not_fitted(dataframe: pl.DataFrame)
         transformer.transform(dataframe)
 
 
+@sklearn_available
 def test_label_encoder_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -174,6 +178,7 @@ def test_label_encoder_transformer_transform_missing_policy_ignore(
     )
 
 
+@sklearn_available
 def test_label_encoder_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -182,6 +187,7 @@ def test_label_encoder_transformer_transform_missing_policy_raise(
         transformer.transform(dataframe)
 
 
+@sklearn_available
 def test_label_encoder_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -209,6 +215,7 @@ def test_label_encoder_transformer_transform_missing_policy_warn(
     )
 
 
+@sklearn_available
 def test_label_encoder_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -236,6 +243,7 @@ def test_label_encoder_transformer_transform_exist_policy_ignore(
     )
 
 
+@sklearn_available
 def test_label_encoder_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -245,6 +253,7 @@ def test_label_encoder_transformer_transform_exist_policy_raise(
         transformer.transform(dataframe)
 
 
+@sklearn_available
 def test_label_encoder_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
