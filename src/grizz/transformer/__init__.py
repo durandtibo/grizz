@@ -38,6 +38,8 @@ __all__ = [
     "IntegerCastTransformer",
     "JsonDecode",
     "JsonDecodeTransformer",
+    "LabelEncoder",
+    "LabelEncoderTransformer",
     "Replace",
     "ReplaceStrict",
     "ReplaceStrictTransformer",
@@ -100,6 +102,8 @@ from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
 from grizz.transformer.json import JsonDecodeTransformer
 from grizz.transformer.json import JsonDecodeTransformer as JsonDecode
+from grizz.transformer.label_encoder import LabelEncoderTransformer
+from grizz.transformer.label_encoder import LabelEncoderTransformer as LabelEncoder
 from grizz.transformer.null import DropNullColumnTransformer
 from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer
