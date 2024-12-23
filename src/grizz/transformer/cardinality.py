@@ -12,6 +12,7 @@ import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.utils.format import str_col_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -121,8 +122,16 @@ class FilterCardinalityTransformer(BaseColumnsTransformer):
             f"cardinality [{self._n_min}, {self._n_max})..."
         )
         self._check_input_columns(frame)
+        initial_shape = frame.shape
         columns = self.find_common_columns(frame)
         valid = frame.select(
             pl.n_unique(*columns).is_between(self._n_min, self._n_max, closed="left")
         )
-        return frame.drop([col.name for col in valid.iter_columns() if not col.first()])
+        cols_to_drop = [col.name for col in valid.iter_columns() if not col.first()]
+        logger.info(f"Dropping {len(cols_to_drop):,} columns: {cols_to_drop}")
+        out = frame.drop(cols_to_drop)
+        logger.info(
+            f"DataFrame shape: {initial_shape} -> {out.shape} | "
+            f"{str_col_diff(orig=initial_shape[1], final=out.shape[1])}"
+        )
+        return out
