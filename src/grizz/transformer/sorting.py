@@ -7,7 +7,11 @@ __all__ = ["SortColumnsTransformer", "SortTransformer"]
 import logging
 from typing import TYPE_CHECKING, Any
 
+from coola.utils.format import repr_mapping_line
+
+from grizz.transformer import BaseColumnsTransformer
 from grizz.transformer.base import BaseTransformer
+from grizz.utils.format import str_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -17,13 +21,12 @@ if TYPE_CHECKING:
     import polars as pl
 
 
-class SortTransformer(BaseTransformer):
+class SortTransformer(BaseColumnsTransformer):
     r"""Implement a transformer to sort the DataFrame by the given
     columns.
 
     Args:
         columns: The columns to convert.
-        *args: The positional arguments to pass to ``sort``.
         **kwargs: The keyword arguments to pass to ``sort``.
 
     Example usage:
@@ -34,7 +37,7 @@ class SortTransformer(BaseTransformer):
     >>> from grizz.transformer import Sort
     >>> transformer = Sort(columns=["col3", "col1"])
     >>> transformer
-    SortTransformer(columns=('col3', 'col1'))
+    SortTransformer(columns=('col3', 'col1'), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {"col1": [1, 2, None], "col2": [6.0, 5.0, 4.0], "col3": ["a", "c", "b"]}
     ... )
@@ -65,13 +68,15 @@ class SortTransformer(BaseTransformer):
     ```
     """
 
-    def __init__(self, columns: Sequence[str], *args: Any, **kwargs: Any) -> None:
-        self._columns = tuple(columns)
-        self._args = args
+    def __init__(
+        self, columns: Sequence[str] | None = None, missing_policy: str = "raise", **kwargs: Any
+    ) -> None:
+        super().__init__(columns=columns, missing_policy=missing_policy)
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(columns={self._columns})"
+        args = repr_mapping_line({"columns": self._columns, "missing_policy": self._missing_policy})
+        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -79,13 +84,18 @@ class SortTransformer(BaseTransformer):
             f"available to fit"
         )
 
-    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self.fit(frame)
-        return self.transform(frame)
-
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Sorting rows based on the columns: {self._columns}")
-        return frame.sort(self._columns, *self._args, **self._kwargs)
+        cols = self.find_columns(frame)
+        logger.info(f"Sorting rows based on {len(cols):,} columns: {cols}")
+        self._check_input_columns(frame)
+        # Note: it is not possible to use find_common_columns because find_common_columns
+        # may change the order of the columns.
+        columns = self._find_existing_columns(frame)
+        return frame.sort(columns, **self._kwargs)
+
+    def _find_existing_columns(self, frame: pl.DataFrame) -> list[str]:
+        cols = self.find_columns(frame)
+        return [col for col in cols if col in frame]
 
 
 class SortColumnsTransformer(BaseTransformer):
