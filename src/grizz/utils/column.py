@@ -96,7 +96,7 @@ def check_existing_columns(
             If ``'warn'``, a warning is raised if at least one column
             already exist and the existing columns are overwritten.
             If ``'ignore'``, the existing columns are overwritten and
-            no message is shown.
+            no warning message appears.
 
     Raises:
         ColumnExistsError: if at least one column already exists and
@@ -151,7 +151,7 @@ def check_missing_columns(
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no message is shown.
+            no warning message appears.
 
     Raises:
         ColumnNotFoundError: if at least one column is missing and

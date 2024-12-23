@@ -42,7 +42,7 @@ class CastTransformer(BaseColumnsTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no message is shown.
+            no warning message appears.
         **kwargs: The keyword arguments for ``cast``.
 
     Example usage:
@@ -147,7 +147,7 @@ class DecimalCastTransformer(CastTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no message is shown.
+            no warning message appears.
         **kwargs: The keyword arguments for ``cast``.
 
     Example usage:
@@ -225,7 +225,7 @@ class FloatCastTransformer(CastTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no message is shown.
+            no warning message appears.
         **kwargs: The keyword arguments for ``cast``.
 
     Example usage:
@@ -303,7 +303,7 @@ class IntegerCastTransformer(CastTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no message is shown.
+            no warning message appears.
         **kwargs: The keyword arguments for ``cast``.
 
     Example usage:
