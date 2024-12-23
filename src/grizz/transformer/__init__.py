@@ -30,6 +30,8 @@ __all__ = [
     "FillNanTransformer",
     "FillNull",
     "FillNullTransformer",
+    "FilterCardinality",
+    "FilterCardinalityTransformer",
     "FloatCast",
     "FloatCastTransformer",
     "Function",
@@ -69,6 +71,10 @@ from grizz.transformer.base import (
     BaseTransformer,
     is_transformer_config,
     setup_transformer,
+)
+from grizz.transformer.cardinality import FilterCardinalityTransformer
+from grizz.transformer.cardinality import (
+    FilterCardinalityTransformer as FilterCardinality,
 )
 from grizz.transformer.casting import CastTransformer
 from grizz.transformer.casting import CastTransformer as Cast
