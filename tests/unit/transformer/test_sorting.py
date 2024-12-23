@@ -1,15 +1,26 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+import warnings
 
 import polars as pl
+import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
 from grizz.transformer import Sort, SortColumns
 
-if TYPE_CHECKING:
-    import pytest
+
+@pytest.fixture
+def dataframe() -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "col1": [None, 1, 2, None],
+            "col2": [None, 6.0, 5.0, 4.0],
+            "col3": [None, "a", "c", "b"],
+        }
+    )
+
 
 #####################################
 #     Tests for SortTransformer     #
@@ -17,31 +28,45 @@ if TYPE_CHECKING:
 
 
 def test_sort_transformer_repr() -> None:
-    assert repr(Sort(columns=["col3", "col1"])).startswith("SortTransformer(")
+    assert (
+        repr(Sort(columns=["col3", "col1"]))
+        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise')"
+    )
+
+
+def test_sort_transformer_repr_kwargs() -> None:
+    assert (
+        repr(Sort(columns=["col3", "col1"], descending=True))
+        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise', descending=True)"
+    )
 
 
 def test_sort_transformer_str() -> None:
-    assert str(Sort(columns=["col3", "col1"])).startswith("SortTransformer(")
-
-
-def test_sort_transformer_fit(caplog: pytest.LogCaptureFixture) -> None:
-    transformer = Sort(columns=["col3", "col1"])
-    frame = pl.DataFrame(
-        {"col1": [None, 1, 2, None], "col2": [None, 6.0, 5.0, 4.0], "col3": [None, "a", "c", "b"]}
+    assert (
+        str(Sort(columns=["col3", "col1"]))
+        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise')"
     )
+
+
+def test_sort_transformer_str_kwargs() -> None:
+    assert (
+        str(Sort(columns=["col3", "col1"], descending=True))
+        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise', descending=True)"
+    )
+
+
+def test_sort_transformer_fit(caplog: pytest.LogCaptureFixture, dataframe: pl.DataFrame) -> None:
+    transformer = Sort(columns=["col3", "col1"])
     with caplog.at_level(logging.INFO):
-        transformer.fit(frame)
+        transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
         "Skipping 'SortTransformer.fit' as there are no parameters available to fit"
     )
 
 
-def test_sort_transformer_fit_transform() -> None:
-    frame = pl.DataFrame(
-        {"col1": [None, 1, 2, None], "col2": [None, 6.0, 5.0, 4.0], "col3": [None, "a", "c", "b"]}
-    )
+def test_sort_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = Sort(columns=["col3", "col1"])
-    out = transformer.fit_transform(frame)
+    out = transformer.fit_transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -54,12 +79,9 @@ def test_sort_transformer_fit_transform() -> None:
     )
 
 
-def test_sort_transformer_transform() -> None:
-    frame = pl.DataFrame(
-        {"col1": [None, 1, 2, None], "col2": [None, 6.0, 5.0, 4.0], "col3": [None, "a", "c", "b"]}
-    )
+def test_sort_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = Sort(columns=["col3", "col1"])
-    out = transformer.transform(frame)
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -72,12 +94,9 @@ def test_sort_transformer_transform() -> None:
     )
 
 
-def test_sort_transformer_transform_null_last() -> None:
-    frame = pl.DataFrame(
-        {"col1": [None, 1, 2, None], "col2": [None, 6.0, 5.0, 4.0], "col3": [None, "a", "c", "b"]}
-    )
+def test_sort_transformer_transform_null_last(dataframe: pl.DataFrame) -> None:
     transformer = Sort(columns=["col3", "col1"], nulls_last=True)
-    out = transformer.transform(frame)
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -90,11 +109,58 @@ def test_sort_transformer_transform_null_last() -> None:
     )
 
 
-def test_sort_transformer_transform_empty() -> None:
+def test_sort_transformer_transform_empty_rows() -> None:
     frame = pl.DataFrame({"col1": [], "col2": [], "col3": []})
     transformer = Sort(columns=["col3", "col1"])
     out = transformer.transform(frame)
     assert_frame_equal(out, pl.DataFrame({"col1": [], "col2": [], "col3": []}))
+
+
+def test_sort_transformer_transform_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Sort(columns=["col3", "col1", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [None, 1, None, 2],
+                "col2": [None, 6.0, 4.0, 5.0],
+                "col3": [None, "a", "b", "c"],
+            }
+        ),
+    )
+
+
+def test_sort_transformer_transform_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Sort(columns=["col3", "col1", "col5"])
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(dataframe)
+
+
+def test_sort_transformer_transform_missing_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Sort(columns=["col3", "col1", "col5"], missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [None, 1, None, 2],
+                "col2": [None, 6.0, 4.0, 5.0],
+                "col3": [None, "a", "b", "c"],
+            }
+        ),
+    )
 
 
 ############################################
