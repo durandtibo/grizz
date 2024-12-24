@@ -8,6 +8,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
+from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
 from grizz.ingestor.utils import check_dataframe_file
@@ -53,6 +54,7 @@ class ParquetIngestor(BaseIngestor):
         logger.info(
             f"Ingesting parquet data from {self._path} | size={human_file_size(self._path)}..."
         )
-        frame = pl.read_parquet(self._path, **self._kwargs)
-        logger.info(f"data ingested | shape: {frame.shape}")
+        with timeblock("DataFrame ingestion time: {time}"):
+            frame = pl.read_parquet(self._path, **self._kwargs)
+            logger.info(f"DataFrame ingested | shape: {frame.shape}")
         return frame

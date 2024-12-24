@@ -8,6 +8,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import polars as pl
+from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
 from grizz.utils.factory import setup_object
@@ -63,8 +64,9 @@ class ClickHouseIngestor(BaseIngestor):
             f"query:\n{self._query}\n"
             "---------------------------------------------------------------------------------\n\n"
         )
-        frame = pl.from_arrow(self._client.query_arrow(query=self._query))
-        frame = frame.select(sorted(frame.columns))
-        logger.info(f"Data ingested. DataFrame shape: {frame.shape}")
+        with timeblock("DataFrame ingestion time: {time}"):
+            frame = pl.from_arrow(self._client.query_arrow(query=self._query))
+            frame = frame.select(sorted(frame.columns))
+            logger.info(f"DataFrame ingested. DataFrame shape: {frame.shape}")
         logger.info(f"number of unique column names: {len(set(frame.columns)):,}")
         return frame
