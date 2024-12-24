@@ -237,27 +237,29 @@ def frame_time() -> pl.DataFrame:
 
 def test_to_time_transformer_repr() -> None:
     assert repr(ToTime(columns=["col1", "col3"])) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, missing_policy='raise')"
+        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_to_time_transformer_repr_with_kwargs() -> None:
     assert repr(ToTime(columns=["col1", "col3"], strict=False)) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, missing_policy='raise', "
-        "strict=False)"
+        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
     )
 
 
 def test_to_time_transformer_str() -> None:
     assert str(ToTime(columns=["col1", "col3"])) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, missing_policy='raise')"
+        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_to_time_transformer_str_with_kwargs() -> None:
     assert str(ToTime(columns=["col1", "col3"], strict=False)) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, missing_policy='raise', "
-        "strict=False)"
+        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
     )
 
 
@@ -351,6 +353,35 @@ def test_to_time_transformer_transform_format(frame_time: pl.DataFrame) -> None:
                     datetime.time(hour=13, minute=13, second=13),
                     datetime.time(hour=8, minute=8, second=8),
                     datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_to_time_transformer_transform_exclude_columns(frame_time: pl.DataFrame) -> None:
+    transformer = ToTime(columns=["col1", "col3", "col4"], exclude_columns=["col4"])
+    out = transformer.transform(frame_time)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(11, 11, 11),
+                    datetime.time(12, 12, 12),
+                    datetime.time(13, 13, 13),
+                    datetime.time(8, 8, 8),
+                    datetime.time(23, 59, 59),
                 ],
                 "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
             },

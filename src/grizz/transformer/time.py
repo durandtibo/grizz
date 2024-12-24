@@ -140,6 +140,9 @@ class ToTimeTransformer(BaseColumnsTransformer):
             for the full specification. Example: ``"%H:%M:%S"``.
             If set to ``None`` (default), the format is inferred from
             the data.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -158,7 +161,7 @@ class ToTimeTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import ToTime
     >>> transformer = ToTime(columns=["col1"], format="%H:%M:%S")
     >>> transformer
-    ToTimeTransformer(columns=('col1',), format='%H:%M:%S', missing_policy='raise')
+    ToTimeTransformer(columns=('col1',), format='%H:%M:%S', exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
@@ -201,10 +204,13 @@ class ToTimeTransformer(BaseColumnsTransformer):
         self,
         columns: Sequence[str] | None,
         format: str | None = None,  # noqa: A002
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+        )
         self._format = format
         self._kwargs = kwargs
 
@@ -213,6 +219,7 @@ class ToTimeTransformer(BaseColumnsTransformer):
             {
                 "columns": self._columns,
                 "format": self._format,
+                "exclude_columns": self._exclude_columns,
                 "missing_policy": self._missing_policy,
             }
         )
