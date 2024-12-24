@@ -266,6 +266,21 @@ def test_drop_null_row_transformer_transform_columns(frame_row: pl.DataFrame) ->
     )
 
 
+def test_drop_null_row_transformer_transform_exclude_columns(frame_row: pl.DataFrame) -> None:
+    transformer = DropNullRow(exclude_columns=["col2"])
+    out = transformer.transform(frame_row)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-31", "2020-12-31"],
+                "col2": [1, 3, None],
+                "col3": [None, None, None],
+            }
+        ),
+    )
+
+
 def test_drop_null_row_transformer_transform_empty_row() -> None:
     transformer = DropNullRow()
     out = transformer.transform(pl.DataFrame({"col1": [], "col2": [], "col3": []}))
