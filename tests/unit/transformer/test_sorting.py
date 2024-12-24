@@ -127,7 +127,7 @@ def test_sort_transformer_transform_columns_none(dataframe: pl.DataFrame) -> Non
 
 
 def test_sort_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
-    transformer = Sort(exclude_columns=["col1"])
+    transformer = Sort(exclude_columns=["col1", "col4"])
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
