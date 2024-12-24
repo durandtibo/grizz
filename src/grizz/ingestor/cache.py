@@ -1,20 +1,20 @@
+r"""Contain the implementation of an ingestor that attempts the fast
+ingestor first, falling back to the slow ingestor if needed."""
+
 from __future__ import annotations
 
 __all__ = ["CacheIngestor"]
 
-import datetime
 import logging
 from typing import TYPE_CHECKING
 
 from coola.utils import repr_indent, repr_mapping
-from iden.io import save_text
 
+from grizz.exceptions import DataFrameNotFoundError
 from grizz.exporter.base import BaseExporter, setup_exporter
 from grizz.ingestor.base import BaseIngestor, setup_ingestor
-from grizz.utils.path import sanitize_path
 
 if TYPE_CHECKING:
-    from pathlib import Path
 
     import polars as pl
 
@@ -22,12 +22,24 @@ logger = logging.getLogger(__name__)
 
 
 class CacheIngestor(BaseIngestor):
-    r"""Implement an ingestor that also transforms the DataFrame.
+    r"""Implement an ingestor that attempts the fast ingestor first,
+    falling back to the slow ingestor if needed.
+
+    Internally, this ingestor attempts to load the DataFrame using
+    the fast ingestor. If a DataFrameNotFoundError is raised,
+    it falls back to the slow ingestor, then exports the DataFrame
+    for ingestion by the fast ingestor during the next cycle.
 
     Args:
-        ingestor_slow: The slow ingestor.
-        ingestor_fast: The fast ingestor.
-        exporter: The DataFrame exporter.
+        ingestor_slow: The slow DataFrame ingestor or its
+            configuration.
+        ingestor_fast: The fast DataFrame ingestor or its
+            configuration.
+        exporter: The DataFrame exporter or its configuration.
+            The DataFrame exporter is responsible for storing the
+            output of the slower DataFrame ingestor, allowing it to
+            be ingested by the faster DataFrame ingestor during the
+            next ingestion cycle.
 
     Example usage:
 
@@ -49,23 +61,27 @@ class CacheIngestor(BaseIngestor):
     >>> ingestor = CacheIngestor(
     ...     ingestor_slow=ingestor_slow,
     ...     ingestor_fast=exporter_ingestor,
-    ...     exporter=exporter_ingestor
+    ...     exporter=exporter_ingestor,
     ... )
     >>> ingestor
     CacheIngestor(
+      (ingestor_slow): Ingestor(shape=(5, 3))
+      (ingestor_fast): InMemoryExporter(frame=None)
+      (exporter): InMemoryExporter(frame=None)
+    )
     >>> frame = ingestor.ingest()
     >>> frame
     shape: (5, 3)
     ┌──────┬──────┬──────┐
     │ col1 ┆ col2 ┆ col3 │
     │ ---  ┆ ---  ┆ ---  │
-    │ f32  ┆ str  ┆ f32  │
+    │ str  ┆ str  ┆ f64  │
     ╞══════╪══════╪══════╡
-    │ 1.0  ┆ a    ┆ 1.2  │
-    │ 2.0  ┆ b    ┆ 2.2  │
-    │ 3.0  ┆ c    ┆ 3.2  │
-    │ 4.0  ┆ d    ┆ 4.2  │
-    │ 5.0  ┆ e    ┆ 5.2  │
+    │ 1    ┆ a    ┆ 1.2  │
+    │ 2    ┆ b    ┆ 2.2  │
+    │ 3    ┆ c    ┆ 3.2  │
+    │ 4    ┆ d    ┆ 4.2  │
+    │ 5    ┆ e    ┆ 5.2  │
     └──────┴──────┴──────┘
 
     ```
@@ -76,12 +92,10 @@ class CacheIngestor(BaseIngestor):
         ingestor_slow: BaseIngestor | dict,
         ingestor_fast: BaseIngestor | dict,
         exporter: BaseExporter | dict,
-        path: Path | str,
     ) -> None:
         self._ingestor_slow = setup_ingestor(ingestor_slow)
         self._ingestor_fast = setup_ingestor(ingestor_fast)
         self._exporter = setup_exporter(exporter)
-        self._path = sanitize_path(path)
 
     def __repr__(self) -> str:
         args = repr_indent(
@@ -90,19 +104,15 @@ class CacheIngestor(BaseIngestor):
                     "ingestor_slow": self._ingestor_slow,
                     "ingestor_fast": self._ingestor_fast,
                     "exporter": self._exporter,
-                    "path": self._path,
                 }
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     def ingest(self) -> pl.DataFrame:
-        if self._path.is_file():
-            return self._ingestor_fast.ingest()
-        frame = self._ingestor_slow.ingest()
-        self._exporter.export(frame)
-        save_text(
-            f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}",
-            self._path,
-        )
+        try:
+            frame = self._ingestor_fast.ingest()
+        except DataFrameNotFoundError:
+            frame = self._ingestor_slow.ingest()
+            self._exporter.export(frame)
         return frame

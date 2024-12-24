@@ -8,6 +8,7 @@ __all__ = ["InMemoryExporter"]
 import logging
 from typing import TYPE_CHECKING
 
+from grizz.exceptions import DataFrameNotFoundError
 from grizz.exporter.base import BaseExporter
 from grizz.ingestor.base import BaseIngestor
 
@@ -77,5 +78,5 @@ class InMemoryExporter(BaseExporter, BaseIngestor):
                 "No DataFrame available for ingestion. You must export a DataFrame "
                 "before to ingest it"
             )
-            raise RuntimeError(msg)
+            raise DataFrameNotFoundError(msg)
         return self._frame

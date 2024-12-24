@@ -4,6 +4,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import DataFrameNotFoundError
 from grizz.exporter import InMemoryExporter
 
 
@@ -96,5 +97,5 @@ def test_parquet_exporter_ingest(dataframe: pl.DataFrame) -> None:
 
 def test_parquet_exporter_ingest_empty() -> None:
     exporter = InMemoryExporter()
-    with pytest.raises(RuntimeError, match="No DataFrame available for ingestion."):
+    with pytest.raises(DataFrameNotFoundError, match="No DataFrame available for ingestion."):
         exporter.ingest()
