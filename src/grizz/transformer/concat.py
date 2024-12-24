@@ -26,8 +26,12 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
 
     Args:
         columns: The columns to concatenate. The column should have
-            the same type or compatible types.
+            the same type or compatible types. If ``None``,
+            it processes all the columns.
         out_col: The output column.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         exist_policy: The policy on how to handle existing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -53,7 +57,7 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import ConcatColumns
     >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="col")
     >>> transformer
-    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exist_policy='raise', missing_policy='raise')
+    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [11, 12, 13, 14, 15],
@@ -96,12 +100,15 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
 
     def __init__(
         self,
-        columns: Sequence[str],
+        columns: Sequence[str] | None,
         out_col: str,
+        exclude_columns: Sequence[str] = (),
         exist_policy: str = "raise",
         missing_policy: str = "raise",
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+        )
         self._out_col = out_col
 
         check_column_exist_policy(exist_policy)
@@ -112,6 +119,7 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
             {
                 "columns": self._columns,
                 "out_col": self._out_col,
+                "exclude_columns": self._exclude_columns,
                 "exist_policy": self._exist_policy,
                 "missing_policy": self._missing_policy,
             }

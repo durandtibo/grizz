@@ -29,14 +29,18 @@ def dataframe() -> pl.DataFrame:
 
 
 def test_filter_cardinality_transformer_repr() -> None:
-    assert repr(FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5)).startswith(
-        "FilterCardinalityTransformer("
+    assert (
+        repr(FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5))
+        == "FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, "
+        "exclude_columns=(), missing_policy='raise')"
     )
 
 
 def test_filter_cardinality_transformer_str() -> None:
-    assert str(FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5)).startswith(
-        "FilterCardinalityTransformer("
+    assert (
+        str(FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5))
+        == "FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, "
+        "exclude_columns=(), missing_policy='raise')"
     )
 
 
@@ -159,6 +163,22 @@ def test_filter_cardinality_transformer_transform_max_3() -> None:
             {
                 "col1": [1, 1, 1, 1, 1],
                 "col2": [1, 1, 2, 2, 2],
+            }
+        ),
+    )
+
+
+def test_filter_cardinality_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = FilterCardinality(n_min=2, exclude_columns=["col2", "col5"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1, 1, 1, 1, 1],
+                "col3": ["a", "b", "c", "a", "b"],
+                "col4": [1.2, float("nan"), 3.2, None, 5.2],
             }
         ),
     )
