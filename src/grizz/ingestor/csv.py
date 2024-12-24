@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 import polars as pl
 
 from grizz.ingestor.base import BaseIngestor
+from grizz.ingestor.utils import check_dataframe_file
 from grizz.utils.format import str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
 
@@ -48,6 +49,7 @@ class CsvIngestor(BaseIngestor):
         return f"{self.__class__.__qualname__}(path={self._path}{str_kwargs(self._kwargs)})"
 
     def ingest(self) -> pl.DataFrame:
+        check_dataframe_file(self._path)
         logger.info(f"Ingesting CSV data from {self._path} | size={human_file_size(self._path)}...")
         frame = pl.read_csv(self._path, **self._kwargs)
         logger.info(f"Data ingested | shape: {frame.shape}")
