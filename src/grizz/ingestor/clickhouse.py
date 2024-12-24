@@ -12,6 +12,7 @@ from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
 from grizz.utils.factory import setup_object
+from grizz.utils.format import human_byte
 from grizz.utils.imports import check_clickhouse_connect, check_pyarrow
 
 if TYPE_CHECKING:
@@ -69,7 +70,7 @@ class ClickHouseIngestor(BaseIngestor):
             frame = frame.select(sorted(frame.columns))
             logger.info(
                 f"DataFrame ingested | shape: {frame.shape} | "
-                f"estimated size: {frame.estimated_size('mb')} MB"
+                f"estimated size: {human_byte(frame.estimated_size())}"
             )
         logger.info(f"number of unique column names: {len(set(frame.columns)):,}")
         return frame

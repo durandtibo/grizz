@@ -12,7 +12,7 @@ from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
 from grizz.ingestor.utils import check_dataframe_file
-from grizz.utils.format import str_kwargs
+from grizz.utils.format import human_byte, str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
 
 if TYPE_CHECKING:
@@ -58,6 +58,6 @@ class ParquetIngestor(BaseIngestor):
             frame = pl.read_parquet(self._path, **self._kwargs)
             logger.info(
                 f"DataFrame ingested | shape: {frame.shape} | "
-                f"estimated size: {frame.estimated_size('mb')} MB"
+                f"estimated size: {human_byte(frame.estimated_size())}"
             )
         return frame
