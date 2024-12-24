@@ -47,7 +47,7 @@ class StripCharsTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import StripChars
     >>> transformer = StripChars(columns=["col2", "col3"])
     >>> transformer
-    StripCharsTransformer(columns=('col2', 'col3'), missing_policy='raise')
+    StripCharsTransformer(columns=('col2', 'col3'), exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -88,13 +88,27 @@ class StripCharsTransformer(BaseColumnsTransformer):
     """
 
     def __init__(
-        self, columns: Sequence[str] | None = None, missing_policy: str = "raise", **kwargs: Any
+        self,
+        columns: Sequence[str] | None = None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
+        )
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line({"columns": self._columns, "missing_policy": self._missing_policy})
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "exclude_columns": self._exclude_columns,
+                "missing_policy": self._missing_policy,
+            }
+        )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
