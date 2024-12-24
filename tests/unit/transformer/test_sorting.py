@@ -30,28 +30,30 @@ def dataframe() -> pl.DataFrame:
 def test_sort_transformer_repr() -> None:
     assert (
         repr(Sort(columns=["col3", "col1"]))
-        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise')"
+        == "SortTransformer(columns=('col3', 'col1'), exclude_columns=(), missing_policy='raise')"
     )
 
 
 def test_sort_transformer_repr_kwargs() -> None:
     assert (
         repr(Sort(columns=["col3", "col1"], descending=True))
-        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise', descending=True)"
+        == "SortTransformer(columns=('col3', 'col1'), exclude_columns=(), "
+        "missing_policy='raise', descending=True)"
     )
 
 
 def test_sort_transformer_str() -> None:
     assert (
         str(Sort(columns=["col3", "col1"]))
-        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise')"
+        == "SortTransformer(columns=('col3', 'col1'), exclude_columns=(), missing_policy='raise')"
     )
 
 
 def test_sort_transformer_str_kwargs() -> None:
     assert (
         str(Sort(columns=["col3", "col1"], descending=True))
-        == "SortTransformer(columns=('col3', 'col1'), missing_policy='raise', descending=True)"
+        == "SortTransformer(columns=('col3', 'col1'), exclude_columns=(), "
+        "missing_policy='raise', descending=True)"
     )
 
 
@@ -104,6 +106,36 @@ def test_sort_transformer_transform_null_last(dataframe: pl.DataFrame) -> None:
                 "col1": [1, None, 2, None],
                 "col2": [6.0, 4.0, 5.0, None],
                 "col3": ["a", "b", "c", None],
+            }
+        ),
+    )
+
+
+def test_sort_transformer_transform_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = Sort()
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [None, None, 1, 2],
+                "col2": [None, 4.0, 6.0, 5.0],
+                "col3": [None, "b", "a", "c"],
+            }
+        ),
+    )
+
+
+def test_sort_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = Sort(exclude_columns=["col1"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [None, None, 2, 1],
+                "col2": [None, 4.0, 5.0, 6.0],
+                "col3": [None, "b", "c", "a"],
             }
         ),
     )

@@ -26,7 +26,18 @@ class SortTransformer(BaseColumnsTransformer):
     columns.
 
     Args:
-        columns: The columns to convert.
+        columns: The columns to use to sort the rows.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
         **kwargs: The keyword arguments to pass to ``sort``.
 
     Example usage:
@@ -37,7 +48,7 @@ class SortTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import Sort
     >>> transformer = Sort(columns=["col3", "col1"])
     >>> transformer
-    SortTransformer(columns=('col3', 'col1'), missing_policy='raise')
+    SortTransformer(columns=('col3', 'col1'), exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {"col1": [1, 2, None], "col2": [6.0, 5.0, 4.0], "col3": ["a", "c", "b"]}
     ... )
@@ -69,13 +80,25 @@ class SortTransformer(BaseColumnsTransformer):
     """
 
     def __init__(
-        self, columns: Sequence[str] | None = None, missing_policy: str = "raise", **kwargs: Any
+        self,
+        columns: Sequence[str] | None = None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+        )
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line({"columns": self._columns, "missing_policy": self._missing_policy})
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "exclude_columns": self._exclude_columns,
+                "missing_policy": self._missing_policy,
+            }
+        )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
