@@ -6,6 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import DataFrameNotFoundError
 from grizz.ingestor import CsvIngestor
 
 if TYPE_CHECKING:
@@ -70,3 +71,9 @@ def test_csv_ingestor_ingest_with_kwargs(frame_path: Path) -> None:
             }
         ),
     )
+
+
+def test_csv_ingestor_ingest_missing_file(tmp_path: Path) -> None:
+    ingestor = CsvIngestor(tmp_path.joinpath("data.csv"))
+    with pytest.raises(DataFrameNotFoundError, match="DataFrame file does not exist"):
+        ingestor.ingest()
