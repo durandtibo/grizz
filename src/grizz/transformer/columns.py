@@ -32,7 +32,7 @@ class BaseColumnsTransformer(BaseTransformer):
 
     Args:
         columns: The columns to prepare. If ``None``, it processes all
-            the columns of type string.
+            the columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
