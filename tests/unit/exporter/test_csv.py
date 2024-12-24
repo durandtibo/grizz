@@ -48,14 +48,14 @@ def test_csv_exporter_str_with_kwargs(tmp_path: Path) -> None:
 
 
 def test_csv_exporter_export(tmp_path: Path, dataframe: pl.DataFrame) -> None:
-    path = tmp_path.joinpath("data.csv")
+    path = tmp_path.joinpath("my_folder/data.csv")
     assert not path.is_file()
     CsvExporter(path).export(dataframe)
     assert path.is_file()
 
 
 def test_csv_exporter_export_with_kwargs(tmp_path: Path, dataframe: pl.DataFrame) -> None:
-    path = tmp_path.joinpath("data.csv")
+    path = tmp_path.joinpath("my_folder/data.csv")
     assert not path.is_file()
     CsvExporter(path, include_header=False).export(dataframe)
     assert path.is_file()

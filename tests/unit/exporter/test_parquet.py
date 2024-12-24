@@ -50,14 +50,14 @@ def test_parquet_exporter_str_with_kwargs(tmp_path: Path) -> None:
 
 
 def test_parquet_exporter_export(tmp_path: Path, dataframe: pl.DataFrame) -> None:
-    path = tmp_path.joinpath("data.parquet")
+    path = tmp_path.joinpath("my_folder/data.parquet")
     assert not path.is_file()
     ParquetExporter(path).export(dataframe)
     assert path.is_file()
 
 
 def test_parquet_exporter_export_with_kwargs(tmp_path: Path, dataframe: pl.DataFrame) -> None:
-    path = tmp_path.joinpath("data.parquet")
+    path = tmp_path.joinpath("my_folder/data.parquet")
     assert not path.is_file()
     ParquetExporter(path, compression="gzip").export(dataframe)
     assert path.is_file()
