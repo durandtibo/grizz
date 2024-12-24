@@ -140,7 +140,7 @@ def test_strip_chars_transformer_transform_columns_none(dataframe: pl.DataFrame)
 
 
 def test_strip_chars_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
-    transformer = StripChars(exclude_columns=["col4"])
+    transformer = StripChars(exclude_columns=["col4", "col5"])
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,

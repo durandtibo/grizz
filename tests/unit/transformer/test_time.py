@@ -362,7 +362,7 @@ def test_to_time_transformer_transform_format(frame_time: pl.DataFrame) -> None:
 
 
 def test_to_time_transformer_transform_exclude_columns(frame_time: pl.DataFrame) -> None:
-    transformer = ToTime(columns=["col1", "col3", "col4"], exclude_columns=["col4"])
+    transformer = ToTime(columns=["col1", "col3", "col4"], exclude_columns=["col4", "col5"])
     out = transformer.transform(frame_time)
     assert_frame_equal(
         out,

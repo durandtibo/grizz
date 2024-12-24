@@ -36,25 +36,29 @@ def dataframe() -> pl.DataFrame:
 
 def test_fill_nan_transformer_repr() -> None:
     assert repr(FillNan(columns=["col1", "col4"])) == (
-        "FillNanTransformer(columns=('col1', 'col4'), missing_policy='raise')"
+        "FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_fill_nan_transformer_repr_with_kwargs() -> None:
     assert repr(FillNan(columns=["col1", "col4"], value=100)) == (
-        "FillNanTransformer(columns=('col1', 'col4'), missing_policy='raise', value=100)"
+        "FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise', value=100)"
     )
 
 
 def test_fill_nan_transformer_str() -> None:
     assert str(FillNan(columns=["col1", "col4"])) == (
-        "FillNanTransformer(columns=('col1', 'col4'), missing_policy='raise')"
+        "FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_fill_nan_transformer_str_with_kwargs() -> None:
     assert str(FillNan(columns=["col1", "col4"], value=100)) == (
-        "FillNanTransformer(columns=('col1', 'col4'), missing_policy='raise', value=100)"
+        "FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise', value=100)"
     )
 
 
@@ -124,6 +128,28 @@ def test_fill_nan_transformer_transform_columns_none(dataframe: pl.DataFrame) ->
                 "col2": [1.2, 2.2, 3.2, 4.2, 100.0],
                 "col3": ["a", "b", "c", "d", None],
                 "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float64,
+                "col3": pl.String,
+                "col4": pl.Float64,
+            },
+        ),
+    )
+
+
+def test_fill_nan_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = FillNan(value=100, exclude_columns=["col4", "col5"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, 100.0],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, float("nan"), 3.2, None, 5.2],
             },
             schema={
                 "col1": pl.Int64,
@@ -242,25 +268,29 @@ def test_fill_nan_transformer_find_missing_columns_none(dataframe: pl.DataFrame)
 
 def test_fill_null_transformer_repr() -> None:
     assert repr(FillNull(columns=["col1", "col4"])) == (
-        "FillNullTransformer(columns=('col1', 'col4'), missing_policy='raise')"
+        "FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_fill_null_transformer_repr_with_kwargs() -> None:
     assert repr(FillNull(columns=["col1", "col4"], value=100)) == (
-        "FillNullTransformer(columns=('col1', 'col4'), missing_policy='raise', value=100)"
+        "FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise', value=100)"
     )
 
 
 def test_fill_null_transformer_str() -> None:
     assert str(FillNull(columns=["col1", "col4"])) == (
-        "FillNullTransformer(columns=('col1', 'col4'), missing_policy='raise')"
+        "FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_fill_null_transformer_str_with_kwargs() -> None:
     assert str(FillNull(columns=["col1", "col4"], value=100)) == (
-        "FillNullTransformer(columns=('col1', 'col4'), missing_policy='raise', value=100)"
+        "FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise', value=100)"
     )
 
 
@@ -333,6 +363,28 @@ def test_fill_null_transformer_transform_columns_none(dataframe: pl.DataFrame) -
             schema={
                 "col1": pl.Int64,
                 "col2": pl.Float64,
+                "col4": pl.Float64,
+            },
+        ),
+    )
+
+
+def test_fill_null_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = FillNull(value=100, exclude_columns=["col4", "col5"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 100],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", "100"],
+                "col4": [1.2, float("nan"), 3.2, None, 5.2],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float64,
+                "col3": pl.String,
                 "col4": pl.Float64,
             },
         ),

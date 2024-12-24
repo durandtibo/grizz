@@ -27,6 +27,9 @@ class FillNanTransformer(BaseColumnsTransformer):
     Args:
         columns: The columns to prepare. If ``None``, it processes all
             the columns of type string.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -45,7 +48,7 @@ class FillNanTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import FillNan
     >>> transformer = FillNan(columns=["col1", "col4"], value=100)
     >>> transformer
-    FillNanTransformer(columns=('col1', 'col4'), missing_policy='raise', value=100)
+    FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), missing_policy='raise', value=100)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, None],
@@ -86,13 +89,27 @@ class FillNanTransformer(BaseColumnsTransformer):
     """
 
     def __init__(
-        self, columns: Sequence[str] | None = None, missing_policy: str = "raise", **kwargs: Any
+        self,
+        columns: Sequence[str] | None = None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
+        )
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line({"columns": self._columns, "missing_policy": self._missing_policy})
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "exclude_columns": self._exclude_columns,
+                "missing_policy": self._missing_policy,
+            }
+        )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
@@ -116,6 +133,9 @@ class FillNullTransformer(BaseColumnsTransformer):
     Args:
         columns: The columns to prepare. If ``None``, it processes all
             the columns of type string.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -134,7 +154,7 @@ class FillNullTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import FillNull
     >>> transformer = FillNull(columns=["col1", "col4"], value=100)
     >>> transformer
-    FillNullTransformer(columns=('col1', 'col4'), missing_policy='raise', value=100)
+    FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), missing_policy='raise', value=100)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, None],
@@ -175,13 +195,27 @@ class FillNullTransformer(BaseColumnsTransformer):
     """
 
     def __init__(
-        self, columns: Sequence[str] | None = None, missing_policy: str = "raise", **kwargs: Any
+        self,
+        columns: Sequence[str] | None = None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
+        )
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line({"columns": self._columns, "missing_policy": self._missing_policy})
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "exclude_columns": self._exclude_columns,
+                "missing_policy": self._missing_policy,
+            }
+        )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
