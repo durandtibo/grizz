@@ -28,11 +28,19 @@ def dataframe() -> pl.DataFrame:
 
 
 def test_column_selection_transformer_repr() -> None:
-    assert repr(ColumnSelection(columns=["col1", "col2"])).startswith("ColumnSelectionTransformer(")
+    assert (
+        repr(ColumnSelection(columns=["col1", "col2"]))
+        == "ColumnSelectionTransformer(columns=('col1', 'col2'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
 
 
 def test_column_selection_transformer_str() -> None:
-    assert str(ColumnSelection(columns=["col1", "col2"])).startswith("ColumnSelectionTransformer(")
+    assert (
+        str(ColumnSelection(columns=["col1", "col2"]))
+        == "ColumnSelectionTransformer(columns=('col1', 'col2'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
 
 
 def test_column_selection_transformer_fit(
@@ -62,6 +70,35 @@ def test_column_selection_fit_transformer_transform(dataframe: pl.DataFrame) -> 
 
 def test_column_selection_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = ColumnSelection(columns=["col1", "col2"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+                "col2": [1, None, 3, None, 5],
+            }
+        ),
+    )
+
+
+def test_column_selection_transformer_transform_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = ColumnSelection()
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+                "col2": [1, None, 3, None, 5],
+                "col3": [None, None, None, None, None],
+            }
+        ),
+    )
+
+
+def test_column_selection_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = ColumnSelection(exclude_columns=["col3", "col4"])
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
