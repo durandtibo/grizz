@@ -153,6 +153,9 @@ class DropNullRowTransformer(BaseColumnsTransformer):
     Args:
         columns: The columns to check. If set to ``None`` (default),
             use all columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -170,7 +173,7 @@ class DropNullRowTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import DropNullRow
     >>> transformer = DropNullRow()
     >>> transformer
-    DropNullRowTransformer(columns=None, missing_policy='raise')
+    DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
@@ -215,9 +218,9 @@ class DropNullRowTransformer(BaseColumnsTransformer):
         )
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info("Dropping all rows that contain null values....")
-        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
+        logger.info(f"Dropping all rows that contain null values in {len(columns):,} columns....")
+        self._check_input_columns(frame)
         initial_shape = frame.shape
         out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))
         logger.info(
