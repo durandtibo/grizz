@@ -33,7 +33,11 @@ class JsonDecodeTransformer(BaseColumnsTransformer):
         columns: The columns to parse. ``None`` means all the
             columns.
         dtype: The dtype to cast the extracted value to.
-            If ``None``, the dtype will be inferred from the JSON value.
+            If ``None``, the dtype will be inferred from the JSON
+            value.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -51,7 +55,7 @@ class JsonDecodeTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import JsonDecode
     >>> transformer = JsonDecode(columns=["col1", "col3"])
     >>> transformer
-    JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise')
+    JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
@@ -93,12 +97,17 @@ class JsonDecodeTransformer(BaseColumnsTransformer):
 
     def __init__(
         self,
-        columns: Sequence[str] | None,
+        columns: Sequence[str] | None = None,
         dtype: PolarsDataType | PythonDataType | None = None,
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
+        )
         self._dtype = dtype
         self._kwargs = kwargs
 
@@ -107,6 +116,7 @@ class JsonDecodeTransformer(BaseColumnsTransformer):
             {
                 "columns": self._columns,
                 "dtype": self._dtype,
+                "exclude_columns": self._exclude_columns,
                 "missing_policy": self._missing_policy,
             }
         )

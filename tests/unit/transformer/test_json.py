@@ -26,27 +26,29 @@ def dataframe() -> pl.DataFrame:
 
 def test_json_decode_transformer_repr() -> None:
     assert repr(JsonDecode(columns=["col1", "col3"])) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise')"
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_json_decode_transformer_repr_with_kwargs() -> None:
     assert repr(JsonDecode(columns=["col1", "col3"], strict=False)) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise', "
-        "strict=False)"
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
     )
 
 
 def test_json_decode_transformer_str() -> None:
     assert str(JsonDecode(columns=["col1", "col3"])) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise')"
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_json_decode_transformer_str_with_kwargs() -> None:
     assert str(JsonDecode(columns=["col1", "col3"], strict=False)) == (
-        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, missing_policy='raise', "
-        "strict=False)"
+        "JsonDecodeTransformer(columns=('col1', 'col3'), dtype=None, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
     )
 
 
@@ -179,7 +181,7 @@ def test_json_decode_transformer_transform_dtype() -> None:
 
 
 def test_json_decode_transformer_transform_columns_none(dataframe: pl.DataFrame) -> None:
-    transformer = JsonDecode(columns=None)
+    transformer = JsonDecode()
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -187,6 +189,21 @@ def test_json_decode_transformer_transform_columns_none(dataframe: pl.DataFrame)
             {"list": [[], [1]], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
             schema={
                 "list": pl.List(pl.Int64),
+                "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+            },
+        ),
+    )
+
+
+def test_json_decode_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = JsonDecode(exclude_columns=["list", "col1"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"list": ["[]", "[1]"], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
+            schema={
+                "list": pl.String,
                 "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
             },
         ),
