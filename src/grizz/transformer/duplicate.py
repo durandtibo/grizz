@@ -26,6 +26,9 @@ class DropDuplicateTransformer(BaseColumnsTransformer):
     Args:
         columns: The columns to check. If set to ``None`` (default),
             use all columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -44,7 +47,7 @@ class DropDuplicateTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import DropDuplicate
     >>> transformer = DropDuplicate(keep="first", maintain_order=True)
     >>> transformer
-    DropDuplicateTransformer(columns=None, missing_policy='raise', keep=first, maintain_order=True)
+    DropDuplicateTransformer(columns=None, exclude_columns=(), missing_policy='raise', keep=first, maintain_order=True)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 1],
@@ -86,14 +89,25 @@ class DropDuplicateTransformer(BaseColumnsTransformer):
     def __init__(
         self,
         columns: Sequence[str] | None = None,
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
+        )
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line({"columns": self._columns, "missing_policy": self._missing_policy})
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "exclude_columns": self._exclude_columns,
+                "missing_policy": self._missing_policy,
+            }
+        )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
