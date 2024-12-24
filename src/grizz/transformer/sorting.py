@@ -87,7 +87,9 @@ class SortTransformer(BaseColumnsTransformer):
         **kwargs: Any,
     ) -> None:
         super().__init__(
-            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
         )
         self._kwargs = kwargs
 
