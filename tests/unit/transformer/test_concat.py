@@ -35,14 +35,18 @@ def dataframe() -> pl.DataFrame:
 
 
 def test_concat_transformer_repr() -> None:
-    assert repr(ConcatColumns(columns=["col1", "col3"], out_col="out")).startswith(
-        "ConcatColumnsTransformer("
+    assert (
+        repr(ConcatColumns(columns=["col1", "col3"], out_col="out"))
+        == "ConcatColumnsTransformer(columns=('col1', 'col3'), out_col='out', "
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
 def test_concat_transformer_str() -> None:
-    assert str(ConcatColumns(columns=["col1", "col3"], out_col="out")).startswith(
-        "ConcatColumnsTransformer("
+    assert (
+        str(ConcatColumns(columns=["col1", "col3"], out_col="out"))
+        == "ConcatColumnsTransformer(columns=('col1', 'col3'), out_col='out', "
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -129,6 +133,30 @@ def test_concat_transformer_transform_2_cols(dataframe: pl.DataFrame) -> None:
 
 def test_concat_transformer_transform_3_cols(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="out")
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [11, 12, 13, 14, 15],
+                "col2": [21, 22, 23, 24, 25],
+                "col3": [31, 32, 33, 34, 35],
+                "col4": ["a", "b", "c", "d", "e"],
+                "out": [[11, 21, 31], [12, 22, 32], [13, 23, 33], [14, 24, 34], [15, 25, 35]],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Int64,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "out": pl.List(pl.Int64),
+            },
+        ),
+    )
+
+
+def test_concat_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = ConcatColumns(columns=None, exclude_columns=["col4", "col5"], out_col="out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
