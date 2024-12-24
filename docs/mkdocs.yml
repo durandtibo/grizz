@@ -25,6 +25,7 @@ nav:
   - Home: index.md
   - get_started.md
   - Reference:
+      - exporter: refs/exporter.md
       - ingestor: refs/ingestor.md
       - transformer: refs/transformer.md
       - utils: refs/utils.md

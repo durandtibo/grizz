@@ -1,4 +1,4 @@
-r"""Contain data ingestors."""
+r"""Contain DataFrame ingestors."""
 
 from __future__ import annotations
 
