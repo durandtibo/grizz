@@ -24,11 +24,19 @@ class BaseExporter(ABC, metaclass=AbstractFactory):
 
     ```pycon
 
+    >>> import polars as pl
     >>> from grizz.exporter import ParquetExporter
     >>> exporter = ParquetExporter(path="/path/to/frame.parquet")
     >>> exporter
     ParquetExporter(path=/path/to/frame.parquet)
-    >>> frame = exporter.ingest()  # doctest: +SKIP
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a", "b", "c", "d", "e"],
+    ...     }
+    ... )
+    >>> exporter.export(frame)  # doctest: +SKIP
 
     ```
     """
@@ -43,9 +51,17 @@ class BaseExporter(ABC, metaclass=AbstractFactory):
 
         ```pycon
 
+        >>> import polars as pl
         >>> from grizz.exporter import ParquetExporter
         >>> exporter = ParquetExporter(path="/path/to/frame.parquet")
-        >>> frame = exporter.ingest()  # doctest: +SKIP
+        >>> frame = pl.DataFrame(
+        ...     {
+        ...         "col1": [1, 2, 3, 4, 5],
+        ...         "col2": ["1", "2", "3", "4", "5"],
+        ...         "col3": ["a", "b", "c", "d", "e"],
+        ...     }
+        ... )
+        >>> exporter.export(frame)  # doctest: +SKIP
 
         ```
         """
@@ -73,7 +89,7 @@ def is_exporter_config(config: dict) -> bool:
 
     >>> from grizz.exporter import is_exporter_config
     >>> is_exporter_config(
-    ...     {"_target_": "grizz.exporter.CsvExporter", "path": "/path/to/data.csv"}
+    ...     {"_target_": "grizz.exporter.ParquetExporter", "path": "/path/to/data.parquet"}
     ... )
     True
 
@@ -102,10 +118,10 @@ def setup_exporter(
 
     >>> from grizz.exporter import setup_exporter
     >>> exporter = setup_exporter(
-    ...     {"_target_": "grizz.exporter.CsvExporter", "path": "/path/to/data.csv"}
+    ...     {"_target_": "grizz.exporter.ParquetExporter", "path": "/path/to/data.parquet"}
     ... )
     >>> exporter
-    CsvExporter(path=/path/to/data.csv)
+    ParquetExporter(path=/path/to/data.parquet)
 
     ```
     """
