@@ -35,6 +35,9 @@ class CastTransformer(BaseColumnsTransformer):
         columns: The columns to convert. ``None`` means all the
             columns.
         dtype: The target data type.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -53,7 +56,7 @@ class CastTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import Cast
     >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
-    CastTransformer(columns=('col1', 'col3'), dtype=Int32, missing_policy='raise')
+    CastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -97,10 +100,13 @@ class CastTransformer(BaseColumnsTransformer):
         self,
         columns: Sequence[str] | None,
         dtype: type[pl.DataType],
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+        )
         self._dtype = dtype
         self._kwargs = kwargs
 
@@ -109,6 +115,7 @@ class CastTransformer(BaseColumnsTransformer):
             {
                 "columns": self._columns,
                 "dtype": self._dtype,
+                "exclude_columns": self._exclude_columns,
                 "missing_policy": self._missing_policy,
             }
         )
@@ -140,6 +147,9 @@ class DecimalCastTransformer(CastTransformer):
         columns: The columns to convert. ``None`` means all the
             columns.
         dtype: The target data type.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -158,7 +168,7 @@ class DecimalCastTransformer(CastTransformer):
     >>> from grizz.transformer import DecimalCast
     >>> transformer = DecimalCast(columns=["col1", "col2"], dtype=pl.Float32)
     >>> transformer
-    DecimalCastTransformer(columns=('col1', 'col2'), dtype=Float32, missing_policy='raise')
+    DecimalCastTransformer(columns=('col1', 'col2'), dtype=Float32, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -218,6 +228,9 @@ class FloatCastTransformer(CastTransformer):
         columns: The columns to convert. ``None`` means all the
             columns.
         dtype: The target data type.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -236,7 +249,7 @@ class FloatCastTransformer(CastTransformer):
     >>> from grizz.transformer import FloatCast
     >>> transformer = FloatCast(columns=["col1", "col2"], dtype=pl.Int32)
     >>> transformer
-    FloatCastTransformer(columns=('col1', 'col2'), dtype=Int32, missing_policy='raise')
+    FloatCastTransformer(columns=('col1', 'col2'), dtype=Int32, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -296,6 +309,9 @@ class IntegerCastTransformer(CastTransformer):
         columns: The columns to convert. ``None`` means all the
             columns.
         dtype: The target data type.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -314,7 +330,7 @@ class IntegerCastTransformer(CastTransformer):
     >>> from grizz.transformer import IntegerCast
     >>> transformer = IntegerCast(columns=["col1", "col2"], dtype=pl.Float32)
     >>> transformer
-    IntegerCastTransformer(columns=('col1', 'col2'), dtype=Float32, missing_policy='raise')
+    IntegerCastTransformer(columns=('col1', 'col2'), dtype=Float32, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
