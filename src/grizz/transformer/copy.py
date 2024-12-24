@@ -117,6 +117,9 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
             columns.
         prefix: The column name prefix for the copied columns.
         suffix: The column name suffix for the copied columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -134,7 +137,7 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import CopyColumns
     >>> transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="_raw")
     >>> transformer
-    CopyColumnsTransformer(columns=('col1', 'col3'), prefix='', suffix='_raw', missing_policy='raise')
+    CopyColumnsTransformer(columns=('col1', 'col3'), prefix='', suffix='_raw', exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -179,9 +182,14 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
         columns: Sequence[str] | None,
         prefix: str,
         suffix: str,
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
+        )
         self._prefix = prefix
         self._suffix = suffix
 
@@ -191,6 +199,7 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
                 "columns": self._columns,
                 "prefix": self._prefix,
                 "suffix": self._suffix,
+                "exclude_columns": self._exclude_columns,
                 "missing_policy": self._missing_policy,
             }
         )

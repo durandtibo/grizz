@@ -240,13 +240,15 @@ def test_copy_column_transformer_transform_exist_policy_warn(
 
 def test_copy_columns_transformer_repr() -> None:
     assert repr(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
-        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', missing_policy='raise')"
+        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', "
+        "exclude_columns=(), missing_policy='raise')"
     )
 
 
 def test_copy_columns_transformer_str() -> None:
     assert str(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
-        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', missing_policy='raise')"
+        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', "
+        "exclude_columns=(), missing_policy='raise')"
     )
 
 
@@ -400,6 +402,46 @@ def test_copy_columns_transformer_transform_columns_empty() -> None:
                 "col4": ["101", "102", "103", "104", "105"],
             },
             schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+        ),
+    )
+
+
+def test_copy_columns_transformer_transform_exclude_columns() -> None:
+    transformer = CopyColumns(
+        columns=None, exclude_columns=["col4", "col5"], prefix="p_", suffix="_s"
+    )
+    out = transformer.transform(
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["101", "102", "103", "104", "105"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+        )
+    )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["101", "102", "103", "104", "105"],
+                "p_col1_s": [1, 2, 3, 4, 5],
+                "p_col2_s": ["1", "2", "3", "4", "5"],
+                "p_col3_s": ["1", "2", "3", "4", "5"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.String,
+                "col3": pl.String,
+                "col4": pl.String,
+                "p_col1_s": pl.Int64,
+                "p_col2_s": pl.String,
+                "p_col3_s": pl.String,
+            },
         ),
     )
 
