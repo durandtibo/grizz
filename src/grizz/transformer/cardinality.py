@@ -31,6 +31,9 @@ class FilterCardinalityTransformer(BaseColumnsTransformer):
             of type string.
         n_min: The minimal cardinality (included).
         n_max: The maximal cardinality (excluded).
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -48,7 +51,7 @@ class FilterCardinalityTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import FilterCardinality
     >>> transformer = FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5)
     >>> transformer
-    FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, missing_policy='raise')
+    FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -93,9 +96,12 @@ class FilterCardinalityTransformer(BaseColumnsTransformer):
         columns: Sequence[str] | None = None,
         n_min: int = 0,
         n_max: int = float("inf"),
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+        )
         self._n_min = n_min
         self._n_max = n_max
 
@@ -105,6 +111,7 @@ class FilterCardinalityTransformer(BaseColumnsTransformer):
                 "columns": self._columns,
                 "n_min": self._n_min,
                 "n_max": self._n_max,
+                "exclude_columns": self._exclude_columns,
                 "missing_policy": self._missing_policy,
             }
         )
