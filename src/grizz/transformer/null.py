@@ -34,6 +34,9 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
             or equal to this threshold value, the column is removed.
             If set to ``1.0``, it removes all the columns that have
             only null values.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -52,7 +55,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import DropNullColumn
     >>> transformer = DropNullColumn()
     >>> transformer
-    DropNullColumnTransformer(columns=None, threshold=1.0, missing_policy='raise')
+    DropNullColumnTransformer(columns=None, threshold=1.0, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
@@ -95,10 +98,13 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
         self,
         columns: Sequence[str] | None = None,
         threshold: float = 1.0,
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
-        super().__init__(columns=columns, missing_policy=missing_policy)
+        super().__init__(
+            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+        )
         self._threshold = threshold
         self._kwargs = kwargs
 
@@ -107,6 +113,7 @@ class DropNullColumnTransformer(BaseColumnsTransformer):
             {
                 "columns": self._columns,
                 "threshold": self._threshold,
+                "exclude_columns": self._exclude_columns,
                 "missing_policy": self._missing_policy,
             }
         )
