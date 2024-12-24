@@ -9,7 +9,6 @@ import logging
 from typing import TYPE_CHECKING
 
 from grizz.transformer.columns import BaseColumnsTransformer
-from grizz.utils.column import find_common_columns
 from grizz.utils.format import str_col_diff
 
 if TYPE_CHECKING:
@@ -26,6 +25,9 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
 
     Args:
         columns: The columns to keep.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -33,7 +35,7 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no warning message is shown.
+            no warning message appears.
 
     Example usage:
 
@@ -43,7 +45,7 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
     >>> from grizz.transformer import ColumnSelection
     >>> transformer = ColumnSelection(columns=["col1", "col2"])
     >>> transformer
-    ColumnSelectionTransformer(columns=('col1', 'col2'), missing_policy='raise')
+    ColumnSelectionTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
@@ -78,7 +80,7 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Selecting {len(self.find_columns(frame)):,} columns...")
         self._check_input_columns(frame)
-        columns = find_common_columns(frame, self._columns)
+        columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.select(columns)
         logger.info(
