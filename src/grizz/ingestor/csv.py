@@ -54,5 +54,8 @@ class CsvIngestor(BaseIngestor):
         logger.info(f"Ingesting CSV data from {self._path} | size={human_file_size(self._path)}...")
         with timeblock("DataFrame ingestion time: {time}"):
             frame = pl.read_csv(self._path, **self._kwargs)
-            logger.info(f"DataFrame ingested | shape: {frame.shape}")
+            logger.info(
+                f"DataFrame ingested | shape: {frame.shape} | "
+                f"estimated size: {frame.estimated_size('mb')} MB"
+            )
         return frame
