@@ -198,13 +198,15 @@ def frame_row() -> pl.DataFrame:
 
 def test_drop_null_row_transformer_repr() -> None:
     assert repr(DropNullRow(columns=["col1", "col3"])) == (
-        "DropNullRowTransformer(columns=('col1', 'col3'), missing_policy='raise')"
+        "DropNullRowTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_drop_null_row_transformer_str() -> None:
     assert str(DropNullRow(columns=["col1", "col3"])) == (
-        "DropNullRowTransformer(columns=('col1', 'col3'), missing_policy='raise')"
+        "DropNullRowTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
