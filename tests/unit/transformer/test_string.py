@@ -30,25 +30,29 @@ def dataframe() -> pl.DataFrame:
 
 def test_strip_chars_transformer_repr() -> None:
     assert repr(StripChars(columns=["col1", "col3"])) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise')"
+        "StripCharsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_strip_chars_transformer_repr_with_kwargs() -> None:
     assert repr(StripChars(columns=["col1", "col3"], characters=None)) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise', characters=None)"
+        "StripCharsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', characters=None)"
     )
 
 
 def test_strip_chars_transformer_str() -> None:
     assert str(StripChars(columns=["col1", "col3"])) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise')"
+        "StripCharsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_strip_chars_transformer_str_with_kwargs() -> None:
     assert str(StripChars(columns=["col1", "col3"], characters=None)) == (
-        "StripCharsTransformer(columns=('col1', 'col3'), missing_policy='raise', characters=None)"
+        "StripCharsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', characters=None)"
     )
 
 
@@ -130,6 +134,22 @@ def test_strip_chars_transformer_transform_columns_none(dataframe: pl.DataFrame)
                 "col2": ["1", "2", "3", "4", "5"],
                 "col3": ["a", "b", "c", "d", "e"],
                 "col4": ["a", "b", "c", "d", "e"],
+            }
+        ),
+    )
+
+
+def test_strip_chars_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = StripChars(exclude_columns=["col4"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["a", "b", "c", "d", "e"],
+                "col4": ["a ", " b", "  c  ", "d", "e"],
             }
         ),
     )
