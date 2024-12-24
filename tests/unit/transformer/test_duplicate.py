@@ -28,22 +28,30 @@ def dataframe() -> pl.DataFrame:
 
 
 def test_drop_duplicate_transformer_repr() -> None:
-    assert repr(DropDuplicate()) == "DropDuplicateTransformer(columns=None, missing_policy='raise')"
+    assert (
+        repr(DropDuplicate())
+        == "DropDuplicateTransformer(columns=None, exclude_columns=(), missing_policy='raise')"
+    )
 
 
 def test_drop_duplicate_transformer_repr_with_kwargs() -> None:
     assert repr(DropDuplicate(columns=["col1", "col3"], keep="first")) == (
-        "DropDuplicateTransformer(columns=('col1', 'col3'), missing_policy='raise', keep=first)"
+        "DropDuplicateTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', keep=first)"
     )
 
 
 def test_drop_duplicate_transformer_str() -> None:
-    assert str(DropDuplicate()) == "DropDuplicateTransformer(columns=None, missing_policy='raise')"
+    assert (
+        str(DropDuplicate())
+        == "DropDuplicateTransformer(columns=None, exclude_columns=(), missing_policy='raise')"
+    )
 
 
 def test_drop_duplicate_transformer_str_with_kwargs() -> None:
     assert str(DropDuplicate(columns=["col1", "col3"], keep="first")) == (
-        "DropDuplicateTransformer(columns=('col1', 'col3'), missing_policy='raise', keep=first)"
+        "DropDuplicateTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', keep=first)"
     )
 
 
@@ -98,11 +106,25 @@ def test_drop_duplicate_transformer_transform_columns(dataframe: pl.DataFrame) -
         pl.DataFrame(
             {
                 "col1": [1, 2, 3],
-                "col2": [
-                    "1",
-                    "2",
-                    "3",
-                ],
+                "col2": ["1", "2", "3"],
+                "col3": ["1", "2", "3"],
+                "col4": ["a", "a", "a"],
+            }
+        ),
+    )
+
+
+def test_drop_duplicate_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = DropDuplicate(
+        exclude_columns=["col1", "col2", "col5"], keep="first", maintain_order=True
+    )
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3],
+                "col2": ["1", "2", "3"],
                 "col3": ["1", "2", "3"],
                 "col4": ["a", "a", "a"],
             }
