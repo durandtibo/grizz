@@ -91,7 +91,7 @@ def setup_ingestor(
     by using the ``BaseIngestor`` factory function.
 
     Args:
-        ingestor: Specifies an ingestor or its configuration.
+        ingestor: An ingestor or its configuration.
 
     Returns:
         An instantiated ingestor.
