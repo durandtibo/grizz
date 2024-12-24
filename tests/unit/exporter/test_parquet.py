@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import polars as pl
 import pytest
+from polars.testing import assert_frame_equal
 
 from grizz.exporter import ParquetExporter
 
@@ -18,7 +19,8 @@ def dataframe() -> pl.DataFrame:
             "col1": [1, 2, 3, 4, 5],
             "col2": ["a", "b", "c", "d", "e"],
             "col3": [1.2, 2.2, 3.2, 4.2, 5.2],
-        }
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64},
     )
 
 
@@ -59,3 +61,15 @@ def test_parquet_exporter_export_with_kwargs(tmp_path: Path, dataframe: pl.DataF
     assert not path.is_file()
     ParquetExporter(path, compression="gzip").export(dataframe)
     assert path.is_file()
+
+    assert_frame_equal(
+        pl.read_parquet(path),
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["a", "b", "c", "d", "e"],
+                "col3": [1.2, 2.2, 3.2, 4.2, 5.2],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64},
+        ),
+    )
