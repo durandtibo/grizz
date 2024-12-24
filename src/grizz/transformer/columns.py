@@ -33,6 +33,9 @@ class BaseColumnsTransformer(BaseTransformer):
     Args:
         columns: The columns to prepare. If ``None``, it processes all
             the columns of type string.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -93,15 +96,23 @@ class BaseColumnsTransformer(BaseTransformer):
     def __init__(
         self,
         columns: Sequence[str] | None = None,
+        exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
     ) -> None:
         self._columns = tuple(columns) if columns is not None else None
+        self._exclude_columns = exclude_columns
 
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
 
     def __repr__(self) -> str:
-        args = repr_mapping_line({"columns": self._columns, "missing_policy": self._missing_policy})
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "exclude_columns": self._exclude_columns,
+                "missing_policy": self._missing_policy,
+            }
+        )
         return f"{self.__class__.__qualname__}({args})"
 
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
@@ -142,9 +153,9 @@ class BaseColumnsTransformer(BaseTransformer):
 
         ```
         """
-        if self._columns is None:
-            return tuple(frame.columns)
-        return self._columns
+        cols = list(frame.columns if self._columns is None else self._columns)
+        [cols.remove(col) for col in self._exclude_columns if col in cols]
+        return tuple(cols)
 
     def find_common_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the common columns.
