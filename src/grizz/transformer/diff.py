@@ -34,7 +34,7 @@ class DiffTransformer(BaseColumnTransformer):
             If ``'warn'``, a warning is raised if at least one column
             already exist and the existing columns are overwritten.
             If ``'ignore'``, the existing columns are overwritten and
-            no warning message is shown.
+            no warning message appears.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -42,7 +42,7 @@ class DiffTransformer(BaseColumnTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no warning message is shown.
+            no warning message appears.
 
     Example usage:
 

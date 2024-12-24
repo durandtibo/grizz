@@ -124,7 +124,7 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
             If ``'warn'``, a warning is raised if at least one column
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
-            no warning message is shown.
+            no warning message appears.
 
     Example usage:
 
