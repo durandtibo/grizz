@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["BaseIngestor", "is_ingestor_config", "setup_ingestor"]
 
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from objectory import AbstractFactory
@@ -33,6 +33,7 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
     ```
     """
 
+    @abstractmethod
     def ingest(self) -> pl.DataFrame:
         r"""Ingest a DataFrame.
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["BaseExporter", "is_exporter_config", "setup_exporter"]
 
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from objectory import AbstractFactory
@@ -41,6 +41,7 @@ class BaseExporter(ABC, metaclass=AbstractFactory):
     ```
     """
 
+    @abstractmethod
     def export(self, frame: pl.DataFrame) -> None:
         r"""Export a DataFrame.
 
