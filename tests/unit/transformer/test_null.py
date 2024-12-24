@@ -28,27 +28,29 @@ def frame_col() -> pl.DataFrame:
 
 def test_drop_null_column_transformer_repr() -> None:
     assert repr(DropNullColumn(columns=["col1", "col3"])) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise')"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_drop_null_column_transformer_repr_with_kwargs() -> None:
     assert repr(DropNullColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise', "
-        "strict=False)"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
     )
 
 
 def test_drop_null_column_transformer_str() -> None:
     assert str(DropNullColumn(columns=["col1", "col3"])) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise')"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
+        "missing_policy='raise')"
     )
 
 
 def test_drop_null_column_transformer_str_with_kwargs() -> None:
     assert str(DropNullColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, missing_policy='raise', "
-        "strict=False)"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
     )
 
 
@@ -113,6 +115,21 @@ def test_drop_null_column_transformer_transform_columns(frame_col: pl.DataFrame)
         pl.DataFrame(
             {
                 "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+                "col3": [None, None, None, None, None],
+            }
+        ),
+    )
+
+
+def test_drop_null_column_transformer_transform_exclude_columns(frame_col: pl.DataFrame) -> None:
+    transformer = DropNullColumn(threshold=1.0, exclude_columns=["col3", "col4"])
+    out = transformer.transform(frame_col)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+                "col2": [1, None, 3, None, 5],
                 "col3": [None, None, None, None, None],
             }
         ),
