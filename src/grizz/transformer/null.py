@@ -13,7 +13,7 @@ import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_col_diff, str_kwargs, str_row_diff
+from grizz.utils.format import str_dataframe_shape_diff, str_kwargs
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -142,10 +142,7 @@ class DropNullColumnTransformer(BaseInNTransformer):
         )
         logger.info(f"dropped columns: {cols}")
         out = frame.drop(cols)
-        logger.info(
-            f"DataFrame shape: {initial_shape} -> {out.shape} | "
-            f"{str_col_diff(orig=initial_shape[1], final=out.shape[1])}"
-        )
+        logger.info(str_dataframe_shape_diff(orig=initial_shape, final=out.shape))
         return out
 
 
@@ -231,8 +228,5 @@ class DropNullRowTransformer(BaseInNTransformer):
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))
-        logger.info(
-            f"DataFrame shape: {initial_shape} -> {out.shape} | "
-            f"{str_row_diff(orig=initial_shape[0], final=out.shape[0])}"
-        )
+        logger.info(str_dataframe_shape_diff(orig=initial_shape, final=out.shape))
         return out
