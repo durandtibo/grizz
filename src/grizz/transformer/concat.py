@@ -18,7 +18,7 @@ class ConcatColumnsTransformer(BaseInNOut1Transformer):
     r"""Implement a transformer to concatenate columns into a new column.
 
     Args:
-        columns: The columns to concatenate. The column should have
+        columns: The columns to concatenate. The columns should have
             the same type or compatible types. If ``None``,
             it processes all the columns.
         out_col: The output column.
