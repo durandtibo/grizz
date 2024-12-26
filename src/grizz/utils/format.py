@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "human_byte",
     "str_col_diff",
+    "str_dataframe_shape_diff",
     "str_kwargs",
     "str_row_diff",
 ]
@@ -131,3 +132,33 @@ def str_row_diff(orig: int, final: int) -> str:
     diff_pct = 100 * diff / orig if orig > 0 else float("nan")
     row = "rows have" if diff > 1 else "row has"
     return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been removed"
+
+
+def str_dataframe_shape_diff(orig: tuple[int, int], final: tuple[int, int]) -> str:
+    r"""Return a string that indicates the difference of DataFrame
+    shapes.
+
+    Args:
+        orig: The original shape.
+        final: The final number of rows.
+
+    Returns:
+        The generated string with the difference of DataFrame shapes.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.format import str_dataframe_shape_diff
+    >>> str_dataframe_shape_diff(orig=(100, 10), final=(80, 8))
+    DataFrame shape: (100, 10) -> (80, 8) | 20/100 (20.0000 %) rows have been removed |
+    2/10 (20.0000 %) columns have been removed
+
+    ```
+    """
+    msg = f"DataFrame shape: {orig} -> {final}"
+    if orig[0] != final[0]:
+        msg += f" | {str_row_diff(orig=orig[0], final=final[0])}"
+    if orig[1] != final[1]:
+        msg += f" | {str_col_diff(orig=orig[1], final=final[1])}"
+    return msg
