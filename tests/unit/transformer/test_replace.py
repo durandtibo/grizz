@@ -33,13 +33,59 @@ def test_replace_transformer_str() -> None:
 
 
 def test_replace_transformer_fit(caplog: pytest.LogCaptureFixture) -> None:
-    transformer = Replace(in_col="col1", out_col="out")
-    frame = pl.DataFrame({"old": ["a", "b", "c", "d", "e"]})
+    transformer = Replace(in_col="col", out_col="out")
+    frame = pl.DataFrame({"col": ["a", "b", "c", "d", "e"]})
     with caplog.at_level(logging.INFO):
         transformer.fit(frame)
     assert caplog.messages[0].startswith(
         "Skipping 'ReplaceTransformer.fit' as there are no parameters available to fit"
     )
+
+
+def test_replace_transformer_fit_missing_policy_ignore() -> None:
+    transformer = Replace(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="ignore"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame)
+
+
+def test_replace_transformer_fit_missing_policy_raise() -> None:
+    transformer = Replace(in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3})
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+        transformer.fit(frame)
+
+
+def test_replace_transformer_fit_missing_policy_warn() -> None:
+    transformer = Replace(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="warn"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+    ):
+        transformer.fit(frame)
 
 
 def test_replace_transformer_fit_transform() -> None:
@@ -220,13 +266,59 @@ def test_replace_strict_transformer_str() -> None:
 
 
 def test_replace_strict_transformer_fit(caplog: pytest.LogCaptureFixture) -> None:
-    transformer = ReplaceStrict(in_col="col1", out_col="out")
-    frame = pl.DataFrame({"old": ["a", "b", "c", "d", "e"]})
+    transformer = ReplaceStrict(in_col="col", out_col="out")
+    frame = pl.DataFrame({"col": ["a", "b", "c", "d", "e"]})
     with caplog.at_level(logging.INFO):
         transformer.fit(frame)
     assert caplog.messages[0].startswith(
         "Skipping 'ReplaceStrictTransformer.fit' as there are no parameters available to fit"
     )
+
+
+def test_replace_strict_transformer_fit_missing_policy_ignore() -> None:
+    transformer = ReplaceStrict(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="ignore"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame)
+
+
+def test_replace_strict_transformer_fit_missing_policy_raise() -> None:
+    transformer = ReplaceStrict(in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3})
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+        transformer.fit(frame)
+
+
+def test_replace_strict_transformer_fit_missing_policy_warn() -> None:
+    transformer = ReplaceStrict(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="warn"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+    ):
+        transformer.fit(frame)
 
 
 def test_replace_strict_transformer_fit_transform() -> None:
