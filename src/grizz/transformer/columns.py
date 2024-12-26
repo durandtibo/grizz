@@ -88,7 +88,7 @@ class BaseIn1Out1Transformer(BaseTransformer):
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
-        self._check_input_column(frame)
+        self.check_input_column(frame)
         if self._in_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.fit' "
@@ -102,17 +102,17 @@ class BaseIn1Out1Transformer(BaseTransformer):
         return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_input_column(frame)
+        self.check_input_column(frame)
         if self._in_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.transform' "
                 f"because the input column ({self._in_col}) is missing"
             )
             return frame
-        self._check_output_column(frame)
+        self.check_output_column(frame)
         return self._transform(frame)
 
-    def _check_input_column(self, frame: pl.DataFrame) -> None:
+    def check_input_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the input column is missing.
 
         Args:
@@ -120,7 +120,7 @@ class BaseIn1Out1Transformer(BaseTransformer):
         """
         check_missing_column(frame, column=self._in_col, missing_policy=self._missing_policy)
 
-    def _check_output_column(self, frame: pl.DataFrame) -> None:
+    def check_output_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the output column already exists.
 
         Args:
@@ -251,7 +251,7 @@ class BaseIn2Out1Transformer(BaseTransformer):
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
-        self._check_input_columns(frame)
+        self.check_input_columns(frame)
         if self._in1_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.fit' "
@@ -271,7 +271,7 @@ class BaseIn2Out1Transformer(BaseTransformer):
         return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_input_columns(frame)
+        self.check_input_columns(frame)
         if self._in1_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.transform' "
@@ -284,10 +284,10 @@ class BaseIn2Out1Transformer(BaseTransformer):
                 f"because the input column ({self._in2_col}) is missing"
             )
             return frame
-        self._check_output_column(frame)
+        self.check_output_column(frame)
         return self._transform(frame)
 
-    def _check_input_columns(self, frame: pl.DataFrame) -> None:
+    def check_input_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if any of the input columns is missing.
 
         Args:
@@ -296,7 +296,7 @@ class BaseIn2Out1Transformer(BaseTransformer):
         check_missing_column(frame, column=self._in1_col, missing_policy=self._missing_policy)
         check_missing_column(frame, column=self._in2_col, missing_policy=self._missing_policy)
 
-    def _check_output_column(self, frame: pl.DataFrame) -> None:
+    def check_output_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the output column already exists.
 
         Args:
@@ -415,7 +415,7 @@ class BaseInNTransformer(BaseTransformer):
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
-        self._check_input_columns(frame)
+        self.check_input_columns(frame)
         self._fit(frame)
 
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
@@ -423,7 +423,7 @@ class BaseInNTransformer(BaseTransformer):
         return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_input_columns(frame)
+        self.check_input_columns(frame)
         return self._transform(frame)
 
     def find_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
@@ -537,7 +537,7 @@ class BaseInNTransformer(BaseTransformer):
         """
         return find_missing_columns(frame, self.find_columns(frame))
 
-    def _check_input_columns(self, frame: pl.DataFrame) -> None:
+    def check_input_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if some input columns are missing.
 
         Args:
@@ -676,15 +676,15 @@ class BaseInNOut1Transformer(BaseInNTransformer):
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
-        self._check_input_columns(frame)
+        self.check_input_columns(frame)
         self._fit(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_input_columns(frame)
-        self._check_output_column(frame)
+        self.check_input_columns(frame)
+        self.check_output_column(frame)
         return self._transform(frame)
 
-    def _check_output_column(self, frame: pl.DataFrame) -> None:
+    def check_output_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the output column already exists.
 
         Args:
