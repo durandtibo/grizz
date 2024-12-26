@@ -23,6 +23,8 @@ __all__ = [
     "DecimalCast",
     "DecimalCastTransformer",
     "Diff",
+    "DiffHorizontal",
+    "DiffHorizontalTransformer",
     "DiffTransformer",
     "DropDuplicate",
     "DropDuplicateTransformer",
@@ -75,6 +77,8 @@ __all__ = [
 
 from grizz.transformer.abs_diff import AbsDiffColumnTransformer
 from grizz.transformer.abs_diff import AbsDiffColumnTransformer as AbsDiffColumn
+from grizz.transformer.abs_diff import DiffHorizontalTransformer
+from grizz.transformer.abs_diff import DiffHorizontalTransformer as DiffHorizontal
 from grizz.transformer.base import (
     BaseTransformer,
     is_transformer_config,
