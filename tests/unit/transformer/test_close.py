@@ -176,6 +176,56 @@ def test_close_columns_transformer_transform_int() -> None:
     )
 
 
+def test_close_columns_transformer_transform_atol() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": [1.0, 1.00001, 1.0001, 1.001, 1.01, 1.1],
+            "col2": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            "col3": ["a", "b", "c", "d", "e", "f"],
+        },
+        schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
+    )
+    transformer = CloseColumns(actual="col1", expected="col2", out_col="out", atol=1e-3, rtol=0.0)
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 1.00001, 1.0001, 1.001, 1.01, 1.1],
+                "col2": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                "col3": ["a", "b", "c", "d", "e", "f"],
+                "out": [True, True, True, False, False, False],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String, "out": pl.Boolean},
+        ),
+    )
+
+
+def test_close_columns_transformer_transform_rtol() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": [1.0, 1.00001, 1.0001, 1.001, 1.01, 1.1],
+            "col2": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            "col3": ["a", "b", "c", "d", "e", "f"],
+        },
+        schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
+    )
+    transformer = CloseColumns(actual="col1", expected="col2", out_col="out", rtol=1e-3, atol=0.0)
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 1.00001, 1.0001, 1.001, 1.01, 1.1],
+                "col2": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                "col3": ["a", "b", "c", "d", "e", "f"],
+                "out": [True, True, True, False, False, False],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String, "out": pl.Boolean},
+        ),
+    )
+
+
 def test_close_columns_transformer_transform_empty() -> None:
     frame = pl.DataFrame(
         {"col1": [], "col2": []},

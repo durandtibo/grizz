@@ -116,8 +116,8 @@ class CloseColumnsTransformer(BaseIn2Out1Transformer):
             exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
-        self._atol = atol
-        self._rtol = rtol
+        self._atol = float(atol)
+        self._rtol = float(rtol)
         self._equal_nan = equal_nan
 
     def __repr__(self) -> str:
