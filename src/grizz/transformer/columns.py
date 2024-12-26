@@ -155,7 +155,7 @@ class BaseIn2Out1Transformer(BaseTransformer):
 
     Args:
         in1_col: The first input column name.
-        in2_col: The seconf input column name.
+        in2_col: The second input column name.
         out_col: The output column name.
         exist_policy: The policy on how to handle existing columns.
             The following options are available: ``'ignore'``,
