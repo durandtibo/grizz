@@ -8,7 +8,7 @@ __all__ = ["ColumnSelectionTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_col_diff
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ColumnSelectionTransformer(BaseColumnsTransformer):
+class ColumnSelectionTransformer(BaseInNTransformer):
     r"""Implement a ``polars.DataFrame`` transformer to select a subset
     of columns.
 
@@ -71,15 +71,14 @@ class ColumnSelectionTransformer(BaseColumnsTransformer):
     ```
     """
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Selecting {len(self.find_columns(frame)):,} columns...")
-        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.select(columns)
