@@ -12,8 +12,7 @@ import polars as pl
 import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.column import BaseColumnTransformer
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns import BaseColumnsTransformer, BaseIn1Out1Transformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class TimeToSecondTransformer(BaseColumnTransformer):
+class TimeToSecondTransformer(BaseIn1Out1Transformer):
     r"""Implement a transformer to convert a column with time values to
     seconds.
 
@@ -101,22 +100,14 @@ class TimeToSecondTransformer(BaseColumnTransformer):
     ```
     """
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Converting time column ({self._in_col}) to seconds ({self._out_col})...")
-        self._check_input_column(frame)
-        if self._in_col not in frame:
-            logger.info(
-                f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in_col}) is missing"
-            )
-            return frame
-        self._check_output_column(frame)
         return frame.with_columns(
             frame.select(
                 pl.col(self._in_col)
