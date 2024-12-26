@@ -59,6 +59,27 @@ def test_copy_column_transformer_fit(
     )
 
 
+def test_copy_column_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = CopyColumn(in_col="in", out_col="out", missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(dataframe)
+
+
+def test_copy_column_transformer_fit_missing_policy_raise(dataframe: pl.DataFrame) -> None:
+    transformer = CopyColumn(in_col="in", out_col="out")
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+        transformer.fit(dataframe)
+
+
+def test_copy_column_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = CopyColumn(in_col="in", out_col="out", missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+    ):
+        transformer.fit(dataframe)
+
+
 def test_copy_column_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = CopyColumn(in_col="col1", out_col="out")
     out = transformer.fit_transform(dataframe)

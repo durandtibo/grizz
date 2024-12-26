@@ -10,8 +10,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.column import BaseColumnTransformer
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns import BaseColumnsTransformer, BaseIn1Out1Transformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CopyColumnTransformer(BaseColumnTransformer):
+class CopyColumnTransformer(BaseIn1Out1Transformer):
     r"""Implement a ``polars.DataFrame`` to copy a column.
 
     Args:
@@ -90,22 +89,14 @@ class CopyColumnTransformer(BaseColumnTransformer):
     ```
     """
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Copying column {self._in_col} to {self._out_col} ...")
-        self._check_input_column(frame)
-        if self._in_col not in frame:
-            logger.info(
-                f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in_col}) is missing"
-            )
-            return frame
-        self._check_output_column(frame)
         return frame.with_columns(pl.col(self._in_col).alias(self._out_col))
 
 
