@@ -179,10 +179,10 @@ class BaseIn2Out1Transformer(BaseTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import AbsDiffColumn
-    >>> transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="diff")
+    >>> from grizz.transformer import AbsDiffHorizontal
+    >>> transformer = AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="diff")
     >>> transformer
-    AbsDiffColumnTransformer(in1_col='col1', in2_col='col2', out_col='diff', exist_policy='raise', missing_policy='raise')
+    AbsDiffHorizontalTransformer(in1_col='col1', in2_col='col2', out_col='diff', exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],

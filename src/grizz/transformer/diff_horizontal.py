@@ -3,7 +3,7 @@ difference between two columns."""
 
 from __future__ import annotations
 
-__all__ = ["AbsDiffColumnTransformer", "DiffHorizontalTransformer"]
+__all__ = ["AbsDiffHorizontalTransformer", "DiffHorizontalTransformer"]
 
 import logging
 
@@ -14,7 +14,7 @@ from grizz.transformer.columns import BaseIn2Out1Transformer
 logger = logging.getLogger(__name__)
 
 
-class AbsDiffColumnTransformer(BaseIn2Out1Transformer):
+class AbsDiffHorizontalTransformer(BaseIn2Out1Transformer):
     r"""Implement a transformer to compute the absolute difference
     between two columns.
 
@@ -46,10 +46,10 @@ class AbsDiffColumnTransformer(BaseIn2Out1Transformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import AbsDiffColumn
-    >>> transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="diff")
+    >>> from grizz.transformer import AbsDiffHorizontal
+    >>> transformer = AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="diff")
     >>> transformer
-    AbsDiffColumnTransformer(in1_col='col1', in2_col='col2', out_col='diff', exist_policy='raise', missing_policy='raise')
+    AbsDiffHorizontalTransformer(in1_col='col1', in2_col='col2', out_col='diff', exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
