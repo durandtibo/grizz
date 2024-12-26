@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseColumnsTransformer, BaseIn1Out1Transformer
+from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -100,7 +100,7 @@ class CopyColumnTransformer(BaseIn1Out1Transformer):
         return frame.with_columns(pl.col(self._in_col).alias(self._out_col))
 
 
-class CopyColumnsTransformer(BaseColumnsTransformer):
+class CopyColumnsTransformer(BaseInNTransformer):
     r"""Implement a transformer to copy some columns.
 
     Args:
@@ -196,13 +196,13 @@ class CopyColumnsTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Copying {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
             f"suffix={self._suffix!r} ..."
