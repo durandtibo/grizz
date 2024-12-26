@@ -59,6 +59,8 @@ __all__ = [
     "SqlTransformer",
     "StripChars",
     "StripCharsTransformer",
+    "SumHorizontal",
+    "SumHorizontalTransformer",
     "TimeDiff",
     "TimeDiffTransformer",
     "TimeToSecond",
@@ -139,6 +141,8 @@ from grizz.transformer.sorting import SortTransformer as Sort
 from grizz.transformer.sql import SqlTransformer
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
+from grizz.transformer.sum import SumHorizontalTransformer
+from grizz.transformer.sum import SumHorizontalTransformer as SumHorizontal
 from grizz.transformer.time import TimeToSecondTransformer
 from grizz.transformer.time import TimeToSecondTransformer as TimeToSecond
 from grizz.transformer.time import ToTimeTransformer
