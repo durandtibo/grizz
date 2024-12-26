@@ -34,7 +34,7 @@ def dataframe() -> pl.DataFrame:
 ##############################################
 
 
-def test_concat_transformer_repr() -> None:
+def test_concat_columns_transformer_repr() -> None:
     assert (
         repr(ConcatColumns(columns=["col1", "col3"], out_col="out"))
         == "ConcatColumnsTransformer(columns=('col1', 'col3'), out_col='out', "
@@ -42,7 +42,7 @@ def test_concat_transformer_repr() -> None:
     )
 
 
-def test_concat_transformer_str() -> None:
+def test_concat_columns_transformer_str() -> None:
     assert (
         str(ConcatColumns(columns=["col1", "col3"], out_col="out"))
         == "ConcatColumnsTransformer(columns=('col1', 'col3'), out_col='out', "
@@ -50,7 +50,9 @@ def test_concat_transformer_str() -> None:
     )
 
 
-def test_concat_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture) -> None:
+def test_concat_columns_transformer_fit(
+    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="out")
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
@@ -59,7 +61,7 @@ def test_concat_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCaptu
     )
 
 
-def test_concat_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(
         columns=["col1", "col3", "col5"], out_col="out", missing_policy="ignore"
     )
@@ -68,7 +70,7 @@ def test_concat_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -
         transformer.fit(dataframe)
 
 
-def test_concat_transformer_fit_missing_policy_raise(
+def test_concat_columns_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = ConcatColumns(columns=["col1", "col3", "col5"], out_col="out")
@@ -76,7 +78,7 @@ def test_concat_transformer_fit_missing_policy_raise(
         transformer.fit(dataframe)
 
 
-def test_concat_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(
         columns=["col1", "col3", "col5"], out_col="out", missing_policy="warn"
     )
@@ -86,7 +88,7 @@ def test_concat_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> 
         transformer.fit(dataframe)
 
 
-def test_concat_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="out")
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
@@ -110,7 +112,7 @@ def test_concat_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_concat_transformer_transform_1_col(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_1_col(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=["col1"], out_col="out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -134,7 +136,7 @@ def test_concat_transformer_transform_1_col(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_concat_transformer_transform_2_cols(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_2_cols(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -158,7 +160,7 @@ def test_concat_transformer_transform_2_cols(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_concat_transformer_transform_3_cols(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_3_cols(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -182,7 +184,7 @@ def test_concat_transformer_transform_3_cols(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_concat_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=None, exclude_columns=["col4", "col5"], out_col="out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -206,7 +208,7 @@ def test_concat_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -
     )
 
 
-def test_concat_transformer_transform_exist_policy_ignore(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_exist_policy_ignore(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="col2", exist_policy="ignore")
     with warnings.catch_warnings():
         warnings.simplefilter("error")
@@ -230,7 +232,7 @@ def test_concat_transformer_transform_exist_policy_ignore(dataframe: pl.DataFram
     )
 
 
-def test_concat_transformer_transform_exist_policy_raise(
+def test_concat_columns_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="col2")
@@ -238,7 +240,7 @@ def test_concat_transformer_transform_exist_policy_raise(
         transformer.transform(dataframe)
 
 
-def test_concat_transformer_transform_exist_policy_warn(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_exist_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="col2", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
@@ -264,7 +266,9 @@ def test_concat_transformer_transform_exist_policy_warn(dataframe: pl.DataFrame)
     )
 
 
-def test_concat_transformer_transform_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
     transformer = ConcatColumns(
         columns=["col1", "col3", "col5"], out_col="out", missing_policy="ignore"
     )
@@ -292,7 +296,7 @@ def test_concat_transformer_transform_missing_policy_ignore(dataframe: pl.DataFr
     )
 
 
-def test_concat_transformer_transform_missing_policy_raise(
+def test_concat_columns_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = ConcatColumns(columns=["col1", "col3", "col5"], out_col="out")
@@ -300,7 +304,7 @@ def test_concat_transformer_transform_missing_policy_raise(
         transformer.transform(dataframe)
 
 
-def test_concat_transformer_transform_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+def test_concat_columns_transformer_transform_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = ConcatColumns(
         columns=["col1", "col3", "col5"], out_col="out", missing_policy="warn"
     )
