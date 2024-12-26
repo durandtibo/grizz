@@ -99,7 +99,7 @@ class ConcatColumnsTransformer(BaseInNOut1Transformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Concatenating {len(self.find_columns(frame)):,} columns to {self._out_col}..."
+            f"Concatenating {len(self.find_columns(frame)):,} columns to {self._out_col!r} ..."
         )
         columns = self.find_common_columns(frame)
         return frame.with_columns(

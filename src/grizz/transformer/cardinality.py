@@ -12,7 +12,7 @@ import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_col_diff
+from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -138,8 +138,5 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         cols_to_drop = [col.name for col in valid.iter_columns() if not col.first()]
         logger.info(f"Dropping {len(cols_to_drop):,} columns: {cols_to_drop}")
         out = frame.drop(cols_to_drop)
-        logger.info(
-            f"DataFrame shape: {initial_shape} -> {out.shape} | "
-            f"{str_col_diff(orig=initial_shape[1], final=out.shape[1])}"
-        )
+        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
         return out

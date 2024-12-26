@@ -213,8 +213,8 @@ class TimeDiffTransformer(BaseTransformer):
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Computing the time difference between consecutive time steps | "
-            f"group_cols={self._group_cols} | time_col={self._time_col} | "
-            f"time_diff_col={self._time_diff_col} | shift={self._shift}"
+            f"group_cols={self._group_cols} | time_col={self._time_col!r} | "
+            f"time_diff_col={self._time_diff_col!r} | shift={self._shift}"
         )
         frame = frame.sort(by=[*self._group_cols, self._time_col])
         return frame.with_columns(
