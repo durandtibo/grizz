@@ -786,6 +786,54 @@ class BaseInNOut1Transformer(BaseInNTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import ConcatColumns
+    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="col")
+    >>> transformer
+    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [11, 12, 13, 14, 15],
+    ...         "col2": [21, 22, 23, 24, 25],
+    ...         "col3": [31, 32, 33, 34, 35],
+    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ i64  ┆ i64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 11   ┆ 21   ┆ 31   ┆ a    │
+    │ 12   ┆ 22   ┆ 32   ┆ b    │
+    │ 13   ┆ 23   ┆ 33   ┆ c    │
+    │ 14   ┆ 24   ┆ 34   ┆ d    │
+    │ 15   ┆ 25   ┆ 35   ┆ e    │
+    └──────┴──────┴──────┴──────┘
+    >>> out = transformer.fit_transform(frame)
+    >>> out
+    shape: (5, 5)
+    ┌──────┬──────┬──────┬──────┬──────────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col          │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---          │
+    │ i64  ┆ i64  ┆ i64  ┆ str  ┆ list[i64]    │
+    ╞══════╪══════╪══════╪══════╪══════════════╡
+    │ 11   ┆ 21   ┆ 31   ┆ a    ┆ [11, 21, 31] │
+    │ 12   ┆ 22   ┆ 32   ┆ b    ┆ [12, 22, 32] │
+    │ 13   ┆ 23   ┆ 33   ┆ c    ┆ [13, 23, 33] │
+    │ 14   ┆ 24   ┆ 34   ┆ d    ┆ [14, 24, 34] │
+    │ 15   ┆ 25   ┆ 35   ┆ e    ┆ [15, 25, 35] │
+    └──────┴──────┴──────┴──────┴──────────────┘
+
+
+    ```
     """
 
     def __init__(
