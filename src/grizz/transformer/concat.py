@@ -10,7 +10,6 @@ import polars as pl
 import polars.selectors as cs
 
 from grizz.transformer.columns import BaseInNOut1Transformer
-from grizz.utils.column import check_existing_columns
 
 logger = logging.getLogger(__name__)
 
@@ -106,11 +105,3 @@ class ConcatColumnsTransformer(BaseInNOut1Transformer):
         return frame.with_columns(
             frame.select(pl.concat_list(cs.by_name(columns).alias(self._out_col)))
         )
-
-    def _check_output_column(self, frame: pl.DataFrame) -> None:
-        r"""Check if the output column already exists.
-
-        Args:
-            frame: The input DataFrame to check.
-        """
-        check_existing_columns(frame, columns=[self._out_col], exist_policy=self._exist_policy)

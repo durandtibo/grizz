@@ -234,7 +234,7 @@ def test_concat_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="col2")
-    with pytest.raises(ColumnExistsError, match="1 column already exists in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match="column 'col2' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -242,7 +242,7 @@ def test_concat_transformer_transform_exist_policy_warn(dataframe: pl.DataFrame)
     transformer = ConcatColumns(columns=["col1", "col3"], out_col="col2", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
-        match="1 column already exists in the DataFrame and will be overwritten:",
+        match="column 'col2' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
