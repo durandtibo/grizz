@@ -127,7 +127,25 @@ def test_abs_diff_column_transformer_transform_empty() -> None:
     )
 
 
-def test_abs_diff_column_transformer_transform_missing_policy_ignore(
+def test_abs_diff_column_transformer_transform_missing_policy_ignore_in1(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(
+        in1_col="col", in2_col="col2", out_col="diff", missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"col1": [1, 2, 3, 4, 5], "col2": [5, 4, 3, 2, 1], "col3": ["a", "b", "c", "d", "e"]},
+            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.String},
+        ),
+    )
+
+
+def test_abs_diff_column_transformer_transform_missing_policy_ignore_in2(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffColumn(
@@ -145,59 +163,46 @@ def test_abs_diff_column_transformer_transform_missing_policy_ignore(
     )
 
 
-def test_abs_diff_column_transformer_transform_missing_policy_raise(
+def test_abs_diff_column_transformer_transform_missing_policy_raise_in1(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = AbsDiffColumn(in1_col="col1", in2_col="missing", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    transformer = AbsDiffColumn(in1_col="col", in2_col="col2", out_col="diff")
+    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
-def test_abs_diff_column_transformer_transform_missing_policy_warn(
+def test_abs_diff_column_transformer_transform_missing_policy_raise_in2(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(in1_col="col1", in2_col="missing", out_col="diff")
+    with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
+        transformer.transform(dataframe)
+
+
+def test_abs_diff_column_transformer_transform_missing_policy_warn_in1(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(
+        in1_col="col", in2_col="col2", out_col="diff", missing_policy="warn"
+    )
+    with pytest.warns(ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame"):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"col1": [1, 2, 3, 4, 5], "col2": [5, 4, 3, 2, 1], "col3": ["a", "b", "c", "d", "e"]},
+            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.String},
+        ),
+    )
+
+
+def test_abs_diff_column_transformer_transform_missing_policy_warn_in2(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffColumn(
         in1_col="col1", in2_col="missing", out_col="diff", missing_policy="warn"
     )
-    with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
-    ):
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {"col1": [1, 2, 3, 4, 5], "col2": [5, 4, 3, 2, 1], "col3": ["a", "b", "c", "d", "e"]},
-            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.String},
-        ),
-    )
-
-
-def test_abs_diff_column_transformer_transform_missing_in1(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = AbsDiffColumn(
-        in1_col="missing", in2_col="col2", out_col="diff", missing_policy="ignore"
-    )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {"col1": [1, 2, 3, 4, 5], "col2": [5, 4, 3, 2, 1], "col3": ["a", "b", "c", "d", "e"]},
-            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.String},
-        ),
-    )
-
-
-def test_abs_diff_column_transformer_transform_missing_in2(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = AbsDiffColumn(
-        in1_col="col1", in2_col="missing", out_col="diff", missing_policy="ignore"
-    )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
+    with pytest.warns(ColumnNotFoundWarning, match="column 'missing' is missing in the DataFrame"):
         out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
