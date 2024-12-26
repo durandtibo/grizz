@@ -65,6 +65,37 @@ def test_drop_null_column_transformer_fit(
     )
 
 
+def test_drop_null_column_transformer_fit_missing_policy_ignore(
+    frame_col: pl.DataFrame,
+) -> None:
+    transformer = DropNullColumn(
+        columns=["col1", "col2", "col5"], threshold=0.4, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_col)
+
+
+def test_drop_null_column_transformer_fit_missing_policy_raise(
+    frame_col: pl.DataFrame,
+) -> None:
+    transformer = DropNullColumn(columns=["col1", "col2", "col5"], threshold=0.4)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_col)
+
+
+def test_drop_null_column_transformer_fit_missing_policy_warn(
+    frame_col: pl.DataFrame,
+) -> None:
+    transformer = DropNullColumn(
+        columns=["col1", "col2", "col5"], threshold=0.4, missing_policy="warn"
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_col)
+
+
 def test_drop_null_column_transformer_fit_transform(frame_col: pl.DataFrame) -> None:
     transformer = DropNullColumn()
     out = transformer.fit_transform(frame_col)
@@ -236,6 +267,33 @@ def test_drop_null_row_transformer_fit(
     assert caplog.messages[0].startswith(
         "Skipping 'DropNullRowTransformer.fit' as there are no parameters available to fit"
     )
+
+
+def test_drop_null_row_transformer_fit_missing_policy_ignore(
+    frame_row: pl.DataFrame,
+) -> None:
+    transformer = DropNullRow(columns=["col1", "col2", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_row)
+
+
+def test_drop_null_row_transformer_fit_missing_policy_raise(
+    frame_row: pl.DataFrame,
+) -> None:
+    transformer = DropNullRow(columns=["col1", "col2", "col5"])
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_row)
+
+
+def test_drop_null_row_transformer_fit_missing_policy_warn(
+    frame_row: pl.DataFrame,
+) -> None:
+    transformer = DropNullRow(columns=["col1", "col2", "col5"], missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_row)
 
 
 def test_drop_null_row_transformer_fit_transform(frame_row: pl.DataFrame) -> None:
