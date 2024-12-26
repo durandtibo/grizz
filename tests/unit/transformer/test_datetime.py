@@ -131,6 +131,27 @@ def test_to_datetime_transformer_fit(
     )
 
 
+def test_to_datetime_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = ToDatetime(columns=["col1", "col3", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(dataframe)
+
+
+def test_to_datetime_transformer_fit_missing_policy_raise(dataframe: pl.DataFrame) -> None:
+    transformer = ToDatetime(columns=["col1", "col3", "col5"])
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(dataframe)
+
+
+def test_to_datetime_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = ToDatetime(columns=["col1", "col3", "col5"], missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(dataframe)
+
+
 def test_to_datetime_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = ToDatetime(columns=["col1", "col3"])
     out = transformer.fit_transform(dataframe)
