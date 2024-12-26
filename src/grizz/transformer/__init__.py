@@ -5,7 +5,6 @@ from __future__ import annotations
 __all__ = [
     "AbsDiffColumn",
     "AbsDiffColumnTransformer",
-    "BaseColumnsTransformer",
     "BaseIn1Out1Transformer",
     "BaseIn2Out1Transformer",
     "BaseInNOut1Transformer",
@@ -92,7 +91,6 @@ from grizz.transformer.casting import FloatCastTransformer as FloatCast
 from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.columns import (
-    BaseColumnsTransformer,
     BaseIn1Out1Transformer,
     BaseIn2Out1Transformer,
     BaseInNOut1Transformer,
