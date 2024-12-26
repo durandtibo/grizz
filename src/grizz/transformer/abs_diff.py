@@ -14,7 +14,7 @@ from grizz.transformer.base import BaseTransformer
 from grizz.utils.column import (
     check_column_exist_policy,
     check_column_missing_policy,
-    check_existing_columns,
+    check_existing_column,
     check_missing_column,
 )
 
@@ -170,4 +170,4 @@ class AbsDiffColumnTransformer(BaseTransformer):
         Args:
             frame: The input DataFrame to check.
         """
-        check_existing_columns(frame, columns=[self._out_col], exist_policy=self._exist_policy)
+        check_existing_column(frame, column=self._out_col, exist_policy=self._exist_policy)

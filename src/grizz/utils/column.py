@@ -234,7 +234,7 @@ def check_missing_column(
     if missing_policy == "raise":
         raise ColumnNotFoundError(msg)
     if missing_policy == "warn":
-        warnings.warn(msg, ColumnNotFoundWarning, stacklevel=2)
+        warnings.warn(msg + " and will be ignored", ColumnNotFoundWarning, stacklevel=2)
 
 
 def check_missing_columns(

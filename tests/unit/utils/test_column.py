@@ -91,7 +91,10 @@ def test_check_existing_column_raise(dataframe: pl.DataFrame) -> None:
 
 
 def test_check_existing_column_warn(dataframe: pl.DataFrame) -> None:
-    with pytest.warns(ColumnExistsWarning, match="column 'col1' already exists in the DataFrame"):
+    with pytest.warns(
+        ColumnExistsWarning,
+        match="column 'col1' already exists in the DataFrame and will be overwritten",
+    ):
         check_existing_column(dataframe, column="col1", exist_policy="warn")
 
 
@@ -171,7 +174,9 @@ def test_check_missing_column_raise(dataframe: pl.DataFrame) -> None:
 
 
 def test_check_missing_column_warn(dataframe: pl.DataFrame) -> None:
-    with pytest.warns(ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame"):
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignored"
+    ):
         check_missing_column(dataframe, column="col", missing_policy="warn")
 
 
