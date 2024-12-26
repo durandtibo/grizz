@@ -6,15 +6,11 @@ from __future__ import annotations
 __all__ = ["LabelEncoderTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
 
 import polars as pl
 
-from grizz.transformer.column import BaseColumnTransformer
+from grizz.transformer.columns import BaseIn1Out1Transformer
 from grizz.utils.imports import check_sklearn, is_sklearn_available
-
-if TYPE_CHECKING:
-    import numpy as np
 
 if is_sklearn_available():  # pragma: no cover
     from sklearn.preprocessing import LabelEncoder
@@ -22,7 +18,7 @@ if is_sklearn_available():  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-class LabelEncoderTransformer(BaseColumnTransformer):
+class LabelEncoderTransformer(BaseIn1Out1Transformer):
     r"""Implement a ``polars.DataFrame`` to encode the labels in a given
     column.
 
@@ -111,29 +107,11 @@ class LabelEncoderTransformer(BaseColumnTransformer):
         check_sklearn()
         self._encoder = LabelEncoder()
 
-    def fit(self, frame: pl.DataFrame) -> None:
+    def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(f"Fitting the label encoder to the data in column {self._in_col}")
-        self._check_input_column(frame)
-        if self._in_col not in frame:
-            logger.info(
-                f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in_col}) is missing"
-            )
-            return
-        self._encoder.fit(self._get_input_array(frame))
+        self._encoder.fit(frame[self._in_col].to_numpy())
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Encoding labels in {self._in_col} and saving output in {self._out_col} ...")
-        self._check_input_column(frame)
-        if self._in_col not in frame:
-            logger.info(
-                f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in_col}) is missing"
-            )
-            return frame
-        self._check_output_column(frame)
-        y = self._encoder.transform(self._get_input_array(frame))
+        y = self._encoder.transform(frame[self._in_col].to_numpy())
         return frame.with_columns(pl.from_numpy(y, schema=[self._out_col]))
-
-    def _get_input_array(self, frame: pl.DataFrame) -> np.ndarray:
-        return frame[self._in_col].to_numpy()
