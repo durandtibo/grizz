@@ -12,6 +12,8 @@ __all__ = [
     "BaseTransformer",
     "Cast",
     "CastTransformer",
+    "CloseColumns",
+    "CloseColumnsTransformer",
     "ColumnSelection",
     "ColumnSelectionTransformer",
     "ConcatColumns",
@@ -92,6 +94,8 @@ from grizz.transformer.casting import FloatCastTransformer
 from grizz.transformer.casting import FloatCastTransformer as FloatCast
 from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
+from grizz.transformer.close import CloseColumnsTransformer
+from grizz.transformer.close import CloseColumnsTransformer as CloseColumns
 from grizz.transformer.columns import (
     BaseIn1Out1Transformer,
     BaseIn2Out1Transformer,
