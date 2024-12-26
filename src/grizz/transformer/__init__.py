@@ -9,6 +9,7 @@ __all__ = [
     "BaseIn1Out1Transformer",
     "BaseIn2Out1Transformer",
     "BaseInNOut1Transformer",
+    "BaseInNTransformer",
     "BaseTransformer",
     "Cast",
     "CastTransformer",
@@ -95,6 +96,7 @@ from grizz.transformer.columns import (
     BaseIn1Out1Transformer,
     BaseIn2Out1Transformer,
     BaseInNOut1Transformer,
+    BaseInNTransformer,
 )
 from grizz.transformer.concat import ConcatColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer as ConcatColumns
