@@ -3,8 +3,8 @@ r"""Contain ``polars.DataFrame`` transformers."""
 from __future__ import annotations
 
 __all__ = [
-    "AbsDiffColumn",
-    "AbsDiffColumnTransformer",
+    "AbsDiffHorizontal",
+    "AbsDiffHorizontalTransformer",
     "BaseIn1Out1Transformer",
     "BaseIn2Out1Transformer",
     "BaseInNOut1Transformer",
@@ -75,10 +75,6 @@ __all__ = [
     "setup_transformer",
 ]
 
-from grizz.transformer.abs_diff import AbsDiffColumnTransformer
-from grizz.transformer.abs_diff import AbsDiffColumnTransformer as AbsDiffColumn
-from grizz.transformer.abs_diff import DiffHorizontalTransformer
-from grizz.transformer.abs_diff import DiffHorizontalTransformer as DiffHorizontal
 from grizz.transformer.base import (
     BaseTransformer,
     is_transformer_config,
@@ -114,6 +110,14 @@ from grizz.transformer.diff import DiffTransformer
 from grizz.transformer.diff import DiffTransformer as Diff
 from grizz.transformer.diff import TimeDiffTransformer
 from grizz.transformer.diff import TimeDiffTransformer as TimeDiff
+from grizz.transformer.diff_horizontal import AbsDiffHorizontalTransformer
+from grizz.transformer.diff_horizontal import (
+    AbsDiffHorizontalTransformer as AbsDiffHorizontal,
+)
+from grizz.transformer.diff_horizontal import DiffHorizontalTransformer
+from grizz.transformer.diff_horizontal import (
+    DiffHorizontalTransformer as DiffHorizontal,
+)
 from grizz.transformer.duplicate import DropDuplicateTransformer
 from grizz.transformer.duplicate import DropDuplicateTransformer as DropDuplicate
 from grizz.transformer.fill import FillNanTransformer
