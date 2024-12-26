@@ -6,6 +6,7 @@ __all__ = [
     "check_column_exist_policy",
     "check_column_missing_policy",
     "check_existing_columns",
+    "check_missing_column",
     "check_missing_columns",
     "find_common_columns",
     "find_missing_columns",
@@ -134,6 +135,55 @@ def check_existing_columns(
             f"and will be overwritten: {existing_cols}"
         )
         warnings.warn(msg, ColumnExistsWarning, stacklevel=2)
+
+
+def check_missing_column(
+    frame_or_cols: pl.DataFrame | Sequence, column: str, missing_policy: str = "raise"
+) -> None:
+    r"""Check if a column is missing.
+
+    Args:
+        frame_or_cols: The DataFrame or its columns.
+        column: The column to check.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if the column is missing. If ``'warn'``,
+            a warning is raised if the column is missing and the
+            missing columns are ignored. If ``'ignore'``, the missing
+            column is ignored and no warning message appears.
+
+    Raises:
+        ColumnNotFoundError: if the column is missing and
+            ``missing_policy='raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.column import check_missing_column
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> check_missing_column(frame, "col1", missing_policy="warn")
+
+    ```
+    """
+    check_column_missing_policy(missing_policy)
+    exist = column in frame_or_cols
+    if exist:
+        return
+    msg = f"column '{column}' is missing in the DataFrame"
+    if missing_policy == "raise":
+        raise ColumnNotFoundError(msg)
+    if missing_policy == "warn":
+        warnings.warn(msg, ColumnNotFoundWarning, stacklevel=2)
 
 
 def check_missing_columns(

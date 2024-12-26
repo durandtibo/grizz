@@ -15,6 +15,7 @@ from grizz.utils.column import (
     check_column_exist_policy,
     check_column_missing_policy,
     check_existing_columns,
+    check_missing_column,
     check_missing_columns,
     find_common_columns,
     find_missing_columns,
@@ -107,6 +108,39 @@ def test_check_existing_columns_warn_2(dataframe: pl.DataFrame) -> None:
 def test_check_existing_columns_exist_policy_incorrect(dataframe: pl.DataFrame) -> None:
     with pytest.raises(ValueError, match="Incorrect 'exist_policy': incorrect"):
         check_existing_columns(dataframe, columns=["col1", "col5"], exist_policy="incorrect")
+
+
+##########################################
+#     Tests for check_missing_column     #
+##########################################
+
+
+@pytest.mark.parametrize("missing_policy", ["ignore", "raise", "warn"])
+def test_check_missing_column_dataframe(dataframe: pl.DataFrame, missing_policy: str) -> None:
+    check_missing_column(dataframe, column="col1", missing_policy=missing_policy)
+
+
+@pytest.mark.parametrize("missing_policy", ["ignore", "raise", "warn"])
+def test_check_missing_column_columns(missing_policy: str) -> None:
+    check_missing_column(
+        ["col1", "col2", "col3", "col4"], column="col1", missing_policy=missing_policy
+    )
+
+
+def test_check_missing_column_ignore(dataframe: pl.DataFrame) -> None:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        check_missing_column(dataframe, column="col", missing_policy="ignore")
+
+
+def test_check_missing_column_raise(dataframe: pl.DataFrame) -> None:
+    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+        check_missing_column(dataframe, column="col", missing_policy="raise")
+
+
+def test_check_missing_column_warn(dataframe: pl.DataFrame) -> None:
+    with pytest.warns(ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame"):
+        check_missing_column(dataframe, column="col", missing_policy="warn")
 
 
 ###########################################
