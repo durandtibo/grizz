@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING, Any
 
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer import BaseColumnsTransformer
 from grizz.transformer.base import BaseTransformer
+from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_kwargs
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     import polars as pl
 
 
-class SortTransformer(BaseColumnsTransformer):
+class SortTransformer(BaseInNTransformer):
     r"""Implement a transformer to sort the DataFrame by the given
     columns.
 
@@ -103,16 +103,15 @@ class SortTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         cols = self.find_columns(frame)
         logger.info(f"Sorting rows based on {len(cols):,} columns: {cols}")
-        self._check_input_columns(frame)
         # Note: it is not possible to use find_common_columns because find_common_columns
         # may change the order of the columns.
         columns = self._find_existing_columns(frame)
@@ -186,5 +185,5 @@ class SortColumnsTransformer(BaseTransformer):
         return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info("Sorting columns")
+        logger.info("Sorting columns...")
         return frame.select(sorted(frame.columns, reverse=self._reverse))
