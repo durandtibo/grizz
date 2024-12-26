@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_col_diff
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class FilterCardinalityTransformer(BaseColumnsTransformer):
+class FilterCardinalityTransformer(BaseInNTransformer):
     r"""Implement a transformer to filter based on the cardinality (i.e.
     number of unique values) in each column.
 
@@ -100,7 +100,9 @@ class FilterCardinalityTransformer(BaseColumnsTransformer):
         missing_policy: str = "raise",
     ) -> None:
         super().__init__(
-            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+            columns=columns,
+            exclude_columns=exclude_columns,
+            missing_policy=missing_policy,
         )
         self._n_min = n_min
         self._n_max = n_max
@@ -117,18 +119,17 @@ class FilterCardinalityTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Filtering {len(self.find_columns(frame)):,} columns based on their "
             f"cardinality [{self._n_min}, {self._n_max})..."
         )
-        self._check_input_columns(frame)
         initial_shape = frame.shape
         columns = self.find_common_columns(frame)
         valid = frame.select(

@@ -631,9 +631,17 @@ class BaseInNTransformer(BaseTransformer):
         )
         return f"{self.__class__.__qualname__}({args})"
 
+    def fit(self, frame: pl.DataFrame) -> None:
+        self._check_input_columns(frame)
+        self._fit(frame)
+
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self.fit(frame)
         return self.transform(frame)
+
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self._check_input_columns(frame)
+        return self._transform(frame)
 
     def find_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the columns to transform.
@@ -674,7 +682,8 @@ class BaseInNTransformer(BaseTransformer):
         return tuple(cols)
 
     def find_common_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
-        r"""Find the common columns.
+        r"""Find the common columns between the DataFrame columns and the
+        input columns.
 
         Args:
             frame: The input DataFrame. Sometimes the columns to
@@ -756,6 +765,25 @@ class BaseInNTransformer(BaseTransformer):
             columns=self.find_columns(frame),
             missing_policy=self._missing_policy,
         )
+
+    @abstractmethod
+    def _fit(self, frame: pl.DataFrame) -> pl.DataFrame:
+        r"""Fit to the data in the ``polars.DataFrame``.
+
+        Args:
+            frame: The ``polars.DataFrame`` to fit.
+        """
+
+    @abstractmethod
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        r"""Transform the data in the ``polars.DataFrame``.
+
+        Args:
+            frame: The ``polars.DataFrame`` to transform.
+
+        Returns:
+            The transformed DataFrame.
+        """
 
 
 class BaseInNOut1Transformer(BaseInNTransformer):
@@ -867,10 +895,6 @@ class BaseInNOut1Transformer(BaseInNTransformer):
     def fit(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         self._fit(frame)
-
-    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self.fit(frame)
-        return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
