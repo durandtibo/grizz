@@ -52,6 +52,69 @@ def test_abs_diff_column_transformer_fit(
     )
 
 
+def test_abs_diff_column_transformer_fit_missing_policy_ignore_in1(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(
+        in1_col="col", in2_col="col2", out_col="diff", missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(dataframe)
+
+
+def test_abs_diff_column_transformer_fit_missing_policy_ignore_in2(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(
+        in1_col="col1", in2_col="missing", out_col="diff", missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(dataframe)
+
+
+def test_abs_diff_column_transformer_fit_missing_policy_raise_in1(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(in1_col="col", in2_col="col2", out_col="diff")
+    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+        transformer.fit(dataframe)
+
+
+def test_abs_diff_column_transformer_fit_missing_policy_raise_in2(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(in1_col="col1", in2_col="missing", out_col="diff")
+    with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
+        transformer.fit(dataframe)
+
+
+def test_abs_diff_column_transformer_fit_missing_policy_warn_in1(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(
+        in1_col="col", in2_col="col2", out_col="diff", missing_policy="warn"
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
+    ):
+        transformer.fit(dataframe)
+
+
+def test_abs_diff_column_transformer_fit_missing_policy_warn_in2(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(
+        in1_col="col1", in2_col="missing", out_col="diff", missing_policy="warn"
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning,
+        match="column 'missing' is missing in the DataFrame and will be ignore",
+    ):
+        transformer.fit(dataframe)
+
+
 def test_abs_diff_column_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="diff")
     out = transformer.fit_transform(dataframe)
