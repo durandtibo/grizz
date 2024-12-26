@@ -17,7 +17,7 @@ import polars as pl
 import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CastTransformer(BaseColumnsTransformer):
+class CastTransformer(BaseInNTransformer):
     r"""Implement a transformer to convert some columns to a new data
     type.
 
@@ -121,19 +121,18 @@ class CastTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Casting {len(self.find_columns(frame)):,} columns to {self._dtype}...")
-        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
-        return self._transform(frame, columns)
+        return self._transform_frame(frame, columns)
 
-    def _transform(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
         return frame.with_columns(
             frame.select(cs.by_name(columns).cast(self._dtype, **self._kwargs))
         )
@@ -214,7 +213,7 @@ class DecimalCastTransformer(CastTransformer):
     ```
     """
 
-    def _transform(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
         return frame.with_columns(
             frame.select((cs.by_name(columns) & cs.decimal()).cast(self._dtype, **self._kwargs))
         )
@@ -295,7 +294,7 @@ class FloatCastTransformer(CastTransformer):
     ```
     """
 
-    def _transform(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
         return frame.with_columns(
             frame.select((cs.by_name(columns) & cs.float()).cast(self._dtype, **self._kwargs))
         )
@@ -376,7 +375,7 @@ class IntegerCastTransformer(CastTransformer):
     ```
     """
 
-    def _transform(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
         return frame.with_columns(
             frame.select((cs.by_name(columns) & cs.integer()).cast(self._dtype, **self._kwargs))
         )

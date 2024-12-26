@@ -66,6 +66,29 @@ def test_cast_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCapture
     )
 
 
+def test_cast_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32, missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(dataframe)
+
+
+def test_cast_transformer_fit_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(dataframe)
+
+
+def test_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = Cast(columns=["col1", "col3", "col5"], dtype=pl.Float32, missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(dataframe)
+
+
 def test_cast_transformer_fit_transform_int32(dataframe: pl.DataFrame) -> None:
     transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     out = transformer.fit_transform(dataframe)
@@ -363,6 +386,37 @@ def test_decimal_cast_transformer_fit(
     )
 
 
+def test_decimal_cast_transformer_fit_missing_policy_ignore(
+    frame_decimal: pl.DataFrame,
+) -> None:
+    transformer = DecimalCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_decimal)
+
+
+def test_decimal_cast_transformer_fit_missing_policy_raise(
+    frame_decimal: pl.DataFrame,
+) -> None:
+    transformer = DecimalCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_decimal)
+
+
+def test_decimal_cast_transformer_fit_missing_policy_warn(
+    frame_decimal: pl.DataFrame,
+) -> None:
+    transformer = DecimalCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="warn"
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_decimal)
+
+
 def test_decimal_cast_transformer_fit_transform_int32(frame_decimal: pl.DataFrame) -> None:
     transformer = DecimalCast(columns=["col1", "col2"], dtype=pl.Int32)
     out = transformer.fit_transform(frame_decimal)
@@ -587,6 +641,31 @@ def test_float_cast_transformer_fit(
     )
 
 
+def test_float_cast_transformer_fit_missing_policy_ignore(frame_float: pl.DataFrame) -> None:
+    transformer = FloatCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Int32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_float)
+
+
+def test_float_cast_transformer_fit_missing_policy_raise(
+    frame_float: pl.DataFrame,
+) -> None:
+    transformer = FloatCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_float)
+
+
+def test_float_cast_transformer_fit_missing_policy_warn(frame_float: pl.DataFrame) -> None:
+    transformer = FloatCast(columns=["col1", "col2", "col5"], dtype=pl.Int32, missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_float)
+
+
 def test_float_cast_transformer_fit_transform_int32(frame_float: pl.DataFrame) -> None:
     transformer = FloatCast(columns=["col1", "col2"], dtype=pl.Int32)
     out = transformer.fit_transform(frame_float)
@@ -803,6 +882,37 @@ def test_integer_cast_transformer_fit(
     assert caplog.messages[0].startswith(
         "Skipping 'IntegerCastTransformer.fit' as there are no parameters available to fit"
     )
+
+
+def test_integer_cast_transformer_fit_missing_policy_ignore(
+    frame_integer: pl.DataFrame,
+) -> None:
+    transformer = IntegerCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_integer)
+
+
+def test_integer_cast_transformer_fit_missing_policy_raise(
+    frame_integer: pl.DataFrame,
+) -> None:
+    transformer = IntegerCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_integer)
+
+
+def test_integer_cast_transformer_fit_missing_policy_warn(
+    frame_integer: pl.DataFrame,
+) -> None:
+    transformer = IntegerCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="warn"
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_integer)
 
 
 def test_integer_cast_transformer_fit_transform_int32(frame_integer: pl.DataFrame) -> None:
