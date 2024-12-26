@@ -11,6 +11,7 @@ import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
+from grizz.utils.column import check_column_exist_policy, check_existing_columns
 from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
@@ -112,6 +113,14 @@ class CopyColumnsTransformer(BaseInNTransformer):
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message appears.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -129,7 +138,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
     >>> from grizz.transformer import CopyColumns
     >>> transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="_raw")
     >>> transformer
-    CopyColumnsTransformer(columns=('col1', 'col3'), prefix='', suffix='_raw', exclude_columns=(), missing_policy='raise')
+    CopyColumnsTransformer(columns=('col1', 'col3'), prefix='', suffix='_raw', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -175,6 +184,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
         prefix: str,
         suffix: str,
         exclude_columns: Sequence[str] = (),
+        exist_policy: str = "raise",
         missing_policy: str = "raise",
     ) -> None:
         super().__init__(
@@ -185,6 +195,9 @@ class CopyColumnsTransformer(BaseInNTransformer):
         self._prefix = prefix
         self._suffix = suffix
 
+        check_column_exist_policy(exist_policy)
+        self._exist_policy = exist_policy
+
     def __repr__(self) -> str:
         args = repr_mapping_line(
             {
@@ -192,6 +205,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
                 "prefix": self._prefix,
                 "suffix": self._suffix,
                 "exclude_columns": self._exclude_columns,
+                "exist_policy": self._exist_policy,
                 "missing_policy": self._missing_policy,
             }
         )
@@ -204,6 +218,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self.check_output_columns(frame)
         logger.info(
             f"Copying {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
             f"suffix={self._suffix!r} ..."
@@ -215,3 +230,15 @@ class CopyColumnsTransformer(BaseInNTransformer):
         )
         logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
         return out
+
+    def check_output_columns(self, frame: pl.DataFrame) -> None:
+        r"""Check if the output columns already exist.
+
+        Args:
+            frame: The input DataFrame to check.
+        """
+        check_existing_columns(
+            frame,
+            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
+            exist_policy=self._exist_policy,
+        )

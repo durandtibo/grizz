@@ -262,14 +262,14 @@ def test_copy_column_transformer_transform_missing_policy_warn(
 def test_copy_columns_transformer_repr() -> None:
     assert repr(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
         "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', "
-        "exclude_columns=(), missing_policy='raise')"
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
 def test_copy_columns_transformer_str() -> None:
     assert str(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
         "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', "
-        "exclude_columns=(), missing_policy='raise')"
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -489,6 +489,64 @@ def test_copy_columns_transformer_transform_exclude_columns() -> None:
                 "p_col1_s": pl.Int64,
                 "p_col2_s": pl.String,
                 "p_col3_s": pl.String,
+            },
+        ),
+    )
+
+
+def test_copy_columns_transformer_transform_exist_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="", exist_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.String,
+                "col3": pl.String,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_copy_columns_transformer_transform_exist_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="")
+    with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
+        transformer.transform(dataframe)
+
+
+def test_copy_columns_transformer_transform_exist_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="", exist_policy="warn")
+    with pytest.warns(
+        ColumnExistsWarning,
+        match="2 columns already exist in the DataFrame and will be overwritten:",
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.String,
+                "col3": pl.String,
+                "col4": pl.String,
             },
         ),
     )
