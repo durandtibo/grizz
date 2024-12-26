@@ -185,7 +185,9 @@ def test_abs_diff_column_transformer_transform_missing_policy_warn_in1(
     transformer = AbsDiffColumn(
         in1_col="col", in2_col="col2", out_col="diff", missing_policy="warn"
     )
-    with pytest.warns(ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame"):
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
+    ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -202,7 +204,10 @@ def test_abs_diff_column_transformer_transform_missing_policy_warn_in2(
     transformer = AbsDiffColumn(
         in1_col="col1", in2_col="missing", out_col="diff", missing_policy="warn"
     )
-    with pytest.warns(ColumnNotFoundWarning, match="column 'missing' is missing in the DataFrame"):
+    with pytest.warns(
+        ColumnNotFoundWarning,
+        match="column 'missing' is missing in the DataFrame and will be ignore",
+    ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -239,7 +244,7 @@ def test_abs_diff_column_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="col3")
-    with pytest.raises(ColumnExistsError, match="1 column already exists in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match="column 'col3' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -249,7 +254,7 @@ def test_abs_diff_column_transformer_transform_exist_policy_warn(
     transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="col3", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
-        match="1 column already exists in the DataFrame and will be overwritten:",
+        match="column 'col3' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
