@@ -151,57 +151,6 @@ def test_copy_column_transformer_transform_empty() -> None:
     )
 
 
-def test_copy_column_transformer_transform_missing_policy_ignore(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = CopyColumn(in_col="in", out_col="out", missing_policy="ignore")
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": [1, 2, 3, 4, 5],
-                "col2": ["1", "2", "3", "4", "5"],
-                "col3": ["1", "2", "3", "4", "5"],
-                "col4": ["a", "b", "c", "d", "e"],
-            },
-            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
-        ),
-    )
-
-
-def test_copy_column_transformer_transform_missing_policy_raise(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = CopyColumn(in_col="in", out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
-        transformer.transform(dataframe)
-
-
-def test_copy_column_transformer_transform_missing_policy_warn(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = CopyColumn(in_col="in", out_col="out", missing_policy="warn")
-    with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
-    ):
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": [1, 2, 3, 4, 5],
-                "col2": ["1", "2", "3", "4", "5"],
-                "col3": ["1", "2", "3", "4", "5"],
-                "col4": ["a", "b", "c", "d", "e"],
-            },
-            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
-        ),
-    )
-
-
 def test_copy_column_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -250,6 +199,57 @@ def test_copy_column_transformer_transform_exist_policy_warn(
                 "col4": ["a", "b", "c", "d", "e"],
             },
             schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.String, "col4": pl.String},
+        ),
+    )
+
+
+def test_copy_column_transformer_transform_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = CopyColumn(in_col="in", out_col="out", missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+        ),
+    )
+
+
+def test_copy_column_transformer_transform_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = CopyColumn(in_col="in", out_col="out")
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+        transformer.transform(dataframe)
+
+
+def test_copy_column_transformer_transform_missing_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = CopyColumn(in_col="in", out_col="out", missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.String, "col4": pl.String},
         ),
     )
 

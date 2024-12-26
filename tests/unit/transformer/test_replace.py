@@ -115,72 +115,6 @@ def test_replace_transformer_transform_same_column() -> None:
     assert_frame_equal(out, pl.DataFrame({"col": ["1", "2", "3", "d", "e"]}))
 
 
-def test_replace_transformer_transform_missing_policy_ignore() -> None:
-    transformer = Replace(
-        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="ignore"
-    )
-    frame = pl.DataFrame(
-        {
-            "col1": ["a", "b", "c", "a", "b"],
-            "col2": ["1", "2", "3", "4", "5"],
-        },
-        schema={"col1": pl.String, "col2": pl.String},
-    )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        out = transformer.transform(frame)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": ["a", "b", "c", "a", "b"],
-                "col2": ["1", "2", "3", "4", "5"],
-            },
-            schema={"col1": pl.String, "col2": pl.String},
-        ),
-    )
-
-
-def test_replace_transformer_transform_missing_policy_raise() -> None:
-    transformer = Replace(in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3})
-    frame = pl.DataFrame(
-        {
-            "col1": ["a", "b", "c", "a", "b"],
-            "col2": ["1", "2", "3", "4", "5"],
-        },
-        schema={"col1": pl.String, "col2": pl.String},
-    )
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
-        transformer.transform(frame)
-
-
-def test_replace_transformer_transform_missing_policy_warn() -> None:
-    transformer = Replace(
-        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="warn"
-    )
-    frame = pl.DataFrame(
-        {
-            "col1": ["a", "b", "c", "a", "b"],
-            "col2": ["1", "2", "3", "4", "5"],
-        },
-        schema={"col1": pl.String, "col2": pl.String},
-    )
-    with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
-    ):
-        out = transformer.transform(frame)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": ["a", "b", "c", "a", "b"],
-                "col2": ["1", "2", "3", "4", "5"],
-            },
-            schema={"col1": pl.String, "col2": pl.String},
-        ),
-    )
-
-
 def test_replace_transformer_transform_exist_policy_ignore() -> None:
     transformer = Replace(
         in_col="col1", out_col="col2", old={"a": 1, "b": 2, "c": 3}, exist_policy="ignore"
@@ -242,6 +176,72 @@ def test_replace_transformer_transform_exist_policy_warn() -> None:
             {
                 "col1": ["a", "b", "c", "a", "b"],
                 "col2": ["1", "2", "3", "1", "2"],
+            },
+            schema={"col1": pl.String, "col2": pl.String},
+        ),
+    )
+
+
+def test_replace_transformer_transform_missing_policy_ignore() -> None:
+    transformer = Replace(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="ignore"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["a", "b", "c", "a", "b"],
+                "col2": ["1", "2", "3", "4", "5"],
+            },
+            schema={"col1": pl.String, "col2": pl.String},
+        ),
+    )
+
+
+def test_replace_transformer_transform_missing_policy_raise() -> None:
+    transformer = Replace(in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3})
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+        transformer.transform(frame)
+
+
+def test_replace_transformer_transform_missing_policy_warn() -> None:
+    transformer = Replace(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="warn"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+    ):
+        out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["a", "b", "c", "a", "b"],
+                "col2": ["1", "2", "3", "4", "5"],
             },
             schema={"col1": pl.String, "col2": pl.String},
         ),
@@ -366,72 +366,6 @@ def test_replace_strict_transformer_transform_same_column() -> None:
     assert_frame_equal(out, pl.DataFrame({"col": [1, 2, 3, 4, 5]}))
 
 
-def test_replace_strict_transformer_transform_missing_policy_ignore() -> None:
-    transformer = ReplaceStrict(
-        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="ignore"
-    )
-    frame = pl.DataFrame(
-        {
-            "col1": ["a", "b", "c", "a", "b"],
-            "col2": ["1", "2", "3", "4", "5"],
-        },
-        schema={"col1": pl.String, "col2": pl.String},
-    )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        out = transformer.transform(frame)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": ["a", "b", "c", "a", "b"],
-                "col2": ["1", "2", "3", "4", "5"],
-            },
-            schema={"col1": pl.String, "col2": pl.String},
-        ),
-    )
-
-
-def test_replace_strict_transformer_transform_missing_policy_raise() -> None:
-    transformer = ReplaceStrict(in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3})
-    frame = pl.DataFrame(
-        {
-            "col1": ["a", "b", "c", "a", "b"],
-            "col2": ["1", "2", "3", "4", "5"],
-        },
-        schema={"col1": pl.String, "col2": pl.String},
-    )
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
-        transformer.transform(frame)
-
-
-def test_replace_strict_transformer_transform_missing_policy_warn() -> None:
-    transformer = ReplaceStrict(
-        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="warn"
-    )
-    frame = pl.DataFrame(
-        {
-            "col1": ["a", "b", "c", "a", "b"],
-            "col2": ["1", "2", "3", "4", "5"],
-        },
-        schema={"col1": pl.String, "col2": pl.String},
-    )
-    with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
-    ):
-        out = transformer.transform(frame)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": ["a", "b", "c", "a", "b"],
-                "col2": ["1", "2", "3", "4", "5"],
-            },
-            schema={"col1": pl.String, "col2": pl.String},
-        ),
-    )
-
-
 def test_replace_strict_transformer_transform_exist_policy_ignore() -> None:
     transformer = ReplaceStrict(
         in_col="col1", out_col="col2", old={"a": 1, "b": 2, "c": 3}, exist_policy="ignore"
@@ -495,5 +429,71 @@ def test_replace_strict_transformer_transform_exist_policy_warn() -> None:
                 "col2": [1, 2, 3, 1, 2],
             },
             schema={"col1": pl.String, "col2": pl.Int64},
+        ),
+    )
+
+
+def test_replace_strict_transformer_transform_missing_policy_ignore() -> None:
+    transformer = ReplaceStrict(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="ignore"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["a", "b", "c", "a", "b"],
+                "col2": ["1", "2", "3", "4", "5"],
+            },
+            schema={"col1": pl.String, "col2": pl.String},
+        ),
+    )
+
+
+def test_replace_strict_transformer_transform_missing_policy_raise() -> None:
+    transformer = ReplaceStrict(in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3})
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+        transformer.transform(frame)
+
+
+def test_replace_strict_transformer_transform_missing_policy_warn() -> None:
+    transformer = ReplaceStrict(
+        in_col="in", out_col="out", old={"a": 1, "b": 2, "c": 3}, missing_policy="warn"
+    )
+    frame = pl.DataFrame(
+        {
+            "col1": ["a", "b", "c", "a", "b"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+    ):
+        out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["a", "b", "c", "a", "b"],
+                "col2": ["1", "2", "3", "4", "5"],
+            },
+            schema={"col1": pl.String, "col2": pl.String},
         ),
     )

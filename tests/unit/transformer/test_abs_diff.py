@@ -190,6 +190,58 @@ def test_abs_diff_column_transformer_transform_empty() -> None:
     )
 
 
+def test_abs_diff_column_transformer_transform_exist_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(
+        in1_col="col1", in2_col="col2", out_col="col3", exist_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [5, 4, 3, 2, 1],
+                "col3": [4, 2, 0, 2, 4],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.Int64},
+        ),
+    )
+
+
+def test_abs_diff_column_transformer_transform_exist_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="col3")
+    with pytest.raises(ColumnExistsError, match="column 'col3' already exists in the DataFrame"):
+        transformer.transform(dataframe)
+
+
+def test_abs_diff_column_transformer_transform_exist_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="col3", exist_policy="warn")
+    with pytest.warns(
+        ColumnExistsWarning,
+        match="column 'col3' already exists in the DataFrame and will be overwritten",
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [5, 4, 3, 2, 1],
+                "col3": [4, 2, 0, 2, 4],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.Int64},
+        ),
+    )
+
+
 def test_abs_diff_column_transformer_transform_missing_policy_ignore_in1(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -277,57 +329,5 @@ def test_abs_diff_column_transformer_transform_missing_policy_warn_in2(
         pl.DataFrame(
             {"col1": [1, 2, 3, 4, 5], "col2": [5, 4, 3, 2, 1], "col3": ["a", "b", "c", "d", "e"]},
             schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.String},
-        ),
-    )
-
-
-def test_abs_diff_column_transformer_transform_exist_policy_ignore(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = AbsDiffColumn(
-        in1_col="col1", in2_col="col2", out_col="col3", exist_policy="ignore"
-    )
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": [1, 2, 3, 4, 5],
-                "col2": [5, 4, 3, 2, 1],
-                "col3": [4, 2, 0, 2, 4],
-            },
-            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.Int64},
-        ),
-    )
-
-
-def test_abs_diff_column_transformer_transform_exist_policy_raise(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="col3")
-    with pytest.raises(ColumnExistsError, match="column 'col3' already exists in the DataFrame"):
-        transformer.transform(dataframe)
-
-
-def test_abs_diff_column_transformer_transform_exist_policy_warn(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = AbsDiffColumn(in1_col="col1", in2_col="col2", out_col="col3", exist_policy="warn")
-    with pytest.warns(
-        ColumnExistsWarning,
-        match="column 'col3' already exists in the DataFrame and will be overwritten",
-    ):
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": [1, 2, 3, 4, 5],
-                "col2": [5, 4, 3, 2, 1],
-                "col3": [4, 2, 0, 2, 4],
-            },
-            schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.Int64},
         ),
     )

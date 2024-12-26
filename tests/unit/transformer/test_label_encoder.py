@@ -152,70 +152,6 @@ def test_label_encoder_transformer_transform_not_fitted(dataframe: pl.DataFrame)
 
 
 @sklearn_available
-def test_label_encoder_transformer_transform_missing_policy_ignore(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = LabelEncoder(in_col="in", out_col="out", missing_policy="ignore")
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": ["paris", "paris", "tokyo", "amsterdam", "tokyo"],
-                "col2": [1, 2, 3, 4, 5],
-                "col3": ["1", "2", "3", "4", "5"],
-                "col4": ["a", "b", "c", "d", "e"],
-            },
-            schema={
-                "col1": pl.String,
-                "col2": pl.Int64,
-                "col3": pl.String,
-                "col4": pl.String,
-            },
-        ),
-    )
-
-
-@sklearn_available
-def test_label_encoder_transformer_transform_missing_policy_raise(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = LabelEncoder(in_col="in", out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
-        transformer.transform(dataframe)
-
-
-@sklearn_available
-def test_label_encoder_transformer_transform_missing_policy_warn(
-    dataframe: pl.DataFrame,
-) -> None:
-    transformer = LabelEncoder(in_col="in", out_col="out", missing_policy="warn")
-    with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
-    ):
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "col1": ["paris", "paris", "tokyo", "amsterdam", "tokyo"],
-                "col2": [1, 2, 3, 4, 5],
-                "col3": ["1", "2", "3", "4", "5"],
-                "col4": ["a", "b", "c", "d", "e"],
-            },
-            schema={
-                "col1": pl.String,
-                "col2": pl.Int64,
-                "col3": pl.String,
-                "col4": pl.String,
-            },
-        ),
-    )
-
-
-@sklearn_available
 def test_label_encoder_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -270,6 +206,70 @@ def test_label_encoder_transformer_transform_exist_policy_warn(
             {
                 "col1": ["paris", "paris", "tokyo", "amsterdam", "tokyo"],
                 "col2": [1, 1, 2, 0, 2],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.String,
+                "col2": pl.Int64,
+                "col3": pl.String,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_label_encoder_transformer_transform_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = LabelEncoder(in_col="in", out_col="out", missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["paris", "paris", "tokyo", "amsterdam", "tokyo"],
+                "col2": [1, 2, 3, 4, 5],
+                "col3": ["1", "2", "3", "4", "5"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.String,
+                "col2": pl.Int64,
+                "col3": pl.String,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_label_encoder_transformer_transform_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = LabelEncoder(in_col="in", out_col="out")
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+        transformer.transform(dataframe)
+
+
+@sklearn_available
+def test_label_encoder_transformer_transform_missing_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = LabelEncoder(in_col="in", out_col="out", missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": ["paris", "paris", "tokyo", "amsterdam", "tokyo"],
+                "col2": [1, 2, 3, 4, 5],
                 "col3": ["1", "2", "3", "4", "5"],
                 "col4": ["a", "b", "c", "d", "e"],
             },
