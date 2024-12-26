@@ -11,7 +11,7 @@ import polars as pl
 import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class FillNanTransformer(BaseColumnsTransformer):
+class FillNanTransformer(BaseInNTransformer):
     r"""Implement a transformer to fill NaN values.
 
     Args:
@@ -112,22 +112,21 @@ class FillNanTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
-        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select((cs.by_name(columns) & cs.float()).fill_nan(**self._kwargs))
         )
 
 
-class FillNullTransformer(BaseColumnsTransformer):
+class FillNullTransformer(BaseInNTransformer):
     r"""Implement a transformer to fill null values.
 
     Args:
@@ -218,14 +217,13 @@ class FillNullTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
-        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(frame.select(cs.by_name(columns).fill_null(**self._kwargs)))
