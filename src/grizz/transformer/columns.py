@@ -3,7 +3,7 @@ that transform DataFrames by using multiple columns."""
 
 from __future__ import annotations
 
-__all__ = ["Base2In1OutColumnsTransformer", "BaseColumnsTransformer"]
+__all__ = ["BaseColumnsTransformer", "BaseIn1Out1Transformer", "BaseIn2Out1Transformer"]
 
 import logging
 from abc import abstractmethod
@@ -28,6 +28,119 @@ if TYPE_CHECKING:
     import polars as pl
 
 logger = logging.getLogger(__name__)
+
+
+class BaseIn1Out1Transformer(BaseTransformer):
+    r"""Define a base class to implement ``polars.DataFrame``
+    transformers that takes one input column and generate one output
+    column.
+
+    Args:
+        in_col: The input column name.
+        out_col: The output column name.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message appears.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+    """
+
+    def __init__(
+        self,
+        in_col: str,
+        out_col: str,
+        exist_policy: str = "raise",
+        missing_policy: str = "raise",
+    ) -> None:
+        self._in_col = in_col
+        self._out_col = out_col
+
+        check_column_exist_policy(exist_policy)
+        self._exist_policy = exist_policy
+        check_column_missing_policy(missing_policy)
+        self._missing_policy = missing_policy
+
+    def __repr__(self) -> str:
+        args = repr_mapping_line(
+            {
+                "in_col": self._in_col,
+                "out_col": self._out_col,
+                "exist_policy": self._exist_policy,
+                "missing_policy": self._missing_policy,
+            }
+        )
+        return f"{self.__class__.__qualname__}({args})"
+
+    def fit(self, frame: pl.DataFrame) -> None:
+        self._check_input_column(frame)
+        if self._in_col not in frame:
+            logger.info(
+                f"Skipping '{self.__class__.__qualname__}.fit' "
+                f"because the input column ({self._in_col}) is missing"
+            )
+            return
+        self._fit(frame)
+
+    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self.fit(frame)
+        return self.transform(frame)
+
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self._check_input_column(frame)
+        if self._in_col not in frame:
+            logger.info(
+                f"Skipping '{self.__class__.__qualname__}.transform' "
+                f"because the input column ({self._in_col}) is missing"
+            )
+            return frame
+        self._check_output_column(frame)
+        return self._transform(frame)
+
+    def _check_input_column(self, frame: pl.DataFrame) -> None:
+        r"""Check if the input column is missing.
+
+        Args:
+            frame: The input DataFrame to check.
+        """
+        check_missing_column(frame, column=self._in_col, missing_policy=self._missing_policy)
+
+    def _check_output_column(self, frame: pl.DataFrame) -> None:
+        r"""Check if the output column already exists.
+
+        Args:
+            frame: The input DataFrame to check.
+        """
+        check_existing_column(frame, column=self._out_col, exist_policy=self._exist_policy)
+
+    @abstractmethod
+    def _fit(self, frame: pl.DataFrame) -> pl.DataFrame:
+        r"""Fit to the data in the ``polars.DataFrame``.
+
+        Args:
+            frame: The ``polars.DataFrame`` to fit.
+        """
+
+    @abstractmethod
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        r"""Transform the data in the ``polars.DataFrame``.
+
+        Args:
+            frame: The ``polars.DataFrame`` to transform.
+
+        Returns:
+            The transformed DataFrame.
+        """
 
 
 class BaseColumnsTransformer(BaseTransformer):
@@ -246,9 +359,9 @@ class BaseColumnsTransformer(BaseTransformer):
         )
 
 
-class Base2In1OutColumnsTransformer(BaseTransformer):
+class BaseIn2Out1Transformer(BaseTransformer):
     r"""Define a base class to implement ``polars.DataFrame``
-    transformers that takes two input columns and generate an output
+    transformers that takes two input columns and generate one output
     column.
 
     Args:

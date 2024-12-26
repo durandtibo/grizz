@@ -9,12 +9,12 @@ import logging
 
 import polars as pl
 
-from grizz.transformer.columns import Base2In1OutColumnsTransformer
+from grizz.transformer.columns import BaseIn2Out1Transformer
 
 logger = logging.getLogger(__name__)
 
 
-class AbsDiffColumnTransformer(Base2In1OutColumnsTransformer):
+class AbsDiffColumnTransformer(BaseIn2Out1Transformer):
     r"""Implement a transformer to compute the absolute difference
     between two columns.
 
