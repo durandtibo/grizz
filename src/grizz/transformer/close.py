@@ -6,11 +6,14 @@ from __future__ import annotations
 __all__ = ["CloseColumnsTransformer"]
 
 import logging
+from typing import TYPE_CHECKING
 
-import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn2Out1Transformer
+
+if TYPE_CHECKING:
+    import polars as pl
 
 logger = logging.getLogger(__name__)
 
@@ -143,14 +146,15 @@ class CloseColumnsTransformer(BaseIn2Out1Transformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Computing the equality within tolerance between {self._in1_col!r} and "
-            f"{self._in2_col!r} | out_col: {self._out_col!r} | "
+            f"Computing the equality within tolerance between actual column {self._in1_col!r} "
+            f"and expected column {self._in2_col!r} | out_col: {self._out_col!r} | "
             f"atol={self._atol}  rtol={self._rtol}  equal_nan={self._equal_nan}"
         )
-        diff = frame.select(
-            (pl.col(self._in1_col) - pl.col(self._in2_col))
-            .abs()
-            .le(pl.col(self._in2_col).abs().mul(self._rtol).add(self._atol))
-            .alias(self._out_col)
-        )
-        return frame.with_columns(diff)
+        diff = (frame[self._in1_col] - frame[self._in2_col]).abs()
+        tol = frame[self._in2_col].abs() * self._rtol + self._atol
+        tol_check = (diff <= tol) & ~frame[self._in2_col].is_nan()
+
+        if self._equal_nan:
+            nan_check = frame[self._in1_col].is_nan() & frame[self._in2_col].is_nan()
+            tol_check = tol_check | nan_check
+        return frame.with_columns(tol_check.alias(self._out_col))
