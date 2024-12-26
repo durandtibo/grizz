@@ -296,6 +296,29 @@ def test_to_time_transformer_fit(
     )
 
 
+def test_to_time_transformer_fit_missing_policy_ignore(frame_time: pl.DataFrame) -> None:
+    transformer = ToTime(
+        columns=["col1", "col3", "col5"], format="%H:%M:%S", missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_time)
+
+
+def test_to_time_transformer_fit_missing_policy_raise(frame_time: pl.DataFrame) -> None:
+    transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S")
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_time)
+
+
+def test_to_time_transformer_fit_missing_policy_warn(frame_time: pl.DataFrame) -> None:
+    transformer = ToTime(columns=["col1", "col3", "col5"], format="%H:%M:%S", missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_time)
+
+
 def test_to_time_transformer_fit_transform(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3"])
     out = transformer.fit_transform(frame_time)

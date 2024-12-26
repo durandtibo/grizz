@@ -12,7 +12,7 @@ import polars as pl
 import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseColumnsTransformer, BaseIn1Out1Transformer
+from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
 from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
@@ -119,7 +119,7 @@ class TimeToSecondTransformer(BaseIn1Out1Transformer):
         )
 
 
-class ToTimeTransformer(BaseColumnsTransformer):
+class ToTimeTransformer(BaseInNTransformer):
     r"""Implement a transformer to convert some columns to a
     ``polars.Time`` type.
 
@@ -216,17 +216,16 @@ class ToTimeTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Converting {len(self.find_columns(frame)):,} columns to time ({self._format})..."
         )
-        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select(
