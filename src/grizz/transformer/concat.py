@@ -5,23 +5,17 @@ from __future__ import annotations
 __all__ = ["ConcatColumnsTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
 
 import polars as pl
 import polars.selectors as cs
-from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseColumnsTransformer
-from grizz.utils.column import check_column_exist_policy, check_existing_columns
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
+from grizz.transformer.columns import BaseInNOut1Transformer
+from grizz.utils.column import check_existing_columns
 
 logger = logging.getLogger(__name__)
 
 
-class ConcatColumnsTransformer(BaseColumnsTransformer):
+class ConcatColumnsTransformer(BaseInNOut1Transformer):
     r"""Implement a transformer to concatenate columns into a new column.
 
     Args:
@@ -98,46 +92,16 @@ class ConcatColumnsTransformer(BaseColumnsTransformer):
     ```
     """
 
-    def __init__(
-        self,
-        columns: Sequence[str] | None,
-        out_col: str,
-        exclude_columns: Sequence[str] = (),
-        exist_policy: str = "raise",
-        missing_policy: str = "raise",
-    ) -> None:
-        super().__init__(
-            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
-        )
-        self._out_col = out_col
-
-        check_column_exist_policy(exist_policy)
-        self._exist_policy = exist_policy
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "out_col": self._out_col,
-                "exclude_columns": self._exclude_columns,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args})"
-
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Concatenating {len(self.find_columns(frame)):,} columns to {self._out_col}..."
         )
-        self._check_input_columns(frame)
-        self._check_output_column(frame)
         columns = self.find_common_columns(frame)
         return frame.with_columns(
             frame.select(pl.concat_list(cs.by_name(columns).alias(self._out_col)))
