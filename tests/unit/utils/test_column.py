@@ -14,6 +14,7 @@ from grizz.exceptions import (
 from grizz.utils.column import (
     check_column_exist_policy,
     check_column_missing_policy,
+    check_existing_column,
     check_existing_columns,
     check_missing_column,
     check_missing_columns,
@@ -61,6 +62,37 @@ def test_check_column_missing_policy_valid(policy: str) -> None:
 def test_check_column_missing_policy_incorrect() -> None:
     with pytest.raises(ValueError, match="Incorrect 'missing_policy': incorrect"):
         check_column_missing_policy("incorrect")
+
+
+###########################################
+#     Tests for check_existing_column     #
+###########################################
+
+
+@pytest.mark.parametrize("exist_policy", ["ignore", "raise", "warn"])
+def test_check_existing_column_dataframe(dataframe: pl.DataFrame, exist_policy: str) -> None:
+    check_existing_column(dataframe, column="col", exist_policy=exist_policy)
+
+
+@pytest.mark.parametrize("exist_policy", ["ignore", "raise", "warn"])
+def test_check_existing_column_columns(exist_policy: str) -> None:
+    check_existing_column(["col1", "col2", "col3", "col4"], column="col", exist_policy=exist_policy)
+
+
+def test_check_existing_column_ignore(dataframe: pl.DataFrame) -> None:
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        check_existing_column(dataframe, column="col1", exist_policy="ignore")
+
+
+def test_check_existing_column_raise(dataframe: pl.DataFrame) -> None:
+    with pytest.raises(ColumnExistsError, match="column 'col1' already exists in the DataFrame"):
+        check_existing_column(dataframe, column="col1")
+
+
+def test_check_existing_column_warn(dataframe: pl.DataFrame) -> None:
+    with pytest.warns(ColumnExistsWarning, match="column 'col1' already exists in the DataFrame"):
+        check_existing_column(dataframe, column="col1", exist_policy="warn")
 
 
 ############################################
