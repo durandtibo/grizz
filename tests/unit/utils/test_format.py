@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from grizz.utils.format import human_byte, str_col_diff, str_kwargs, str_row_diff
+from grizz.utils.format import (
+    human_byte,
+    str_col_diff,
+    str_dataframe_shape_diff,
+    str_kwargs,
+    str_row_diff,
+)
 
 ################################
 #     Tests for human_byte     #
@@ -92,3 +98,43 @@ def test_str_row_diff_one() -> None:
 
 def test_str_row_diff_multiple() -> None:
     assert str_row_diff(100, 10) == "90/100 (90.0000 %) rows have been removed"
+
+
+##############################################
+#     Tests for str_dataframe_shape_diff     #
+##############################################
+
+
+def test_str_dataframe_shape_diff_zero() -> None:
+    assert (
+        str_dataframe_shape_diff(orig=(0, 0), final=(0, 0)) == "DataFrame shape: (0, 0) -> (0, 0)"
+    )
+
+
+def test_str_dataframe_shape_diff_same_shape() -> None:
+    assert (
+        str_dataframe_shape_diff(orig=(100, 5), final=(100, 5))
+        == "DataFrame shape: (100, 5) -> (100, 5)"
+    )
+
+
+def test_str_dataframe_shape_diff_cols() -> None:
+    assert (
+        str_dataframe_shape_diff(orig=(100, 5), final=(100, 3))
+        == "DataFrame shape: (100, 5) -> (100, 3) | 2/5 (40.0000 %) columns have been removed"
+    )
+
+
+def test_str_dataframe_shape_diff_rows() -> None:
+    assert (
+        str_dataframe_shape_diff(orig=(100, 5), final=(80, 5))
+        == "DataFrame shape: (100, 5) -> (80, 5) | 20/100 (20.0000 %) rows have been removed"
+    )
+
+
+def test_str_dataframe_shape_diff_cols_and_rows() -> None:
+    assert (
+        str_dataframe_shape_diff(orig=(100, 10), final=(80, 8))
+        == "DataFrame shape: (100, 10) -> (80, 8) | 20/100 (20.0000 %) rows have been removed | "
+        "2/10 (20.0000 %) columns have been removed"
+    )
