@@ -11,7 +11,7 @@ import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
-from grizz.utils.format import str_dataframe_shape_diff
+from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -213,5 +213,5 @@ class CopyColumnsTransformer(BaseInNTransformer):
         out = frame.with_columns(
             frame.select(pl.col(columns)).rename(lambda name: f"{self._prefix}{name}{self._suffix}")
         )
-        logger.info(str_dataframe_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
         return out

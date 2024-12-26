@@ -9,7 +9,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_dataframe_shape_diff
+from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
 
@@ -82,5 +82,5 @@ class ColumnSelectionTransformer(BaseInNTransformer):
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.select(columns)
-        logger.info(str_dataframe_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
         return out

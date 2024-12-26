@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from coola.utils import repr_indent, repr_mapping
 
 from grizz.transformer.base import BaseTransformer
-from grizz.utils.format import str_dataframe_shape_diff
+from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
 
@@ -83,5 +83,5 @@ class SqlTransformer(BaseTransformer):
         logger.info(f"Executing the following SQL query:\n{self._query}")
         initial_shape = frame.shape
         out = frame.sql(self._query)
-        logger.info(str_dataframe_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
         return out
