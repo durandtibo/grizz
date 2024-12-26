@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "check_column_exist_policy",
     "check_column_missing_policy",
+    "check_existing_column",
     "check_existing_columns",
     "check_missing_column",
     "check_missing_columns",
@@ -80,6 +81,56 @@ def check_column_missing_policy(missing_policy: str) -> None:
             f"'ignore', 'raise', 'warn'"
         )
         raise ValueError(msg)
+
+
+def check_existing_column(
+    frame_or_cols: pl.DataFrame | Sequence, column: str, exist_policy: str = "raise"
+) -> None:
+    r"""Check if a column already exists.
+
+    Args:
+        frame_or_cols: The DataFrame or its columns.
+        column: The column to check.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised the column already exists. If ``'warn'``,
+            a warning is raised if the column already exists and the
+            existing column is overwritten. If ``'ignore'``,
+            the existing column is overwritten and no warning message
+            appears.
+
+    Raises:
+        ColumnExistsError: if at least one column already exists and
+            ``exist_policy='raise'``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.column import check_existing_column
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> check_existing_column(frame, "col1", exist_policy="warn")
+
+    ```
+    """
+    check_column_exist_policy(exist_policy)
+    exist = column in frame_or_cols
+    if not exist:
+        return
+    msg = f"column '{column}' already exists in the DataFrame"
+    if exist_policy == "raise":
+        raise ColumnExistsError(msg)
+    if exist_policy == "warn":
+        warnings.warn(msg + " and will be overwritten", ColumnExistsWarning, stacklevel=2)
 
 
 def check_existing_columns(
