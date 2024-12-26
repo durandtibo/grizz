@@ -3,7 +3,7 @@ from __future__ import annotations
 import polars as pl
 import pytest
 
-from grizz.transformer import BaseColumnsTransformer
+from grizz.transformer import BaseInNTransformer
 
 
 @pytest.fixture
@@ -18,17 +18,17 @@ def dataframe() -> pl.DataFrame:
     )
 
 
-############################################
-#     Tests for BaseColumnsTransformer     #
-############################################
+########################################
+#     Tests for BaseInNTransformer     #
+########################################
 
 
-class MyColumnsTransformer(BaseColumnsTransformer):
+class MyColumnsTransformer(BaseInNTransformer):
 
-    def fit(self, frame: pl.DataFrame) -> None:
+    def _fit(self, frame: pl.DataFrame) -> None:
         pass
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame
 
 
