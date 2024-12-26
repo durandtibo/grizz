@@ -98,7 +98,7 @@ class CopyColumnTransformer(BaseIn1Out1Transformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Copying column {self._in_col} to {self._out_col} ...")
+        logger.info(f"Copying column {self._in_col!r} to {self._out_col!r} ...")
         return frame.with_columns(pl.col(self._in_col).alias(self._out_col))
 
 

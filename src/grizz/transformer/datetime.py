@@ -142,7 +142,8 @@ class ToDatetimeTransformer(BaseInNTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Converting {len(self.find_columns(frame)):,} columns to datetime ({self._format})..."
+            f"Converting {len(self.find_columns(frame)):,} columns to datetime "
+            f"| {self._format!r} ..."
         )
         columns = self.find_common_columns(frame)
         return frame.with_columns(

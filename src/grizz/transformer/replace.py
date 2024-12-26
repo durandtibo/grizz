@@ -136,8 +136,8 @@ class ReplaceTransformer(BaseIn1Out1Transformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Replacing values from column {self._in_col} and "
-            f"saving output in {self._out_col} ..."
+            f"Replacing values from column {self._in_col!r} and "
+            f"saving output in {self._out_col!r} ..."
         )
         return frame.with_columns(pl.col(self._in_col).replace(**self._kwargs).alias(self._out_col))
 
@@ -264,8 +264,8 @@ class ReplaceStrictTransformer(BaseIn1Out1Transformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Replacing values from column {self._in_col} and "
-            f"saving output in {self._out_col} ..."
+            f"Replacing values from column {self._in_col!r} and "
+            f"saving output in {self._out_col!r} ..."
         )
         return frame.with_columns(
             pl.col(self._in_col).replace_strict(**self._kwargs).alias(self._out_col)

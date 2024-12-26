@@ -108,10 +108,12 @@ class LabelEncoderTransformer(BaseIn1Out1Transformer):
         self._encoder = LabelEncoder()
 
     def _fit(self, frame: pl.DataFrame) -> None:
-        logger.info(f"Fitting the label encoder to the data in column {self._in_col}")
+        logger.info(f"Fitting the label encoder to the data in column {self._in_col!r}")
         self._encoder.fit(frame[self._in_col].to_numpy())
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Encoding labels in {self._in_col} and saving output in {self._out_col} ...")
+        logger.info(
+            f"Encoding labels in {self._in_col!r} and saving output in {self._out_col!r} ..."
+        )
         y = self._encoder.transform(frame[self._in_col].to_numpy())
         return frame.with_columns(pl.from_numpy(y, schema=[self._out_col]))

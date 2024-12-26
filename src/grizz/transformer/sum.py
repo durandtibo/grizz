@@ -99,7 +99,7 @@ class SumHorizontalTransformer(BaseInNOut1Transformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Summing all values horizontally across {len(self.find_columns(frame)):,} columns "
-            f"| out_col: '{self._out_col}' ..."
+            f"| out_col={self._out_col!r} ..."
         )
         columns = self.find_common_columns(frame)
         return frame.with_columns(pl.sum_horizontal(columns).alias(self._out_col))

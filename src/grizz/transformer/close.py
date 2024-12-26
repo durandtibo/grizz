@@ -147,7 +147,7 @@ class CloseColumnsTransformer(BaseIn2Out1Transformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Computing the equality within tolerance between actual column {self._in1_col!r} "
-            f"and expected column {self._in2_col!r} | out_col: {self._out_col!r} | "
+            f"and expected column {self._in2_col!r} | out_col={self._out_col!r} | "
             f"atol={self._atol}  rtol={self._rtol}  equal_nan={self._equal_nan}"
         )
         diff = (frame[self._in1_col] - frame[self._in2_col]).abs()

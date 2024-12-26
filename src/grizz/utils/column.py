@@ -126,7 +126,7 @@ def check_existing_column(
     exist = column in frame_or_cols
     if not exist:
         return
-    msg = f"column '{column}' already exists in the DataFrame"
+    msg = f"column {column!r} already exists in the DataFrame"
     if exist_policy == "raise":
         raise ColumnExistsError(msg)
     if exist_policy == "warn":
@@ -230,7 +230,7 @@ def check_missing_column(
     exist = column in frame_or_cols
     if exist:
         return
-    msg = f"column '{column}' is missing in the DataFrame"
+    msg = f"column {column!r} is missing in the DataFrame"
     if missing_policy == "raise":
         raise ColumnNotFoundError(msg)
     if missing_policy == "warn":

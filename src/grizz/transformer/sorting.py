@@ -185,5 +185,5 @@ class SortColumnsTransformer(BaseTransformer):
         return self.transform(frame)
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info("Sorting columns...")
+        logger.info(f"Sorting columns | reverse={self._reverse} ...")
         return frame.select(sorted(frame.columns, reverse=self._reverse))

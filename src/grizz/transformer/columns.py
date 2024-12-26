@@ -92,7 +92,7 @@ class BaseIn1Out1Transformer(BaseTransformer):
         if self._in_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.fit' "
-                f"because the input column ({self._in_col}) is missing"
+                f"because the input column {self._in_col!r} is missing"
             )
             return
         self._fit(frame)
@@ -106,7 +106,7 @@ class BaseIn1Out1Transformer(BaseTransformer):
         if self._in_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in_col}) is missing"
+                f"because the input column {self._in_col!r} is missing"
             )
             return frame
         self._check_output_column(frame)
@@ -255,13 +255,13 @@ class BaseIn2Out1Transformer(BaseTransformer):
         if self._in1_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.fit' "
-                f"because the input column ({self._in1_col}) is missing"
+                f"because the input column {self._in1_col!r} is missing"
             )
             return
         if self._in2_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.fit' "
-                f"because the input column ({self._in2_col}) is missing"
+                f"because the input column {self._in2_col!r} is missing"
             )
             return
         self._fit(frame)
@@ -275,13 +275,13 @@ class BaseIn2Out1Transformer(BaseTransformer):
         if self._in1_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in1_col}) is missing"
+                f"because the input column {self._in1_col!r} is missing"
             )
             return frame
         if self._in2_col not in frame:
             logger.info(
                 f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in2_col}) is missing"
+                f"because the input column {self._in2_col!r} is missing"
             )
             return frame
         self._check_output_column(frame)

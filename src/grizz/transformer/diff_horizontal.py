@@ -96,8 +96,8 @@ class AbsDiffHorizontalTransformer(BaseIn2Out1Transformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Computing the absolute difference between '{self._in1_col!r}' and "
-            f"'{self._in2_col!r}' | out_col={self._out_col!r}"
+            f"Computing the absolute difference between {self._in1_col!r} and "
+            f"{self._in2_col!r} | out_col={self._out_col!r}"
         )
         return frame.with_columns(
             frame.select((pl.col(self._in1_col) - pl.col(self._in2_col)).abs().alias(self._out_col))
@@ -186,8 +186,8 @@ class DiffHorizontalTransformer(BaseIn2Out1Transformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Computing the difference between '{self._in1_col!r}' and "
-            f"'{self._in2_col!r}' | out_col={self._out_col!r}"
+            f"Computing the difference between {self._in1_col!r} and "
+            f"{self._in2_col!r} | out_col={self._out_col!r}"
         )
         return frame.with_columns(
             frame.select((pl.col(self._in1_col) - pl.col(self._in2_col)).alias(self._out_col))
