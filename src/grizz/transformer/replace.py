@@ -10,13 +10,13 @@ from typing import Any
 import polars as pl
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.column import BaseColumnTransformer
+from grizz.transformer.columns import BaseIn1Out1Transformer
 from grizz.utils.format import str_kwargs
 
 logger = logging.getLogger(__name__)
 
 
-class ReplaceTransformer(BaseColumnTransformer):
+class ReplaceTransformer(BaseIn1Out1Transformer):
     r"""Replace the values in a column by the values in a mapping.
 
     Args:
@@ -128,29 +128,21 @@ class ReplaceTransformer(BaseColumnTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Replacing values from column {self._in_col} and "
             f"saving output in {self._out_col} ..."
         )
-        self._check_input_column(frame)
-        if self._in_col not in frame:
-            logger.info(
-                f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in_col}) is missing"
-            )
-            return frame
-        self._check_output_column(frame)
         return frame.with_columns(pl.col(self._in_col).replace(**self._kwargs).alias(self._out_col))
 
 
-class ReplaceStrictTransformer(BaseColumnTransformer):
+class ReplaceStrictTransformer(BaseIn1Out1Transformer):
     r"""Replace the values in a column by the values in a mapping.
 
     Args:
@@ -264,25 +256,17 @@ class ReplaceStrictTransformer(BaseColumnTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Replacing values from column {self._in_col} and "
             f"saving output in {self._out_col} ..."
         )
-        self._check_input_column(frame)
-        if self._in_col not in frame:
-            logger.info(
-                f"Skipping '{self.__class__.__qualname__}.transform' "
-                f"because the input column ({self._in_col}) is missing"
-            )
-            return frame
-        self._check_output_column(frame)
         return frame.with_columns(
             pl.col(self._in_col).replace_strict(**self._kwargs).alias(self._out_col)
         )
