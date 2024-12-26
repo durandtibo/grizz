@@ -11,7 +11,7 @@ import polars as pl
 import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseColumnsTransformer
+from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_kwargs, str_row_diff
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class DropDuplicateTransformer(BaseColumnsTransformer):
+class DropDuplicateTransformer(BaseInNTransformer):
     r"""Implement a transformer to drop duplicate rows.
 
     Args:
@@ -110,18 +110,16 @@ class DropDuplicateTransformer(BaseColumnsTransformer):
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Dropping duplicate rows by checking {len(self.find_common_columns(frame)):,} "
-            "columns...."
+            f"Dropping duplicate rows by checking {len(self.find_columns(frame)):,} columns...."
         )
-        self._check_input_columns(frame)
         columns = self.find_common_columns(frame)
         initial_shape = frame.shape
         out = frame.unique(subset=cs.by_name(columns), **self._kwargs)
