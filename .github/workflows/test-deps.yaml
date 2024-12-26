@@ -271,7 +271,7 @@ jobs:
       - name: Run unit tests
         run: |
           make unit-test-cov
-          
+
 
   colorlog:
     runs-on: ${{ matrix.os }}
