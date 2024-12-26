@@ -124,6 +124,60 @@ def test_time_to_second_transformer_transform(dataframe: pl.DataFrame) -> None:
     )
 
 
+def test_time_to_second_transformer_transform_exist_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = TimeToSecond(in_col="time", out_col="col", exist_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "time": [
+                    datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                    datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+                ],
+                "col": [1.89, 61.89, 3661.89, 1159.89, 69559.42],
+            },
+            schema={"time": pl.Time, "col": pl.Float64},
+        ),
+    )
+
+
+def test_time_to_second_transformer_transform_exist_policy_raise(dataframe: pl.DataFrame) -> None:
+    transformer = TimeToSecond(in_col="time", out_col="col")
+    with pytest.raises(ColumnExistsError, match="column 'col' already exists in the DataFrame"):
+        transformer.transform(dataframe)
+
+
+def test_time_to_second_transformer_transform_exist_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = TimeToSecond(in_col="time", out_col="col", exist_policy="warn")
+    with pytest.warns(
+        ColumnExistsWarning,
+        match="column 'col' already exists in the DataFrame and will be overwritten",
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "time": [
+                    datetime.time(hour=0, minute=0, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=1, minute=1, second=1, microsecond=890000),
+                    datetime.time(hour=0, minute=19, second=19, microsecond=890000),
+                    datetime.time(hour=19, minute=19, second=19, microsecond=420000),
+                ],
+                "col": [1.89, 61.89, 3661.89, 1159.89, 69559.42],
+            },
+            schema={"time": pl.Time, "col": pl.Float64},
+        ),
+    )
+
+
 def test_time_to_second_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -175,60 +229,6 @@ def test_time_to_second_transformer_transform_missing_policy_warn(dataframe: pl.
                 "col": ["a", "b", "c", "d", "e"],
             },
             schema={"time": pl.Time, "col": pl.String},
-        ),
-    )
-
-
-def test_time_to_second_transformer_transform_exist_policy_ignore(dataframe: pl.DataFrame) -> None:
-    transformer = TimeToSecond(in_col="time", out_col="col", exist_policy="ignore")
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "time": [
-                    datetime.time(hour=0, minute=0, second=1, microsecond=890000),
-                    datetime.time(hour=0, minute=1, second=1, microsecond=890000),
-                    datetime.time(hour=1, minute=1, second=1, microsecond=890000),
-                    datetime.time(hour=0, minute=19, second=19, microsecond=890000),
-                    datetime.time(hour=19, minute=19, second=19, microsecond=420000),
-                ],
-                "col": [1.89, 61.89, 3661.89, 1159.89, 69559.42],
-            },
-            schema={"time": pl.Time, "col": pl.Float64},
-        ),
-    )
-
-
-def test_time_to_second_transformer_transform_exist_policy_raise(dataframe: pl.DataFrame) -> None:
-    transformer = TimeToSecond(in_col="time", out_col="col")
-    with pytest.raises(ColumnExistsError, match="column 'col' already exists in the DataFrame"):
-        transformer.transform(dataframe)
-
-
-def test_time_to_second_transformer_transform_exist_policy_warn(dataframe: pl.DataFrame) -> None:
-    transformer = TimeToSecond(in_col="time", out_col="col", exist_policy="warn")
-    with pytest.warns(
-        ColumnExistsWarning,
-        match="column 'col' already exists in the DataFrame and will be overwritten",
-    ):
-        out = transformer.transform(dataframe)
-    assert_frame_equal(
-        out,
-        pl.DataFrame(
-            {
-                "time": [
-                    datetime.time(hour=0, minute=0, second=1, microsecond=890000),
-                    datetime.time(hour=0, minute=1, second=1, microsecond=890000),
-                    datetime.time(hour=1, minute=1, second=1, microsecond=890000),
-                    datetime.time(hour=0, minute=19, second=19, microsecond=890000),
-                    datetime.time(hour=19, minute=19, second=19, microsecond=420000),
-                ],
-                "col": [1.89, 61.89, 3661.89, 1159.89, 69559.42],
-            },
-            schema={"time": pl.Time, "col": pl.Float64},
         ),
     )
 
