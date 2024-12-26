@@ -151,10 +151,10 @@ class CloseColumnsTransformer(BaseIn2Out1Transformer):
             f"atol={self._atol}  rtol={self._rtol}  equal_nan={self._equal_nan}"
         )
         diff = (frame[self._in1_col] - frame[self._in2_col]).abs()
-        tolerance = frame[self._in2_col].abs() * self._rtol + self._atol
-        tolerance_check = (diff <= tolerance) & ~frame[self._in2_col].is_nan()
+        tol = frame[self._in2_col].abs() * self._rtol + self._atol
+        tol_check = (diff <= tol) & ~frame[self._in2_col].is_nan()
 
         if self._equal_nan:
             nan_check = frame[self._in1_col].is_nan() & frame[self._in2_col].is_nan()
-            tolerance_check = tolerance_check | nan_check
-        return frame.with_columns(tolerance_check.alias(self._out_col))
+            tol_check = tol_check | nan_check
+        return frame.with_columns(tol_check.alias(self._out_col))
