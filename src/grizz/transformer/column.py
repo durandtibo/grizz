@@ -14,8 +14,8 @@ from grizz.transformer.base import BaseTransformer
 from grizz.utils.column import (
     check_column_exist_policy,
     check_column_missing_policy,
-    check_existing_columns,
-    check_missing_columns,
+    check_existing_column,
+    check_missing_column,
 )
 
 if TYPE_CHECKING:
@@ -86,7 +86,7 @@ class BaseColumnTransformer(BaseTransformer):
         Args:
             frame: The input DataFrame to check.
         """
-        check_missing_columns(frame, columns=[self._in_col], missing_policy=self._missing_policy)
+        check_missing_column(frame, column=self._in_col, missing_policy=self._missing_policy)
 
     def _check_output_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the output column already exists.
@@ -94,4 +94,4 @@ class BaseColumnTransformer(BaseTransformer):
         Args:
             frame: The input DataFrame to check.
         """
-        check_existing_columns(frame, columns=[self._out_col], exist_policy=self._exist_policy)
+        check_existing_column(frame, column=self._out_col, exist_policy=self._exist_policy)

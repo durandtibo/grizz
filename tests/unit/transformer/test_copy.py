@@ -155,7 +155,7 @@ def test_copy_column_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = CopyColumn(in_col="in", out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -164,7 +164,7 @@ def test_copy_column_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = CopyColumn(in_col="in", out_col="out", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -206,7 +206,7 @@ def test_copy_column_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = CopyColumn(in_col="col1", out_col="col2")
-    with pytest.raises(ColumnExistsError, match="1 column already exists in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match="column 'col2' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -216,7 +216,7 @@ def test_copy_column_transformer_transform_exist_policy_warn(
     transformer = CopyColumn(in_col="col1", out_col="col2", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
-        match="1 column already exists in the DataFrame and will be overwritten:",
+        match="column 'col2' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

@@ -170,7 +170,7 @@ def test_time_to_second_transformer_transform_missing_policy_raise() -> None:
         schema={"time": pl.Time, "col": pl.String},
     )
     transformer = TimeToSecond(in_col="in", out_col="second")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
         transformer.transform(frame)
 
 
@@ -190,7 +190,7 @@ def test_time_to_second_transformer_transform_missing_policy_warn() -> None:
     )
     transformer = TimeToSecond(in_col="in", out_col="second", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(frame)
     assert_frame_equal(

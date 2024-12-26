@@ -104,7 +104,7 @@ def test_replace_transformer_transform_missing_policy_raise() -> None:
         },
         schema={"col1": pl.String, "col2": pl.String},
     )
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
         transformer.transform(frame)
 
 
@@ -120,7 +120,7 @@ def test_replace_transformer_transform_missing_policy_warn() -> None:
         schema={"col1": pl.String, "col2": pl.String},
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(frame)
     assert_frame_equal(
@@ -170,7 +170,7 @@ def test_replace_transformer_transform_exist_policy_raise() -> None:
         },
         schema={"col1": pl.String, "col2": pl.String},
     )
-    with pytest.raises(ColumnExistsError, match="1 column already exists in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match="column 'col2' already exists in the DataFrame"):
         transformer.transform(frame)
 
 
@@ -187,7 +187,7 @@ def test_replace_transformer_transform_exist_policy_warn() -> None:
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="1 column already exists in the DataFrame and will be overwritten:",
+        match="column 'col2' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(frame)
     assert_frame_equal(
@@ -309,7 +309,7 @@ def test_replace_strict_transformer_transform_missing_policy_raise() -> None:
         },
         schema={"col1": pl.String, "col2": pl.String},
     )
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
         transformer.transform(frame)
 
 
@@ -325,7 +325,7 @@ def test_replace_strict_transformer_transform_missing_policy_warn() -> None:
         schema={"col1": pl.String, "col2": pl.String},
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(frame)
     assert_frame_equal(
@@ -375,7 +375,7 @@ def test_replace_strict_transformer_transform_exist_policy_raise() -> None:
         },
         schema={"col1": pl.String, "col2": pl.String},
     )
-    with pytest.raises(ColumnExistsError, match="1 column already exists in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match="column 'col2' already exists in the DataFrame"):
         transformer.transform(frame)
 
 
@@ -392,7 +392,7 @@ def test_replace_strict_transformer_transform_exist_policy_warn() -> None:
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="1 column already exists in the DataFrame and will be overwritten:",
+        match="column 'col2' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(frame)
     assert_frame_equal(
