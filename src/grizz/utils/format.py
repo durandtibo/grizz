@@ -10,6 +10,7 @@ __all__ = [
     "str_row_diff",
 ]
 
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -100,10 +101,11 @@ def str_col_diff(orig: int, final: int) -> str:
 
     ```
     """
-    diff = orig - final
+    diff = abs(orig - final)
+    desc = "removed" if orig >= final else "added"
     diff_pct = 100 * diff / orig if orig > 0 else float("nan")
     row = "columns have" if diff > 1 else "column has"
-    return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been removed"
+    return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been {desc}"
 
 
 def str_row_diff(orig: int, final: int) -> str:
@@ -128,10 +130,11 @@ def str_row_diff(orig: int, final: int) -> str:
 
     ```
     """
-    diff = orig - final
+    diff = abs(orig - final)
+    desc = "removed" if orig >= final else "added"
     diff_pct = 100 * diff / orig if orig > 0 else float("nan")
     row = "rows have" if diff > 1 else "row has"
-    return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been removed"
+    return f"{diff:,}/{orig:,} ({diff_pct:.4f} %) {row} been {desc}"
 
 
 def str_dataframe_shape_diff(orig: tuple[int, int], final: tuple[int, int]) -> str:

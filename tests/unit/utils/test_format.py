@@ -83,6 +83,10 @@ def test_str_col_diff_multiple() -> None:
     assert str_col_diff(100, 10) == "90/100 (90.0000 %) columns have been removed"
 
 
+def test_str_col_diff_added() -> None:
+    assert str_col_diff(100, 110) == "10/100 (10.0000 %) columns have been added"
+
+
 ##################################
 #     Tests for str_row_diff     #
 ##################################
@@ -98,6 +102,10 @@ def test_str_row_diff_one() -> None:
 
 def test_str_row_diff_multiple() -> None:
     assert str_row_diff(100, 10) == "90/100 (90.0000 %) rows have been removed"
+
+
+def test_str_row_diff_added() -> None:
+    assert str_row_diff(100, 110) == "10/100 (10.0000 %) rows have been added"
 
 
 ##############################################
