@@ -15,7 +15,7 @@ from grizz.utils.column import (
     check_column_exist_policy,
     check_column_missing_policy,
     check_existing_columns,
-    check_missing_columns,
+    check_missing_column,
 )
 
 logger = logging.getLogger(__name__)
@@ -161,9 +161,8 @@ class AbsDiffColumnTransformer(BaseTransformer):
         Args:
             frame: The input DataFrame to check.
         """
-        check_missing_columns(
-            frame, columns=[self._in1_col, self._in2_col], missing_policy=self._missing_policy
-        )
+        check_missing_column(frame, column=self._in1_col, missing_policy=self._missing_policy)
+        check_missing_column(frame, column=self._in2_col, missing_policy=self._missing_policy)
 
     def _check_output_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the output column already exists.
