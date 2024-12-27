@@ -140,6 +140,8 @@ class SumHorizontalTransformer(BaseInNOut1Transformer):
             f"| out_col={self._out_col!r} | ignore_nulls={self._ignore_nulls} ..."
         )
         columns = self.find_common_columns(frame)
+        if not columns:
+            return frame.with_columns(pl.lit(None).alias(self._out_col))
         return frame.with_columns(
             pl.sum_horizontal(columns, ignore_nulls=self._ignore_nulls).alias(self._out_col)
         )
