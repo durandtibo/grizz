@@ -38,7 +38,7 @@ def test_sum_horizontal_transformer_repr() -> None:
     assert (
         repr(SumHorizontal(columns=["col1", "col3"], out_col="out"))
         == "SumHorizontalTransformer(columns=('col1', 'col3'), out_col='out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -46,7 +46,7 @@ def test_sum_horizontal_transformer_str() -> None:
     assert (
         str(SumHorizontal(columns=["col1", "col3"], out_col="out"))
         == "SumHorizontalTransformer(columns=('col1', 'col3'), out_col='out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -196,6 +196,82 @@ def test_sum_horizontal_transformer_transform_exclude_columns(dataframe: pl.Data
                 "col3": [31, 32, 33, 34, 35],
                 "col4": ["a", "b", "c", "d", "e"],
                 "out": [63, 66, 69, 72, 75],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Int64,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "out": pl.Int64,
+            },
+        ),
+    )
+
+
+def test_sum_horizontal_transformer_transform_ignore_nulls_false() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": [None, 12, 13, 14, None],
+            "col2": [21, None, 23, None, 25],
+            "col3": [31, 32, None, 34, 35],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={
+            "col1": pl.Int64,
+            "col2": pl.Int64,
+            "col3": pl.Int64,
+            "col4": pl.String,
+        },
+    )
+    transformer = SumHorizontal(columns=["col1", "col2", "col3"], ignore_nulls=False, out_col="out")
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [None, 12, 13, 14, None],
+                "col2": [21, None, 23, None, 25],
+                "col3": [31, 32, None, 34, 35],
+                "col4": ["a", "b", "c", "d", "e"],
+                "out": [None, None, None, None, None],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Int64,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "out": pl.Int64,
+            },
+        ),
+    )
+
+
+def test_sum_horizontal_transformer_transform_ignore_nulls_true() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": [None, 12, 13, 14, None],
+            "col2": [21, None, 23, None, 25],
+            "col3": [31, 32, None, 34, 35],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={
+            "col1": pl.Int64,
+            "col2": pl.Int64,
+            "col3": pl.Int64,
+            "col4": pl.String,
+        },
+    )
+    transformer = SumHorizontal(columns=["col1", "col2", "col3"], out_col="out")
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [None, 12, 13, 14, None],
+                "col2": [21, None, 23, None, 25],
+                "col3": [31, 32, None, 34, 35],
+                "col4": ["a", "b", "c", "d", "e"],
+                "out": [52, 44, 36, 48, 60],
             },
             schema={
                 "col1": pl.Int64,
