@@ -8,8 +8,7 @@ import tempfile
 from pathlib import Path
 
 import polars as pl
-from coola.utils import is_numpy_available
-from coola.utils.imports import numpy_available
+from coola.utils.imports import is_numpy_available, numpy_available
 
 from grizz.ingestor import BaseIngestor, ParquetIngestor
 from grizz.transformer import (
