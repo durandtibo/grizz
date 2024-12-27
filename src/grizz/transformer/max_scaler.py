@@ -9,10 +9,13 @@ from typing import TYPE_CHECKING
 
 import polars as pl
 from coola.utils.format import repr_mapping_line
-from sklearn.preprocessing import MaxAbsScaler
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
+from grizz.utils.imports import check_sklearn, is_sklearn_available
+
+if is_sklearn_available():  # pragma: no cover
+    from sklearn.preprocessing import MaxAbsScaler
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -117,6 +120,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         check_column_exist_policy(exist_policy)
         self._exist_policy = exist_policy
 
+        check_sklearn()
         self._scaler = MaxAbsScaler()
 
     def __repr__(self) -> str:
