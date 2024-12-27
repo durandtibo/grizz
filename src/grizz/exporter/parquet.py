@@ -57,7 +57,7 @@ class ParquetExporter(BaseExporter):
 
     def export(self, frame: pl.DataFrame) -> None:
         logger.info(
-            f"Exporting the DataFrame (shape={frame.shape}) to parquet file {self._path} ..."
+            f"Exporting the DataFrame of shape={frame.shape} to parquet file {self._path} ..."
         )
         self._path.parent.mkdir(parents=True, exist_ok=True)
         frame.write_parquet(self._path, **self._kwargs)
