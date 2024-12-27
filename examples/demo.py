@@ -7,8 +7,8 @@ import logging
 import tempfile
 from pathlib import Path
 
-import numpy as np
 import polars as pl
+from coola.utils.imports import is_numpy_available, numpy_available
 
 from grizz.ingestor import BaseIngestor, ParquetIngestor
 from grizz.transformer import (
@@ -22,7 +22,11 @@ from grizz.transformer import (
     Sequential,
     SumHorizontal,
 )
+from grizz.utils.imports import is_sklearn_available
 from grizz.utils.logging import configure_logging
+
+if is_numpy_available():
+    import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -55,17 +59,17 @@ def make_transformer(data_path: Path) -> BaseTransformer:  # noqa: ARG001
     Args:
         data_path: The path where to store the data for this demo example.
     """
-    return Sequential(
-        [
-            CopyColumn(in_col="col1", out_col="cc1"),
-            DiffHorizontal(in1_col="col1", in2_col="col2", out_col="col_diff"),
-            AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="abs_diff"),
-            CloseColumns(actual="col1", expected="cc1", out_col="close_1"),
-            Diff(in_col="col1", out_col="diff_1", shift=1),
-            SumHorizontal(columns=["col1", "col2"], out_col="sum_12"),
-            MaxAbsScaler(columns=["col1", "col2"], prefix="", suffix="_scaled"),
-        ]
-    )
+    transformers = [
+        CopyColumn(in_col="col1", out_col="cc1"),
+        DiffHorizontal(in1_col="col1", in2_col="col2", out_col="col_diff"),
+        AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="abs_diff"),
+        CloseColumns(actual="col1", expected="cc1", out_col="close_1"),
+        Diff(in_col="col1", out_col="diff_1", shift=1),
+        SumHorizontal(columns=["col1", "col2"], out_col="sum_12"),
+    ]
+    if is_sklearn_available():
+        transformers.append(MaxAbsScaler(columns=["col1", "col2"], prefix="", suffix="_scaled"))
+    return Sequential(transformers)
 
 
 def make_and_run_pipeline(data_path: Path) -> None:
@@ -85,6 +89,7 @@ def make_and_run_pipeline(data_path: Path) -> None:
     logger.info(f"transformed data:\n{out}")
 
 
+@numpy_available
 def main() -> None:
     r"""Define the main function."""
     with tempfile.TemporaryDirectory() as tmpdir:
