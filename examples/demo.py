@@ -18,6 +18,7 @@ from grizz.transformer import (
     CopyColumn,
     Diff,
     DiffHorizontal,
+    MaxAbsScaler,
     Sequential,
     SumHorizontal,
 )
@@ -62,6 +63,7 @@ def make_transformer(data_path: Path) -> BaseTransformer:  # noqa: ARG001
             CloseColumns(actual="col1", expected="cc1", out_col="close_1"),
             Diff(in_col="col1", out_col="diff_1", shift=1),
             SumHorizontal(columns=["col1", "col2"], out_col="sum_12"),
+            MaxAbsScaler(columns=["col1", "col2"], prefix="", suffix="_scaled"),
         ]
     )
 
