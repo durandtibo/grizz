@@ -199,6 +199,27 @@ def test_str_boolean_series_stats_empty() -> None:
     )
 
 
+def test_str_boolean_series_stats_all_nulls() -> None:
+    assert (
+        str_boolean_series_stats(pl.Series([None, None, None, None], dtype=pl.Boolean))
+        == "true: 0/0 (nan %) | null: 4/4 (100.0000 %)"
+    )
+
+
+def test_str_boolean_series_stats_all_false() -> None:
+    assert (
+        str_boolean_series_stats(pl.Series([False, False, False, False]))
+        == "true: 0/4 (0.0000 %) | null: 0/4 (0.0000 %)"
+    )
+
+
+def test_str_boolean_series_stats_all_true() -> None:
+    assert (
+        str_boolean_series_stats(pl.Series([True, True, True, True]))
+        == "true: 4/4 (100.0000 %) | null: 0/4 (0.0000 %)"
+    )
+
+
 def test_str_boolean_series_stats_incorrect_dtype() -> None:
     with pytest.raises(ValueError, match="Incorrect dtype"):
         str_boolean_series_stats(pl.Series())
