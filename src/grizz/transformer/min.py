@@ -97,8 +97,9 @@ class MinHorizontalTransformer(BaseInNOut1Transformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        cols = self.find_columns(frame)
         logger.info(
-            f"Getting the minimum value across {len(self.find_columns(frame)):,} columns "
+            f"Getting the minimum value across {len(cols):,} columns: {cols} "
             f"| out_col={self._out_col!r} ..."
         )
         columns = self.find_common_columns(frame)
