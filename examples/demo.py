@@ -7,8 +7,9 @@ import logging
 import tempfile
 from pathlib import Path
 
-import numpy as np
 import polars as pl
+from coola.utils import is_numpy_available
+from coola.utils.imports import numpy_available
 
 from grizz.ingestor import BaseIngestor, ParquetIngestor
 from grizz.transformer import (
@@ -24,6 +25,9 @@ from grizz.transformer import (
 )
 from grizz.utils.imports import is_sklearn_available
 from grizz.utils.logging import configure_logging
+
+if is_numpy_available():
+    import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +90,7 @@ def make_and_run_pipeline(data_path: Path) -> None:
     logger.info(f"transformed data:\n{out}")
 
 
+@numpy_available
 def main() -> None:
     r"""Define the main function."""
     with tempfile.TemporaryDirectory() as tmpdir:
