@@ -52,6 +52,8 @@ __all__ = [
     "LabelEncoderTransformer",
     "MaxHorizontal",
     "MaxHorizontalTransformer",
+    "MinHorizontal",
+    "MinHorizontalTransformer",
     "Replace",
     "ReplaceStrict",
     "ReplaceStrictTransformer",
@@ -138,6 +140,8 @@ from grizz.transformer.label_encoder import LabelEncoderTransformer
 from grizz.transformer.label_encoder import LabelEncoderTransformer as LabelEncoder
 from grizz.transformer.max import MaxHorizontalTransformer
 from grizz.transformer.max import MaxHorizontalTransformer as MaxHorizontal
+from grizz.transformer.min import MinHorizontalTransformer
+from grizz.transformer.min import MinHorizontalTransformer as MinHorizontal
 from grizz.transformer.null import DropNullColumnTransformer
 from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer
