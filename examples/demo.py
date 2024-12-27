@@ -17,6 +17,7 @@ from grizz.transformer import (
     DiffHorizontal,
     Sequential,
 )
+from grizz.utils.logging import configure_logging
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +83,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    # configure_logging(level=logging.INFO)
+    configure_logging(level=logging.INFO)
     main()
