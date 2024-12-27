@@ -69,8 +69,8 @@ class ClickHouseIngestor(BaseIngestor):
             frame = pl.from_arrow(self._client.query_arrow(query=self._query))
             frame = frame.select(sorted(frame.columns))
             logger.info(
-                f"DataFrame ingested | shape: {frame.shape} | "
-                f"estimated size: {human_byte(frame.estimated_size())}"
+                f"DataFrame ingested | shape={frame.shape}  "
+                f"estimated size={human_byte(frame.estimated_size())}"
             )
         logger.info(f"number of unique column names: {len(set(frame.columns)):,}")
         return frame

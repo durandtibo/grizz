@@ -56,7 +56,7 @@ class CsvExporter(BaseExporter):
         return f"{self.__class__.__qualname__}(path={self._path}{str_kwargs(self._kwargs)})"
 
     def export(self, frame: pl.DataFrame) -> None:
-        logger.info(f"Exporting the DataFrame (shape={frame.shape}) to CSV file {self._path} ...")
+        logger.info(f"Exporting the DataFrame of shape={frame.shape} to CSV file {self._path} ...")
         self._path.parent.mkdir(parents=True, exist_ok=True)
         frame.write_csv(self._path, **self._kwargs)
         logger.info(f"DataFrame exported | size={human_file_size(self._path)}")
