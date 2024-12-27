@@ -121,10 +121,9 @@ def test_label_encoder_transformer_fit_transform(dataframe: pl.DataFrame) -> Non
 
 
 @sklearn_available
-def test_label_encoder_transformer_transform(dataframe: pl.DataFrame) -> None:
+def test_label_encoder_transformer_transform() -> None:
     transformer = LabelEncoder(in_col="col1", out_col="out")
-    transformer.fit(dataframe)
-    assert objects_are_equal(list(transformer._encoder.classes_), ["amsterdam", "paris", "tokyo"])
+    transformer._encoder.fit(["tokyo", "amsterdam", "paris", "tokyo"])
 
     frame = pl.DataFrame(
         {"col1": ["tokyo", "amsterdam", "paris", "tokyo"]}, schema={"col1": pl.String}
@@ -156,7 +155,7 @@ def test_label_encoder_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = LabelEncoder(in_col="col1", out_col="col2", exist_policy="ignore")
-    transformer.fit(pl.DataFrame({"col1": ["tokyo", "amsterdam", "paris", "tokyo"]}))
+    transformer._encoder.fit(["tokyo", "amsterdam", "paris", "tokyo"])
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         out = transformer.transform(dataframe)
@@ -184,7 +183,7 @@ def test_label_encoder_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = LabelEncoder(in_col="col1", out_col="col2")
-    transformer.fit(pl.DataFrame({"col1": ["tokyo", "amsterdam", "paris", "tokyo"]}))
+    transformer._encoder.fit(["tokyo", "amsterdam", "paris", "tokyo"])
     with pytest.raises(ColumnExistsError, match="column 'col2' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
@@ -194,7 +193,7 @@ def test_label_encoder_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = LabelEncoder(in_col="col1", out_col="col2", exist_policy="warn")
-    transformer.fit(pl.DataFrame({"col1": ["tokyo", "amsterdam", "paris", "tokyo"]}))
+    transformer._encoder.fit(["tokyo", "amsterdam", "paris", "tokyo"])
     with pytest.warns(
         ColumnExistsWarning,
         match="column 'col2' already exists in the DataFrame and will be overwritten",
