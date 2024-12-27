@@ -50,6 +50,8 @@ __all__ = [
     "JsonDecodeTransformer",
     "LabelEncoder",
     "LabelEncoderTransformer",
+    "MaxAbsScaler",
+    "MaxAbsScalerTransformer",
     "MaxHorizontal",
     "MaxHorizontalTransformer",
     "MeanHorizontal",
@@ -142,6 +144,8 @@ from grizz.transformer.label_encoder import LabelEncoderTransformer
 from grizz.transformer.label_encoder import LabelEncoderTransformer as LabelEncoder
 from grizz.transformer.max import MaxHorizontalTransformer
 from grizz.transformer.max import MaxHorizontalTransformer as MaxHorizontal
+from grizz.transformer.max_scaler import MaxAbsScalerTransformer
+from grizz.transformer.max_scaler import MaxAbsScalerTransformer as MaxAbsScaler
 from grizz.transformer.mean import MeanHorizontalTransformer
 from grizz.transformer.mean import MeanHorizontalTransformer as MeanHorizontal
 from grizz.transformer.min import MinHorizontalTransformer
