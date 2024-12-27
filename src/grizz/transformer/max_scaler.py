@@ -13,6 +13,7 @@ from coola.utils.format import repr_mapping_line
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
 from grizz.utils.imports import check_sklearn, is_sklearn_available
+from grizz.utils.null import propagate_nulls
 
 if is_sklearn_available():  # pragma: no cover
     from sklearn.preprocessing import MaxAbsScaler
@@ -63,7 +64,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
     >>> from grizz.transformer import MaxAbsScaler
     >>> transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")
     >>> transformer
-    MaxAbsScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    MaxAbsScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -161,16 +162,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         x = self._scaler.transform(features.to_numpy())
         features_scaled = pl.from_numpy(x, schema=features.columns)
         if self._propagate_nulls:
-            features_scaled = (
-                features_scaled.with_columns(
-                    features.select(pl.all().is_null().name.suffix("__@@isnull@@_"))
-                )
-                .with_columns(
-                    pl.when(~pl.col(col + "__@@isnull@@_")).then(pl.col(col)).otherwise(None)
-                    for col in columns
-                )
-                .select(columns)
-            )
+            features_scaled = propagate_nulls(features_scaled, features)
         return frame.with_columns(
             features_scaled.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
         )
