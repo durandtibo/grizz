@@ -30,7 +30,7 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
-        ignore_nulls: If set to False, any null value in the input
+        ignore_nulls: If set to ``False``, any null value in the input
             will lead to a null output.
         exist_policy: The policy on how to handle existing columns.
             The following options are available: ``'ignore'``,
