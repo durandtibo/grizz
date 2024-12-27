@@ -46,7 +46,7 @@ def dataframe() -> pl.DataFrame:
 def test_max_scaler_transformer_repr() -> None:
     assert repr(MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")) == (
         "MaxAbsScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -54,7 +54,7 @@ def test_max_scaler_transformer_repr() -> None:
 def test_max_scaler_transformer_str() -> None:
     assert str(MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")) == (
         "MaxAbsScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -151,6 +151,152 @@ def test_max_scaler_transformer_transform(dataframe: pl.DataFrame) -> None:
                 "col3": pl.Int64,
                 "col4": pl.String,
                 "col1_scaled": pl.Float64,
+                "col3_scaled": pl.Float64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_max_scaler_transformer_transform__propagate_nulls_true() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5, None, 1, None, float("nan"), 1, float("nan")],
+            "col2": [-1.0, -2.0, -3.0, -4.0, -5.0, 1, None, None, 1, float("nan"), float("nan")],
+            "col3": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+        },
+        schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Int64},
+    )
+    transformer = MaxAbsScaler(columns=["col1", "col2", "col3"], prefix="", suffix="_scaled")
+    transformer._scaler.fit(np.array([[5, -2, 50]]))
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5, None, 1, None, float("nan"), 1, float("nan")],
+                "col2": [
+                    -1.0,
+                    -2.0,
+                    -3.0,
+                    -4.0,
+                    -5.0,
+                    1,
+                    None,
+                    None,
+                    1,
+                    float("nan"),
+                    float("nan"),
+                ],
+                "col3": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+                "col1_scaled": [
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8,
+                    1.0,
+                    None,
+                    0.2,
+                    None,
+                    float("nan"),
+                    0.2,
+                    float("nan"),
+                ],
+                "col2_scaled": [
+                    -0.5,
+                    -1.0,
+                    -1.5,
+                    -2.0,
+                    -2.5,
+                    0.5,
+                    None,
+                    None,
+                    0.5,
+                    float("nan"),
+                    float("nan"),
+                ],
+                "col3_scaled": [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.Float32,
+                "col3": pl.Int64,
+                "col1_scaled": pl.Float64,
+                "col2_scaled": pl.Float64,
+                "col3_scaled": pl.Float64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_max_scaler_transformer_transform_propagate_nulls_false() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5, None, 1, None, float("nan"), 1, float("nan")],
+            "col2": [-1.0, -2.0, -3.0, -4.0, -5.0, 1, None, None, 1, float("nan"), float("nan")],
+            "col3": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+        },
+        schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Int64},
+    )
+    transformer = MaxAbsScaler(
+        columns=["col1", "col2", "col3"], prefix="", suffix="_scaled", propagate_nulls=False
+    )
+    transformer._scaler.fit(np.array([[5, -2, 50]]))
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5, None, 1, None, float("nan"), 1, float("nan")],
+                "col2": [
+                    -1.0,
+                    -2.0,
+                    -3.0,
+                    -4.0,
+                    -5.0,
+                    1,
+                    None,
+                    None,
+                    1,
+                    float("nan"),
+                    float("nan"),
+                ],
+                "col3": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110],
+                "col1_scaled": [
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8,
+                    1.0,
+                    float("nan"),
+                    0.2,
+                    float("nan"),
+                    float("nan"),
+                    0.2,
+                    float("nan"),
+                ],
+                "col2_scaled": [
+                    -0.5,
+                    -1.0,
+                    -1.5,
+                    -2.0,
+                    -2.5,
+                    0.5,
+                    float("nan"),
+                    float("nan"),
+                    0.5,
+                    float("nan"),
+                    float("nan"),
+                ],
+                "col3_scaled": [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.Float32,
+                "col3": pl.Int64,
+                "col1_scaled": pl.Float64,
+                "col2_scaled": pl.Float64,
                 "col3_scaled": pl.Float64,
             },
         ),

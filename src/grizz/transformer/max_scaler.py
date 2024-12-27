@@ -35,6 +35,9 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
+        propagate_nulls: If set to ``True``, the ``None`` values are
+            propagated after the transformation. If ``False``, the
+            ``None`` values are replaced by NaNs.
         exist_policy: The policy on how to handle existing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -106,6 +109,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         prefix: str,
         suffix: str,
         exclude_columns: Sequence[str] = (),
+        propagate_nulls: bool = True,
         exist_policy: str = "raise",
         missing_policy: str = "raise",
     ) -> None:
@@ -116,6 +120,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         )
         self._prefix = prefix
         self._suffix = suffix
+        self._propagate_nulls = propagate_nulls
 
         check_column_exist_policy(exist_policy)
         self._exist_policy = exist_policy
@@ -130,6 +135,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
                 "prefix": self._prefix,
                 "suffix": self._suffix,
                 "exclude_columns": self._exclude_columns,
+                "propagate_nulls": self._propagate_nulls,
                 "exist_policy": self._exist_policy,
                 "missing_policy": self._missing_policy,
             }
@@ -150,9 +156,23 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
             f"suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
-        x = self._scaler.transform(frame.select(columns).to_numpy())
+        features = frame.select(columns)
+
+        x = self._scaler.transform(features.to_numpy())
+        features_scaled = pl.from_numpy(x, schema=features.columns)
+        if self._propagate_nulls:
+            features_scaled = (
+                features_scaled.with_columns(
+                    features.select(pl.all().is_null().name.suffix("__@@isnull@@_"))
+                )
+                .with_columns(
+                    pl.when(~pl.col(col + "__@@isnull@@_")).then(pl.col(col)).otherwise(None)
+                    for col in columns
+                )
+                .select(columns)
+            )
         return frame.with_columns(
-            pl.from_numpy(x, schema=[f"{self._prefix}{col}{self._suffix}" for col in columns])
+            features_scaled.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
         )
 
     def _check_output_columns(self, frame: pl.DataFrame) -> None:
