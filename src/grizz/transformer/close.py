@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn2Out1Transformer
+from grizz.utils.format import str_boolean_series_stats
 
 if TYPE_CHECKING:
     import polars as pl
@@ -157,4 +158,5 @@ class CloseColumnsTransformer(BaseIn2Out1Transformer):
         if self._equal_nan:
             nan_check = frame[self._in1_col].is_nan() & frame[self._in2_col].is_nan()
             tol_check = tol_check | nan_check
+        logger.info(f"{self._out_col} - {str_boolean_series_stats(tol_check)}")
         return frame.with_columns(tol_check.alias(self._out_col))
