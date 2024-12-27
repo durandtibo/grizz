@@ -228,7 +228,7 @@ def str_boolean_series_stats(series: pl.Series) -> str:
     num_null = stats["num_null"]
     num_non_null = stats["total"] - num_null
     pct_true = 100 * stats["num_true"] / num_non_null if num_non_null > 0 else float("nan")
-    pct_null = 100 * num_null / total if num_non_null > 0 else float("nan")
+    pct_null = 100 * num_null / total if total > 0 else float("nan")
     return (
         f"true: {stats['num_true']:,}/{num_non_null:,} ({pct_true:.4f} %) | "
         f"null: {num_null:,}/{total:,} ({pct_null:.4f} %)"
