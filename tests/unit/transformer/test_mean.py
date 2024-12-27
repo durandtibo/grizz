@@ -409,3 +409,30 @@ def test_mean_horizontal_transformer_transform_missing_policy_warn(dataframe: pl
             },
         ),
     )
+
+
+def test_mean_horizontal_transformer_transform_missing_all_columns(dataframe: pl.DataFrame) -> None:
+    transformer = MeanHorizontal(columns=["col5", "col6"], out_col="out", missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="2 columns are missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [11, 12, 13, 14, 15],
+                "col2": [21, 22, 23, 24, 25],
+                "col3": [31, 32, 33, 34, 35],
+                "col4": ["a", "b", "c", "d", "e"],
+                "out": [None, None, None, None, None],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Int64,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "out": pl.Float64,
+            },
+        ),
+    )
