@@ -17,6 +17,7 @@ from grizz.transformer import (
     DiffHorizontal,
     Sequential,
 )
+from grizz.utils.logging import configure_logging
 
 logger = logging.getLogger(__name__)
 
@@ -66,12 +67,12 @@ def make_and_run_pipeline(data_path: Path) -> None:
     ingestor = make_ingestor(data_path)
     logger.info(f"ingestor:\n{ingestor}")
     data = ingestor.ingest()
-    logger.info(f"ingested data: {data}")
+    logger.info(f"ingested data:\n{data}")
 
     transformer = make_transformer(data_path)
     logger.info(f"transformer:\n{transformer}")
     out = transformer.fit_transform(data)
-    logger.info(f"transformed data: {out}")
+    logger.info(f"transformed data:\n{out}")
 
 
 def main() -> None:
@@ -82,6 +83,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    # configure_logging(level=logging.INFO)
+    configure_logging(level=logging.INFO)
     main()
