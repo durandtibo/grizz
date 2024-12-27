@@ -135,9 +135,10 @@ class SumHorizontalTransformer(BaseInNOut1Transformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        cols = self.find_columns(frame)
         logger.info(
-            f"Summing all values horizontally across {len(self.find_columns(frame)):,} columns "
-            f"| out_col={self._out_col!r} | ignore_nulls={self._ignore_nulls} ..."
+            f"Summing all values horizontally across {len(cols):,} columns: {cols} "
+            f"| out_col={self._out_col!r} | ignore_nulls={self._ignore_nulls}"
         )
         columns = self.find_common_columns(frame)
         if not columns:
