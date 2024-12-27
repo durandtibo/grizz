@@ -4,17 +4,21 @@ from __future__ import annotations
 
 __all__ = [
     "human_byte",
+    "str_boolean_series_stats",
     "str_col_diff",
     "str_kwargs",
     "str_row_diff",
     "str_shape_diff",
 ]
 
-
 from typing import TYPE_CHECKING
+
+from grizz.utils.series import compute_stats_boolean
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+    import polars as pl
 
 
 def human_byte(size: float, decimal: int = 2) -> str:
@@ -165,3 +169,39 @@ def str_shape_diff(orig: tuple[int, int], final: tuple[int, int]) -> str:
     if orig[1] != final[1]:
         msg += f" | {str_col_diff(orig=orig[1], final=final[1])}"
     return msg
+
+
+def str_boolean_series_stats(series: pl.Series) -> str:
+    r"""Return a string about the content of a Boolean series.
+
+    Args:
+        series: The input series.
+
+    Returns:
+        The generated string about the input series.
+
+    Raises:
+        ValueError: if ``series`` is not a Boolean series.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.format import str_boolean_series_stats
+    >>> series = pl.Series([True, False, None, None, False, None])
+    >>> str_boolean_series_stats(series)
+    true: 1/3 (33.3333 %) | null: 3/6 (50.0000 %)
+
+    ```
+    """
+    stats = compute_stats_boolean(series)
+    total = stats["total"]
+    num_null = stats["num_null"]
+    num_non_null = stats["total"] - num_null
+    pct_true = 100 * stats["num_true"] / num_non_null if num_non_null > 0 else float("nan")
+    pct_null = 100 * num_null / total if num_non_null > 0 else float("nan")
+    return (
+        f"true: {stats['num_true']:,}/{num_non_null:,} ({pct_true:.4f} %) | "
+        f"null: {num_null:,}/{total:,} ({pct_null:.4f} %)"
+    )

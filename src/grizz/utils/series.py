@@ -17,6 +17,9 @@ def compute_stats_boolean(series: pl.Series) -> dict[str, float]:
     Returns:
         The statistics about the input Boolean series.
 
+    Raises:
+        ValueError: if ``series`` is not a Boolean series.
+
     Example usage:
 
     ```pycon
