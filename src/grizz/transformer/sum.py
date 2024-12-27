@@ -5,10 +5,15 @@ from __future__ import annotations
 __all__ = ["SumHorizontalTransformer"]
 
 import logging
+from typing import TYPE_CHECKING
 
 import polars as pl
+from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNOut1Transformer
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +29,8 @@ class SumHorizontalTransformer(BaseInNOut1Transformer):
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
+        ignore_nulls: If set to False, any null value in the input
+            will lead to a null output.
         exist_policy: The policy on how to handle existing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -49,7 +56,7 @@ class SumHorizontalTransformer(BaseInNOut1Transformer):
     >>> from grizz.transformer import SumHorizontal
     >>> transformer = SumHorizontal(columns=["col1", "col2", "col3"], out_col="col")
     >>> transformer
-    SumHorizontalTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    SumHorizontalTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [11, 12, 13, 14, 15],
@@ -90,6 +97,37 @@ class SumHorizontalTransformer(BaseInNOut1Transformer):
     ```
     """
 
+    def __init__(
+        self,
+        columns: Sequence[str] | None,
+        out_col: str,
+        exclude_columns: Sequence[str] = (),
+        ignore_nulls: bool = True,
+        exist_policy: str = "raise",
+        missing_policy: str = "raise",
+    ) -> None:
+        super().__init__(
+            columns=columns,
+            out_col=out_col,
+            exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
+            missing_policy=missing_policy,
+        )
+        self._ignore_nulls = ignore_nulls
+
+    def __repr__(self) -> str:
+        args = repr_mapping_line(
+            {
+                "columns": self._columns,
+                "out_col": self._out_col,
+                "exclude_columns": self._exclude_columns,
+                "ignore_nulls": self._ignore_nulls,
+                "exist_policy": self._exist_policy,
+                "missing_policy": self._missing_policy,
+            }
+        )
+        return f"{self.__class__.__qualname__}({args})"
+
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
@@ -99,7 +137,9 @@ class SumHorizontalTransformer(BaseInNOut1Transformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Summing all values horizontally across {len(self.find_columns(frame)):,} columns "
-            f"| out_col={self._out_col!r} ..."
+            f"| out_col={self._out_col!r} | ignore_nulls={self._ignore_nulls} ..."
         )
         columns = self.find_common_columns(frame)
-        return frame.with_columns(pl.sum_horizontal(columns).alias(self._out_col))
+        return frame.with_columns(
+            pl.sum_horizontal(columns, ignore_nulls=self._ignore_nulls).alias(self._out_col)
+        )
