@@ -229,9 +229,9 @@ def test_close_columns_transformer_transform_rtol() -> None:
 def test_close_columns_transformer_transform_equal_nan_true() -> None:
     frame = pl.DataFrame(
         {
-            "col1": [1.0, 2.0, float("nan"), 1.0, float("nan")],
-            "col2": [1.0, 1.0, 1.0, float("nan"), float("nan")],
-            "col3": ["a", "b", "c", "d", "e"],
+            "col1": [1.0, 2.0, float("nan"), 1.0, float("nan"), None, 1.0, None],
+            "col2": [1.0, 1.0, 1.0, float("nan"), float("nan"), 1.0, None, None],
+            "col3": ["a", "b", "c", "d", "e", "f", "g", "h"],
         },
         schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
     )
@@ -241,10 +241,10 @@ def test_close_columns_transformer_transform_equal_nan_true() -> None:
         out,
         pl.DataFrame(
             {
-                "col1": [1.0, 2.0, float("nan"), 1.0, float("nan")],
-                "col2": [1.0, 1.0, 1.0, float("nan"), float("nan")],
-                "col3": ["a", "b", "c", "d", "e"],
-                "out": [True, False, False, False, True],
+                "col1": [1.0, 2.0, float("nan"), 1.0, float("nan"), None, 1.0, None],
+                "col2": [1.0, 1.0, 1.0, float("nan"), float("nan"), 1.0, None, None],
+                "col3": ["a", "b", "c", "d", "e", "f", "g", "h"],
+                "out": [True, False, False, False, True, None, None, None],
             },
             schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String, "out": pl.Boolean},
         ),
@@ -254,9 +254,9 @@ def test_close_columns_transformer_transform_equal_nan_true() -> None:
 def test_close_columns_transformer_transform_equal_nan_false() -> None:
     frame = pl.DataFrame(
         {
-            "col1": [1.0, 2.0, float("nan"), 1.0, float("nan")],
-            "col2": [1.0, 1.0, 1.0, float("nan"), float("nan")],
-            "col3": ["a", "b", "c", "d", "e"],
+            "col1": [1.0, 2.0, float("nan"), 1.0, float("nan"), None, 1.0, None],
+            "col2": [1.0, 1.0, 1.0, float("nan"), float("nan"), 1.0, None, None],
+            "col3": ["a", "b", "c", "d", "e", "f", "g", "h"],
         },
         schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
     )
@@ -266,10 +266,10 @@ def test_close_columns_transformer_transform_equal_nan_false() -> None:
         out,
         pl.DataFrame(
             {
-                "col1": [1.0, 2.0, float("nan"), 1.0, float("nan")],
-                "col2": [1.0, 1.0, 1.0, float("nan"), float("nan")],
-                "col3": ["a", "b", "c", "d", "e"],
-                "out": [True, False, False, False, False],
+                "col1": [1.0, 2.0, float("nan"), 1.0, float("nan"), None, 1.0, None],
+                "col2": [1.0, 1.0, 1.0, float("nan"), float("nan"), 1.0, None, None],
+                "col3": ["a", "b", "c", "d", "e", "f", "g", "h"],
+                "out": [True, False, False, False, False, None, None, None],
             },
             schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String, "out": pl.Boolean},
         ),
