@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import polars as pl
 import pytest
 
 from grizz.utils.format import (
     human_byte,
+    str_boolean_series_stats,
     str_col_diff,
     str_kwargs,
     str_row_diff,
@@ -141,3 +143,27 @@ def test_str_shape_diff_cols_and_rows() -> None:
         == "DataFrame shape: (100, 10) -> (80, 8) | 20/100 (20.0000 %) rows have been removed | "
         "2/10 (20.0000 %) columns have been removed"
     )
+
+
+##############################################
+#     Tests for str_boolean_series_stats     #
+##############################################
+
+
+def test_str_boolean_series_stats() -> None:
+    assert (
+        str_boolean_series_stats(pl.Series([True, False, None, None, False, None]))
+        == "true: 1/3 (33.3333 %) | null: 3/6 (50.0000 %)"
+    )
+
+
+def test_str_boolean_series_stats_empty() -> None:
+    assert (
+        str_boolean_series_stats(pl.Series(dtype=pl.Boolean))
+        == "true: 0/0 (nan %) | null: 0/0 (nan %)"
+    )
+
+
+def test_str_boolean_series_stats_incorrect_dtype() -> None:
+    with pytest.raises(ValueError, match="Incorrect dtype"):
+        str_boolean_series_stats(pl.Series())
