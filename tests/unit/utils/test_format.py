@@ -10,6 +10,7 @@ from grizz.utils.format import (
     str_kwargs,
     str_row_diff,
     str_shape_diff,
+    str_size_diff,
 )
 
 ################################
@@ -142,6 +143,32 @@ def test_str_shape_diff_cols_and_rows() -> None:
         str_shape_diff(orig=(100, 10), final=(80, 8))
         == "DataFrame shape: (100, 10) -> (80, 8) | 20/100 (20.0000 %) rows have been removed | "
         "2/10 (20.0000 %) columns have been removed"
+    )
+
+
+###################################
+#     Tests for str_size_diff     #
+###################################
+
+
+def test_str_size_diff_zero() -> None:
+    assert (
+        str_size_diff(orig=0, final=0)
+        == "DataFrame estimated size: 0.00 B -> 0.00 B | difference: 0.00 B (nan %)"
+    )
+
+
+def test_str_size_diff_increase() -> None:
+    assert (
+        str_size_diff(orig=100, final=120)
+        == "DataFrame estimated size: 100.00 B -> 120.00 B | difference: 20.00 B (20.0000 %)"
+    )
+
+
+def test_str_size_diff_decrease() -> None:
+    assert (
+        str_size_diff(orig=100, final=80)
+        == "DataFrame estimated size: 100.00 B -> 80.00 B | difference: -20.00 B (-20.0000 %)"
     )
 
 

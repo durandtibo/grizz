@@ -147,7 +147,7 @@ def str_shape_diff(orig: tuple[int, int], final: tuple[int, int]) -> str:
 
     Args:
         orig: The original shape.
-        final: The final number of rows.
+        final: The final shape.
 
     Returns:
         The generated string with the difference of DataFrame shapes.
@@ -169,6 +169,34 @@ def str_shape_diff(orig: tuple[int, int], final: tuple[int, int]) -> str:
     if orig[1] != final[1]:
         msg += f" | {str_col_diff(orig=orig[1], final=final[1])}"
     return msg
+
+
+def str_size_diff(orig: float, final: float) -> str:
+    r"""Return a string that indicates the difference of DataFrame sizes.
+
+    Args:
+        orig: The original size.
+        final: The final size.
+
+    Returns:
+        The generated string with the difference of DataFrame sizes.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.utils.format import str_size_diff
+    >>> str_size_diff(orig=100, final=120)
+    DataFrame estimated size: 100.00 B -> 120.00 B | difference: 20.00 B (20.0000 %)
+
+    ```
+    """
+    diff = final - orig
+    pct = 100 * diff / orig if diff != 0 else float("nan")
+    return (
+        f"DataFrame estimated size: {human_byte(orig)} -> {human_byte(final)} | "
+        f"difference: {human_byte(diff)} ({pct:.4f} %)"
+    )
 
 
 def str_boolean_series_stats(series: pl.Series) -> str:
