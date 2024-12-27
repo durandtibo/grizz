@@ -142,8 +142,8 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_output_columns(frame)
         logger.info(
-            f"Scaling {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
-            f"suffix={self._suffix!r} ..."
+            f"Scaling {len(self.find_columns(frame)):,} columns... | prefix={self._prefix!r} | "
+            f"suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
         x = self._scaler.transform(frame.select(columns).to_numpy())
