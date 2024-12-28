@@ -61,6 +61,7 @@ __all__ = [
     "MinMaxScaler",
     "MinMaxScalerTransformer",
     "PowerTransformer",
+    "QuantileTransformer",
     "Replace",
     "ReplaceStrict",
     "ReplaceStrictTransformer",
@@ -162,6 +163,7 @@ from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer
 from grizz.transformer.null import DropNullRowTransformer as DropNullRow
 from grizz.transformer.power import PowerTransformer
+from grizz.transformer.quantile import QuantileTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
 from grizz.transformer.replace import ReplaceTransformer
