@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from unittest.mock import patch
 
 import polars as pl
 import pytest
@@ -280,3 +281,11 @@ def test_label_encoder_transformer_transform_missing_policy_warn(
             },
         ),
     )
+
+
+def test_label_encoder_transformer_no_sklearn() -> None:
+    with (
+        patch("grizz.utils.imports.is_sklearn_available", lambda: False),
+        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+    ):
+        LabelEncoder(in_col="in", out_col="out")

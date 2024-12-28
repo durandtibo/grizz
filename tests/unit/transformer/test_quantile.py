@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from unittest.mock import patch
 
 import polars as pl
 import pytest
@@ -500,3 +501,11 @@ def test_quantile_transformer_transform_missing_policy_warn(
             },
         ),
     )
+
+
+def test_quantile_transformer_no_sklearn() -> None:
+    with (
+        patch("grizz.utils.imports.is_sklearn_available", lambda: False),
+        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+    ):
+        QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_scaled")
