@@ -64,6 +64,8 @@ __all__ = [
     "ReplaceTransformer",
     "Sequential",
     "SequentialTransformer",
+    "ShrinkMemory",
+    "ShrinkMemoryTransformer",
     "Sort",
     "SortColumns",
     "SortColumnsTransformer",
@@ -162,6 +164,8 @@ from grizz.transformer.selection import ColumnSelectionTransformer
 from grizz.transformer.selection import ColumnSelectionTransformer as ColumnSelection
 from grizz.transformer.sequential import SequentialTransformer
 from grizz.transformer.sequential import SequentialTransformer as Sequential
+from grizz.transformer.shrink import ShrinkMemoryTransformer
+from grizz.transformer.shrink import ShrinkMemoryTransformer as ShrinkMemory
 from grizz.transformer.sorting import SortColumnsTransformer
 from grizz.transformer.sorting import SortColumnsTransformer as SortColumns
 from grizz.transformer.sorting import SortTransformer
