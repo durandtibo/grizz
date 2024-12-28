@@ -58,6 +58,9 @@ def test_quantile_transformer_str() -> None:
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_fit(dataframe: pl.DataFrame) -> None:
     transformer = QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_scaled")
     transformer.fit(dataframe)
@@ -65,6 +68,9 @@ def test_quantile_transformer_fit(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -91,6 +97,9 @@ def test_quantile_transformer_fit_missing_policy_raise(
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_fit_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -105,6 +114,9 @@ def test_quantile_transformer_fit_missing_policy_warn(
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_scaled")
     out = transformer.fit_transform(dataframe)
@@ -133,6 +145,9 @@ def test_quantile_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_scaled")
     transformer._transformer.fit(np.array([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]))
@@ -161,6 +176,9 @@ def test_quantile_transformer_transform(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_transform_propagate_nulls_true() -> None:
     frame = pl.DataFrame(
         {
@@ -235,6 +253,9 @@ def test_quantile_transformer_transform_propagate_nulls_true() -> None:
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_transform_propagate_nulls_false() -> None:
     frame = pl.DataFrame(
         {
@@ -321,6 +342,9 @@ def test_quantile_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> N
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -360,6 +384,9 @@ def test_quantile_transformer_transform_exist_policy_raise(
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -392,6 +419,9 @@ def test_quantile_transformer_transform_exist_policy_warn(
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -435,6 +465,9 @@ def test_quantile_transformer_transform_missing_policy_raise(
 
 
 @sklearn_available
+@pytest.mark.filterwarnings(
+    "ignore:n_quantiles .* is greater than the total number of samples .*:UserWarning"
+)
 def test_quantile_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
