@@ -58,6 +58,8 @@ __all__ = [
     "MeanHorizontalTransformer",
     "MinHorizontal",
     "MinHorizontalTransformer",
+    "MinMaxScaler",
+    "MinMaxScalerTransformer",
     "Replace",
     "ReplaceStrict",
     "ReplaceStrictTransformer",
@@ -152,6 +154,8 @@ from grizz.transformer.mean import MeanHorizontalTransformer
 from grizz.transformer.mean import MeanHorizontalTransformer as MeanHorizontal
 from grizz.transformer.min import MinHorizontalTransformer
 from grizz.transformer.min import MinHorizontalTransformer as MinHorizontal
+from grizz.transformer.min_max_scaler import MinMaxScalerTransformer
+from grizz.transformer.min_max_scaler import MinMaxScalerTransformer as MinMaxScaler
 from grizz.transformer.null import DropNullColumnTransformer
 from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer

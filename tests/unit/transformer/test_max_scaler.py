@@ -43,7 +43,7 @@ def dataframe() -> pl.DataFrame:
 
 
 @sklearn_available
-def test_max_scaler_transformer_repr() -> None:
+def test_max_abs_scaler_transformer_repr() -> None:
     assert repr(MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")) == (
         "MaxAbsScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', "
         "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
@@ -51,7 +51,7 @@ def test_max_scaler_transformer_repr() -> None:
 
 
 @sklearn_available
-def test_max_scaler_transformer_str() -> None:
+def test_max_abs_scaler_transformer_str() -> None:
     assert str(MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")) == (
         "MaxAbsScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', "
         "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
@@ -59,14 +59,14 @@ def test_max_scaler_transformer_str() -> None:
 
 
 @sklearn_available
-def test_max_scaler_transformer_fit(dataframe: pl.DataFrame) -> None:
+def test_max_abs_scaler_transformer_fit(dataframe: pl.DataFrame) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")
     transformer.fit(dataframe)
     assert objects_are_equal(transformer._scaler.scale_, np.array([5.0, 50.0]))
 
 
 @sklearn_available
-def test_max_scaler_transformer_fit_missing_policy_ignore(
+def test_max_abs_scaler_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(
@@ -79,7 +79,7 @@ def test_max_scaler_transformer_fit_missing_policy_ignore(
 
 
 @sklearn_available
-def test_max_scaler_transformer_fit_missing_policy_raise(
+def test_max_abs_scaler_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3", "col5"], prefix="", suffix="_scaled")
@@ -88,7 +88,7 @@ def test_max_scaler_transformer_fit_missing_policy_raise(
 
 
 @sklearn_available
-def test_max_scaler_transformer_fit_missing_policy_warn(
+def test_max_abs_scaler_transformer_fit_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(
@@ -102,7 +102,7 @@ def test_max_scaler_transformer_fit_missing_policy_warn(
 
 
 @sklearn_available
-def test_max_scaler_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+def test_max_abs_scaler_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")
     out = transformer.fit_transform(dataframe)
     assert objects_are_equal(transformer._scaler.scale_, np.array([5.0, 50.0]))
@@ -130,7 +130,7 @@ def test_max_scaler_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform(dataframe: pl.DataFrame) -> None:
+def test_max_abs_scaler_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")
     transformer._scaler.fit(np.array([[5, 50]]))
     out = transformer.transform(dataframe)
@@ -158,7 +158,7 @@ def test_max_scaler_transformer_transform(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform__propagate_nulls_true() -> None:
+def test_max_abs_scaler_transformer_transform_propagate_nulls_true() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5, None, 1, None, float("nan"), 1, float("nan")],
@@ -230,7 +230,7 @@ def test_max_scaler_transformer_transform__propagate_nulls_true() -> None:
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_propagate_nulls_false() -> None:
+def test_max_abs_scaler_transformer_transform_propagate_nulls_false() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5, None, 1, None, float("nan"), 1, float("nan")],
@@ -304,7 +304,7 @@ def test_max_scaler_transformer_transform_propagate_nulls_false() -> None:
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> None:
+def test_max_abs_scaler_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")
     with pytest.raises(
         sklearn.exceptions.NotFittedError, match="This MaxAbsScaler instance is not fitted yet."
@@ -313,7 +313,7 @@ def test_max_scaler_transformer_transform_not_fitted(dataframe: pl.DataFrame) ->
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_exist_policy_ignore(
+def test_max_abs_scaler_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(
@@ -343,7 +343,7 @@ def test_max_scaler_transformer_transform_exist_policy_ignore(
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_exist_policy_raise(
+def test_max_abs_scaler_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="")
@@ -352,7 +352,7 @@ def test_max_scaler_transformer_transform_exist_policy_raise(
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_exist_policy_warn(
+def test_max_abs_scaler_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="", exist_policy="warn")
@@ -382,7 +382,7 @@ def test_max_scaler_transformer_transform_exist_policy_warn(
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_missing_policy_ignore(
+def test_max_abs_scaler_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(
@@ -416,7 +416,7 @@ def test_max_scaler_transformer_transform_missing_policy_ignore(
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_missing_policy_raise(
+def test_max_abs_scaler_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3", "col5"], prefix="", suffix="_scaled")
@@ -425,7 +425,7 @@ def test_max_scaler_transformer_transform_missing_policy_raise(
 
 
 @sklearn_available
-def test_max_scaler_transformer_transform_missing_policy_warn(
+def test_max_abs_scaler_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxAbsScaler(
