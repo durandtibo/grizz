@@ -1,9 +1,9 @@
-r"""Contain ``polars.DataFrame`` transformers to scale each column to a
-given range."""
+r"""Contain ``polars.DataFrame`` transformers to apply the quantile
+transformation."""
 
 from __future__ import annotations
 
-__all__ = ["MinMaxScalerTransformer"]
+__all__ = ["QuantileTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -26,8 +26,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class MinMaxScalerTransformer(BaseInNTransformer):
-    r"""Implement a transformer to scale each column to a given range.
+class QuantileTransformer(BaseInNTransformer):
+    r"""Implement a transformer to apply the quantile transformation.
 
     Args:
         columns: The columns to scale. ``None`` means all the
@@ -57,17 +57,17 @@ class MinMaxScalerTransformer(BaseInNTransformer):
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
         **kwargs: Additional arguments passed to
-            ``sklearn.preprocessing.MinMaxScaler``.
+            ``sklearn.preprocessing.QuantileTransformer``.
 
     Example usage:
 
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import MinMaxScaler
-    >>> transformer = MinMaxScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")
+    >>> from grizz.transformer import QuantileTransformer
+    >>> transformer = QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_scaled")
     >>> transformer
-    MinMaxScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')
+    QuantileTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -134,7 +134,7 @@ class MinMaxScalerTransformer(BaseInNTransformer):
         self._exist_policy = exist_policy
 
         check_sklearn()
-        self._scaler = sklearn.preprocessing.MinMaxScaler(**kwargs)
+        self._transformer = sklearn.preprocessing.QuantileTransformer(**kwargs)
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
@@ -153,22 +153,22 @@ class MinMaxScalerTransformer(BaseInNTransformer):
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
-            f"Fitting the min/max scaling parameters of {len(self.find_columns(frame)):,} "
-            "columns..."
+            "Fitting the quantile transformation parameters of "
+            f"{len(self.find_columns(frame)):,} columns..."
         )
         columns = self.find_common_columns(frame)
-        self._scaler.fit(frame.select(columns).to_numpy())
+        self._transformer.fit(frame.select(columns).to_numpy())
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_output_columns(frame)
         logger.info(
-            f"Applying the min/max scaling transformation on {len(self.find_columns(frame)):,} "
+            f"Applying the quantile transformation on {len(self.find_columns(frame)):,} "
             f"columns | prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
         features = frame.select(columns)
 
-        x = self._scaler.transform(features.to_numpy())
+        x = self._transformer.transform(features.to_numpy())
         features_scaled = pl.from_numpy(x, schema=features.columns)
         if self._propagate_nulls:
             features_scaled = propagate_nulls(features_scaled, features)
