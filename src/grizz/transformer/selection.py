@@ -80,7 +80,6 @@ class ColumnSelectionTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Selecting {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
-        initial_shape = frame.shape
         out = frame.select(columns)
-        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out

@@ -130,7 +130,6 @@ class FilterCardinalityTransformer(BaseInNTransformer):
             f"Filtering {len(self.find_columns(frame)):,} columns based on their "
             f"cardinality [{self._n_min}, {self._n_max})..."
         )
-        initial_shape = frame.shape
         columns = self.find_common_columns(frame)
         valid = frame.select(
             pl.n_unique(*columns).is_between(self._n_min, self._n_max, closed="left")
@@ -138,5 +137,5 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         cols_to_drop = [col.name for col in valid.iter_columns() if not col.first()]
         logger.info(f"Dropping {len(cols_to_drop):,} columns: {cols_to_drop}")
         out = frame.drop(cols_to_drop)
-        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out

@@ -133,7 +133,6 @@ class DropNullColumnTransformer(BaseInNTransformer):
         if frame.is_empty():
             return frame
         columns = self.find_common_columns(frame)
-        initial_shape = frame.shape
         pct = frame.select(columns).null_count() / frame.shape[0]
         cols = list(compress(pct.columns, (pct >= self._threshold).row(0)))
         logger.info(
@@ -142,7 +141,7 @@ class DropNullColumnTransformer(BaseInNTransformer):
         )
         logger.info(f"dropped columns: {cols}")
         out = frame.drop(cols)
-        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out
 
 
@@ -226,7 +225,6 @@ class DropNullRowTransformer(BaseInNTransformer):
             "columns...."
         )
         columns = self.find_common_columns(frame)
-        initial_shape = frame.shape
         out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))
-        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out

@@ -1,5 +1,5 @@
-r"""Contain a transformer that is a wrapper around a function to
-transform the DataFrame."""
+r"""Contain a transformer that executes a SQL query against the
+DataFrame."""
 
 from __future__ import annotations
 
@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class SqlTransformer(BaseTransformer):
-    r"""Implement a transformer that execute a SQL query against the
-    DataFrame..
+    r"""Implement a transformer that executes a SQL query against the
+    DataFrame.
 
     Args:
         query: The SQL query to execute.
@@ -81,7 +81,6 @@ class SqlTransformer(BaseTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Executing the following SQL query:\n{self._query}")
-        initial_shape = frame.shape
         out = frame.sql(self._query)
-        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out

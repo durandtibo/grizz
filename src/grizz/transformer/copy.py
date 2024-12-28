@@ -224,11 +224,10 @@ class CopyColumnsTransformer(BaseInNTransformer):
             f"suffix={self._suffix!r} ..."
         )
         columns = self.find_common_columns(frame)
-        initial_shape = frame.shape
         out = frame.with_columns(
             frame.select(pl.col(columns)).rename(lambda name: f"{self._prefix}{name}{self._suffix}")
         )
-        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out
 
     def check_output_columns(self, frame: pl.DataFrame) -> None:
