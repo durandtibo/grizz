@@ -18,7 +18,7 @@ from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
 if is_sklearn_available():  # pragma: no cover
-    from sklearn.preprocessing import MinMaxScaler
+    import sklearn
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -134,7 +134,7 @@ class MinMaxScalerTransformer(BaseInNTransformer):
         self._exist_policy = exist_policy
 
         check_sklearn()
-        self._scaler = MinMaxScaler(**kwargs)
+        self._scaler = sklearn.preprocessing.MinMaxScaler(**kwargs)
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
@@ -153,7 +153,8 @@ class MinMaxScalerTransformer(BaseInNTransformer):
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
-            f"Fitting the scaling parameters of {len(self.find_columns(frame)):,} columns..."
+            f"Fitting the min/max scaling parameters of {len(self.find_columns(frame)):,} "
+            "columns..."
         )
         columns = self.find_common_columns(frame)
         self._scaler.fit(frame.select(columns).to_numpy())
@@ -161,8 +162,8 @@ class MinMaxScalerTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_output_columns(frame)
         logger.info(
-            f"Scaling {len(self.find_columns(frame)):,} columns... | prefix={self._prefix!r} | "
-            f"suffix={self._suffix!r}"
+            f"Applying min/max scaling transformation on {len(self.find_columns(frame)):,} "
+            f"columns | prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
         features = frame.select(columns)
