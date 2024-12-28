@@ -16,7 +16,7 @@ from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
 if is_sklearn_available():  # pragma: no cover
-    from sklearn.preprocessing import MaxAbsScaler
+    import sklearn
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -127,7 +127,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         self._exist_policy = exist_policy
 
         check_sklearn()
-        self._scaler = MaxAbsScaler()
+        self._scaler = sklearn.preprocessing.MaxAbsScaler()
 
     def __repr__(self) -> str:
         args = repr_mapping_line(
@@ -145,7 +145,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
-            f"Fitting the scaling parameters of {len(self.find_columns(frame)):,} columns..."
+            f"Fitting the max scaling parameters of {len(self.find_columns(frame)):,} columns..."
         )
         columns = self.find_common_columns(frame)
         self._scaler.fit(frame.select(columns).to_numpy())
@@ -153,8 +153,8 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_output_columns(frame)
         logger.info(
-            f"Scaling {len(self.find_columns(frame)):,} columns... | prefix={self._prefix!r} | "
-            f"suffix={self._suffix!r}"
+            f"Applying the max scaling transformation on {len(self.find_columns(frame)):,} "
+            f"columns | prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
         features = frame.select(columns)
