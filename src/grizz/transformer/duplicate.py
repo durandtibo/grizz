@@ -121,7 +121,6 @@ class DropDuplicateTransformer(BaseInNTransformer):
             f"Dropping duplicate rows by checking {len(self.find_columns(frame)):,} columns...."
         )
         columns = self.find_common_columns(frame)
-        initial_shape = frame.shape
         out = frame.unique(subset=cs.by_name(columns), **self._kwargs)
-        logger.info(str_shape_diff(orig=initial_shape, final=out.shape))
+        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out

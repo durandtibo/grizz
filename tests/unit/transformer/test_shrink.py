@@ -35,7 +35,9 @@ def test_shrink_memory_transformer_str() -> None:
     assert str(ShrinkMemoryTransformer()) == ("ShrinkMemoryTransformer()")
 
 
-def test_shrink_memory_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture) -> None:
+def test_shrink_memory_transformer_fit(
+    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
     transformer = ShrinkMemoryTransformer()
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
