@@ -78,6 +78,8 @@ __all__ = [
     "SequentialTransformer",
     "ShrinkMemory",
     "ShrinkMemoryTransformer",
+    "SimpleImputer",
+    "SimpleImputerTransformer",
     "Sort",
     "SortColumns",
     "SortColumnsTransformer",
@@ -156,6 +158,8 @@ from grizz.transformer.fill import FillNullTransformer
 from grizz.transformer.fill import FillNullTransformer as FillNull
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
+from grizz.transformer.impute import SimpleImputerTransformer
+from grizz.transformer.impute import SimpleImputerTransformer as SimpleImputer
 from grizz.transformer.json import JsonDecodeTransformer
 from grizz.transformer.json import JsonDecodeTransformer as JsonDecode
 from grizz.transformer.label_encoder import LabelEncoderTransformer
