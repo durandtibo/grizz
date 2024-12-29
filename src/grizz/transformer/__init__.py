@@ -10,6 +10,8 @@ __all__ = [
     "BaseInNOut1Transformer",
     "BaseInNTransformer",
     "BaseTransformer",
+    "Binarizer",
+    "BinarizerTransformer",
     "Cast",
     "CastTransformer",
     "CloseColumns",
@@ -96,6 +98,8 @@ from grizz.transformer.base import (
     is_transformer_config,
     setup_transformer,
 )
+from grizz.transformer.binarizer import BinarizerTransformer
+from grizz.transformer.binarizer import BinarizerTransformer as Binarizer
 from grizz.transformer.cardinality import FilterCardinalityTransformer
 from grizz.transformer.cardinality import (
     FilterCardinalityTransformer as FilterCardinality,
