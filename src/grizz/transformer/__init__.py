@@ -79,6 +79,8 @@ __all__ = [
     "SortColumnsTransformer",
     "SortTransformer",
     "SqlTransformer",
+    "StandardScaler",
+    "StandardScalerTransformer",
     "StripChars",
     "StripCharsTransformer",
     "SumHorizontal",
@@ -187,6 +189,10 @@ from grizz.transformer.sorting import SortColumnsTransformer as SortColumns
 from grizz.transformer.sorting import SortTransformer
 from grizz.transformer.sorting import SortTransformer as Sort
 from grizz.transformer.sql import SqlTransformer
+from grizz.transformer.standard_scaler import StandardScalerTransformer
+from grizz.transformer.standard_scaler import (
+    StandardScalerTransformer as StandardScaler,
+)
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
 from grizz.transformer.sum import SumHorizontalTransformer
