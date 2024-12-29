@@ -1,9 +1,9 @@
-r"""Contain ``polars.DataFrame`` transformers to binarize data according
-to a threshold."""
+r"""Contain ``polars.DataFrame`` transformers to normalize data points
+individually to unit norm."""
 
 from __future__ import annotations
 
-__all__ = ["BinarizerTransformer"]
+__all__ = ["NormalizerTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -26,9 +26,9 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class BinarizerTransformer(BaseInNTransformer):
-    r"""Implement a transformer to binarize data according to a
-    threshold.
+class NormalizerTransformer(BaseInNTransformer):
+    r"""Implement a transformer to normalize data points individually to
+    unit norm.
 
     Args:
         columns: The columns to scale. ``None`` means all the
@@ -55,19 +55,17 @@ class BinarizerTransformer(BaseInNTransformer):
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
         **kwargs: Additional arguments passed to
-            ``sklearn.preprocessing.Binarizer``.
+            ``sklearn.preprocessing.Normalizer``.
 
     Example usage:
 
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import Binarizer
-    >>> transformer = Binarizer(
-    ...     columns=["col1", "col3"], prefix="", suffix="_bin", threshold=1.5
-    ... )
+    >>> from grizz.transformer import Normalizer
+    >>> transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="_norm")
     >>> transformer
-    BinarizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_bin', exclude_columns=(), exist_policy='raise', missing_policy='raise', threshold=1.5)
+    NormalizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_norm', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -94,18 +92,18 @@ class BinarizerTransformer(BaseInNTransformer):
     >>> out = transformer.fit_transform(frame)
     >>> out
     shape: (6, 6)
-    ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_bin ┆ col3_bin │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
-    │ i64  ┆ str  ┆ i64  ┆ str  ┆ i64      ┆ i64      │
-    ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
-    │ 0    ┆ 0    ┆ 5    ┆ a    ┆ 0        ┆ 1        │
-    │ 1    ┆ 1    ┆ 4    ┆ b    ┆ 0        ┆ 1        │
-    │ 2    ┆ 2    ┆ 3    ┆ c    ┆ 1        ┆ 1        │
-    │ 3    ┆ 3    ┆ 2    ┆ d    ┆ 1        ┆ 1        │
-    │ 4    ┆ 4    ┆ 1    ┆ e    ┆ 1        ┆ 0        │
-    │ 5    ┆ 5    ┆ 0    ┆ f    ┆ 1        ┆ 0        │
-    └──────┴──────┴──────┴──────┴──────────┴──────────┘
+    ┌──────┬──────┬──────┬──────┬───────────┬───────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_norm ┆ col3_norm │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---       ┆ ---       │
+    │ i64  ┆ str  ┆ i64  ┆ str  ┆ f64       ┆ f64       │
+    ╞══════╪══════╪══════╪══════╪═══════════╪═══════════╡
+    │ 0    ┆ 0    ┆ 5    ┆ a    ┆ 0.0       ┆ 1.0       │
+    │ 1    ┆ 1    ┆ 4    ┆ b    ┆ 0.242536  ┆ 0.970143  │
+    │ 2    ┆ 2    ┆ 3    ┆ c    ┆ 0.5547    ┆ 0.83205   │
+    │ 3    ┆ 3    ┆ 2    ┆ d    ┆ 0.83205   ┆ 0.5547    │
+    │ 4    ┆ 4    ┆ 1    ┆ e    ┆ 0.970143  ┆ 0.242536  │
+    │ 5    ┆ 5    ┆ 0    ┆ f    ┆ 1.0       ┆ 0.0       │
+    └──────┴──────┴──────┴──────┴───────────┴───────────┘
 
     ```
     """
@@ -132,7 +130,7 @@ class BinarizerTransformer(BaseInNTransformer):
         self._exist_policy = exist_policy
 
         check_sklearn()
-        self._scaler = sklearn.preprocessing.Binarizer(**kwargs)
+        self._scaler = sklearn.preprocessing.Normalizer(**kwargs)
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
@@ -164,9 +162,11 @@ class BinarizerTransformer(BaseInNTransformer):
         data = frame.select(columns).fill_nan(None)
 
         x = self._scaler.transform(data.fill_null(0).to_numpy())
-        data_bin = pl.from_numpy(x, schema=data.columns)
-        data_bin = propagate_nulls(data_bin, data)
-        return frame.with_columns(data_bin.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
+        data_norm = pl.from_numpy(x, schema=data.columns)
+        data_norm = propagate_nulls(data_norm, data)
+        return frame.with_columns(
+            data_norm.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
+        )
 
     def _check_output_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if the output columns already exist.
