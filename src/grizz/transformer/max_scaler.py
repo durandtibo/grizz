@@ -157,14 +157,14 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
             f"columns | prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
-        features = frame.select(columns)
+        data = frame.select(columns)
 
-        x = self._scaler.transform(features.to_numpy())
-        features_scaled = pl.from_numpy(x, schema=features.columns)
+        x = self._scaler.transform(data.to_numpy())
+        data_scaled = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
-            features_scaled = propagate_nulls(features_scaled, features)
+            data_scaled = propagate_nulls(data_scaled, data)
         return frame.with_columns(
-            features_scaled.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
+            data_scaled.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
         )
 
     def _check_output_columns(self, frame: pl.DataFrame) -> None:
