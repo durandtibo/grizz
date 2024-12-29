@@ -68,6 +68,8 @@ __all__ = [
     "ReplaceStrict",
     "ReplaceStrictTransformer",
     "ReplaceTransformer",
+    "RobustScaler",
+    "RobustScalerTransformer",
     "Sequential",
     "SequentialTransformer",
     "ShrinkMemory",
@@ -172,6 +174,8 @@ from grizz.transformer.replace import ReplaceStrictTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
 from grizz.transformer.replace import ReplaceTransformer
 from grizz.transformer.replace import ReplaceTransformer as Replace
+from grizz.transformer.robust_scaler import RobustScalerTransformer
+from grizz.transformer.robust_scaler import RobustScalerTransformer as RobustScaler
 from grizz.transformer.selection import ColumnSelectionTransformer
 from grizz.transformer.selection import ColumnSelectionTransformer as ColumnSelection
 from grizz.transformer.sequential import SequentialTransformer
