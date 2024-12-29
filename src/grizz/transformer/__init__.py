@@ -64,6 +64,8 @@ __all__ = [
     "MinMaxScalerTransformer",
     "Normalizer",
     "NormalizerTransformer",
+    "OrdinalEncoder",
+    "OrdinalEncoderTransformer",
     "PowerTransformer",
     "QuantileTransformer",
     "Replace",
@@ -174,6 +176,10 @@ from grizz.transformer.null import DropNullColumnTransformer
 from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer
 from grizz.transformer.null import DropNullRowTransformer as DropNullRow
+from grizz.transformer.ordinal_encoder import OrdinalEncoderTransformer
+from grizz.transformer.ordinal_encoder import (
+    OrdinalEncoderTransformer as OrdinalEncoder,
+)
 from grizz.transformer.power import PowerTransformer
 from grizz.transformer.quantile import QuantileTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer
