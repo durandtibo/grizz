@@ -1,9 +1,17 @@
 ::: grizz.utils
 ::: grizz.utils.column
+::: grizz.utils.count
 ::: grizz.utils.datetime
 ::: grizz.utils.factory
 ::: grizz.utils.format
+::: grizz.utils.hashing
 ::: grizz.utils.imports
 ::: grizz.utils.interval
+::: grizz.utils.logging
+::: grizz.utils.nan
 ::: grizz.utils.noop
+::: grizz.utils.null
 ::: grizz.utils.path
+::: grizz.utils.series
+::: grizz.utils.sorting
+::: grizz.utils.temporal

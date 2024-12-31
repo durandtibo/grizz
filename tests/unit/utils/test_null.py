@@ -3,10 +3,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-import numpy as np
 import polars as pl
 import pytest
 from coola import objects_are_equal
+from coola.testing import numpy_available
+from coola.utils import is_numpy_available
 from polars.testing import assert_frame_equal
 
 from grizz.utils.null import (
@@ -19,11 +20,15 @@ from grizz.utils.null import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+if is_numpy_available():
+    import numpy as np
+
 ##################################
 #     Tests for compute_null     #
 ##################################
 
 
+@numpy_available
 def test_compute_null() -> None:
     assert_frame_equal(
         compute_null(
@@ -53,6 +58,7 @@ def test_compute_null() -> None:
     )
 
 
+@numpy_available
 def test_compute_null_empty_row() -> None:
     assert_frame_equal(
         compute_null(
@@ -66,7 +72,7 @@ def test_compute_null_empty_row() -> None:
                 "column": ["int", "float", "str"],
                 "null": [0, 0, 0],
                 "total": [0, 0, 0],
-                "null_pct": [np.nan, np.nan, np.nan],
+                "null_pct": [float("nan"), float("nan"), float("nan")],
             },
             schema={
                 "column": pl.String,
@@ -78,6 +84,7 @@ def test_compute_null_empty_row() -> None:
     )
 
 
+@numpy_available
 def test_compute_null_empty() -> None:
     assert_frame_equal(
         compute_null(pl.DataFrame({})),
@@ -103,6 +110,7 @@ def test_compute_null_empty() -> None:
 ########################################
 
 
+@numpy_available
 def test_compute_null_count() -> None:
     assert objects_are_equal(
         compute_null_count(
@@ -119,6 +127,7 @@ def test_compute_null_count() -> None:
     )
 
 
+@numpy_available
 def test_compute_null_count_empty_rows() -> None:
     assert objects_are_equal(
         compute_null_count(
@@ -131,6 +140,7 @@ def test_compute_null_count_empty_rows() -> None:
     )
 
 
+@numpy_available
 def test_compute_null_count_empty() -> None:
     assert objects_are_equal(compute_null_count(pl.DataFrame({})), np.array([], dtype=np.int64))
 
@@ -173,6 +183,7 @@ def dataframe_empty() -> pl.DataFrame:
     )
 
 
+@numpy_available
 @pytest.mark.parametrize("columns", [["col1", "col2"], ("col1", "col2")])
 def test_compute_temporal_null_count(dataframe: pl.DataFrame, columns: Sequence[str]) -> None:
     assert objects_are_equal(
@@ -187,6 +198,7 @@ def test_compute_temporal_null_count(dataframe: pl.DataFrame, columns: Sequence[
     )
 
 
+@numpy_available
 def test_compute_temporal_null_count_subset(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
@@ -200,6 +212,7 @@ def test_compute_temporal_null_count_subset(dataframe: pl.DataFrame) -> None:
     )
 
 
+@numpy_available
 def test_compute_temporal_null_count_empty_columns(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
@@ -213,6 +226,7 @@ def test_compute_temporal_null_count_empty_columns(dataframe: pl.DataFrame) -> N
     )
 
 
+@numpy_available
 def test_compute_temporal_null_count_empty(dataframe_empty: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
@@ -225,6 +239,7 @@ def test_compute_temporal_null_count_empty(dataframe_empty: pl.DataFrame) -> Non
     )
 
 
+@numpy_available
 def test_compute_temporal_null_count_monthly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
@@ -238,6 +253,7 @@ def test_compute_temporal_null_count_monthly(dataframe: pl.DataFrame) -> None:
     )
 
 
+@numpy_available
 def test_compute_temporal_null_count_biweekly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(

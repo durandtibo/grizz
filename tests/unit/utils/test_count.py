@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
 
-import numpy as np
 import polars as pl
 import pytest
 from coola import objects_are_equal
+from coola.testing import numpy_available
+from coola.utils import is_numpy_available
 
 from grizz.utils.count import (
     compute_nunique,
@@ -11,11 +12,15 @@ from grizz.utils.count import (
     compute_temporal_value_counts,
 )
 
+if is_numpy_available():
+    import numpy as np
+
 ####################################
 #    Tests for compute_nunique     #
 ####################################
 
 
+@numpy_available
 def test_compute_nunique() -> None:
     assert objects_are_equal(
         compute_nunique(
@@ -32,6 +37,7 @@ def test_compute_nunique() -> None:
     )
 
 
+@numpy_available
 def test_compute_nunique_empty_rows() -> None:
     assert objects_are_equal(
         compute_nunique(
@@ -44,6 +50,7 @@ def test_compute_nunique_empty_rows() -> None:
     )
 
 
+@numpy_available
 def test_compute_nunique_empty() -> None:
     assert objects_are_equal(compute_nunique(frame=pl.DataFrame({})), np.array([], dtype=np.int64))
 
@@ -70,6 +77,7 @@ def dataframe() -> pl.DataFrame:
     )
 
 
+@numpy_available
 def test_compute_temporal_count_month(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_count(
@@ -84,6 +92,7 @@ def test_compute_temporal_count_month(dataframe: pl.DataFrame) -> None:
     )
 
 
+@numpy_available
 def test_compute_temporal_count_biweekly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_count(
@@ -98,6 +107,7 @@ def test_compute_temporal_count_biweekly(dataframe: pl.DataFrame) -> None:
     )
 
 
+@numpy_available
 def test_compute_temporal_count_empty() -> None:
     assert objects_are_equal(
         compute_temporal_count(
@@ -117,6 +127,7 @@ def test_compute_temporal_count_empty() -> None:
 ##################################################
 
 
+@numpy_available
 def test_compute_temporal_value_counts() -> None:
     counts, steps, values = compute_temporal_value_counts(
         pl.DataFrame(
@@ -148,6 +159,7 @@ def test_compute_temporal_value_counts() -> None:
     assert objects_are_equal(values, ["0.0", "1.0", "4.2", "42.0", "null"])
 
 
+@numpy_available
 def test_compute_temporal_value_counts_drop_nulls() -> None:
     counts, steps, values = compute_temporal_value_counts(
         pl.DataFrame(
@@ -180,6 +192,7 @@ def test_compute_temporal_value_counts_drop_nulls() -> None:
     assert objects_are_equal(values, ["0.0", "1.0", "4.2", "42.0"])
 
 
+@numpy_available
 def test_compute_temporal_value_counts_empty() -> None:
     counts, steps, values = compute_temporal_value_counts(
         pl.DataFrame(
