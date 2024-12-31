@@ -14,6 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundWarning,
 )
 from grizz.transformer import MeanHorizontal
+from tests.conftest import polars_greater_equal_1_17
 
 
 @pytest.fixture
@@ -38,7 +39,7 @@ def test_mean_horizontal_transformer_repr() -> None:
     assert (
         repr(MeanHorizontal(columns=["col1", "col3"], out_col="out"))
         == "MeanHorizontalTransformer(columns=('col1', 'col3'), out_col='out', "
-        "exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -46,7 +47,7 @@ def test_mean_horizontal_transformer_str() -> None:
     assert (
         str(MeanHorizontal(columns=["col1", "col3"], out_col="out"))
         == "MeanHorizontalTransformer(columns=('col1', 'col3'), out_col='out', "
-        "exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -208,7 +209,9 @@ def test_mean_horizontal_transformer_transform_exclude_columns(dataframe: pl.Dat
     )
 
 
+@polars_greater_equal_1_17
 def test_mean_horizontal_transformer_transform_ignore_nulls_false() -> None:
+    # ignore_nulls argument was added in polars 1.17
     frame = pl.DataFrame(
         {
             "col1": [None, 12, 13, 14, None],

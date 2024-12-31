@@ -5,12 +5,13 @@ from __future__ import annotations
 __all__ = ["MeanHorizontalTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNOut1Transformer
+from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -30,8 +31,6 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
-        ignore_nulls: If set to ``False``, any null value in the input
-            will lead to a null output.
         exist_policy: The policy on how to handle existing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -48,6 +47,8 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
+        **kwargs: Additional arguments passed to
+            ``polars.mean_horizontal``.
 
     Example usage:
 
@@ -57,7 +58,7 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
     >>> from grizz.transformer import MeanHorizontal
     >>> transformer = MeanHorizontal(columns=["col1", "col2", "col3"], out_col="col")
     >>> transformer
-    MeanHorizontalTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')
+    MeanHorizontalTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [11, 12, 13, 14, 15],
@@ -103,9 +104,9 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
         columns: Sequence[str] | None,
         out_col: str,
         exclude_columns: Sequence[str] = (),
-        ignore_nulls: bool = True,
         exist_policy: str = "raise",
         missing_policy: str = "raise",
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             columns=columns,
@@ -114,7 +115,7 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
             exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
-        self._ignore_nulls = ignore_nulls
+        self._kwargs = kwargs
 
     def __repr__(self) -> str:
         args = repr_mapping_line(
@@ -122,12 +123,11 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
                 "columns": self._columns,
                 "out_col": self._out_col,
                 "exclude_columns": self._exclude_columns,
-                "ignore_nulls": self._ignore_nulls,
                 "exist_policy": self._exist_policy,
                 "missing_policy": self._missing_policy,
             }
         )
-        return f"{self.__class__.__qualname__}({args})"
+        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -139,11 +139,9 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
         cols = self.find_columns(frame)
         logger.info(
             f"Getting the mean value across {len(cols):,} columns: {cols} "
-            f"| out_col={self._out_col!r} | ignore_nulls={self._ignore_nulls}"
+            f"| out_col={self._out_col!r}"
         )
         columns = self.find_common_columns(frame)
         if not columns:
             return frame.with_columns(pl.lit(None, dtype=pl.Float64).alias(self._out_col))
-        return frame.with_columns(
-            pl.mean_horizontal(columns, ignore_nulls=self._ignore_nulls).alias(self._out_col)
-        )
+        return frame.with_columns(pl.mean_horizontal(columns, **self._kwargs).alias(self._out_col))
