@@ -7,15 +7,22 @@ __all__ = ["compute_null", "compute_null_count", "compute_temporal_null_count", 
 
 
 from typing import TYPE_CHECKING
+from unittest.mock import Mock
 
-import numpy as np
 import polars as pl
 import polars.selectors as cs
+from coola.utils import check_numpy, is_numpy_available
 
 from grizz.utils.temporal import to_step_names
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+
+if is_numpy_available():
+    import numpy as np
+else:  # pragma: no cover
+    np = Mock()
 
 
 def compute_null(frame: pl.DataFrame) -> pl.DataFrame:
@@ -58,6 +65,7 @@ def compute_null(frame: pl.DataFrame) -> pl.DataFrame:
 
     ```
     """
+    check_numpy()
     null_count = compute_null_count(frame)
     total_count = np.full((frame.shape[1],), frame.shape[0], dtype=np.int64)
     with np.errstate(invalid="ignore"):
@@ -103,6 +111,7 @@ def compute_null_count(frame: pl.DataFrame) -> np.ndarray:
 
     ```
     """
+    check_numpy()
     if (ncols := frame.shape[1]) == 0:
         return np.zeros(ncols, dtype=np.int64)
     return frame.null_count().to_numpy()[0].astype(int)
@@ -168,6 +177,7 @@ def compute_temporal_null_count(
 
     ```
     """
+    check_numpy()
     frame_na = frame.select(cs.by_name(columns).is_null().cast(pl.Int64), pl.col(dt_column))
     groups = frame_na.sort(dt_column).group_by_dynamic(dt_column, every=period)
     steps = to_step_names(groups=groups, period=period)

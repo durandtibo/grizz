@@ -4,11 +4,19 @@ from __future__ import annotations
 
 __all__ = ["compute_nunique", "compute_temporal_count", "compute_temporal_value_counts"]
 
-import numpy as np
+from unittest.mock import Mock
+
 import polars as pl
+from coola.utils import is_numpy_available
+from coola.utils.imports import check_numpy
 
 from grizz.utils.sorting import mixed_typed_sort
 from grizz.utils.temporal import to_step_names
+
+if is_numpy_available():
+    import numpy as np
+else:  # pragma: no cover
+    np = Mock()
 
 
 def compute_nunique(frame: pl.DataFrame) -> np.ndarray:
@@ -41,6 +49,7 @@ def compute_nunique(frame: pl.DataFrame) -> np.ndarray:
 
     ```
     """
+    check_numpy()
     if (ncols := frame.shape[1]) == 0:
         return np.zeros(ncols, dtype=np.int64)
     return frame.select(pl.all().n_unique()).to_numpy()[0].astype(np.int64)
@@ -99,6 +108,7 @@ def compute_temporal_count(
 
     ```
     """
+    check_numpy()
     if frame.is_empty():
         return np.array([], dtype=np.int64), []
 
@@ -181,6 +191,7 @@ def compute_temporal_value_counts(
 
     ```
     """
+    check_numpy()
     if frame.is_empty():
         return np.zeros((0, 0), dtype=np.int64), [], []
 
