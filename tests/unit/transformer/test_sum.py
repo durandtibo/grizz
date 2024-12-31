@@ -14,6 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundWarning,
 )
 from grizz.transformer import SumHorizontal
+from tests.conftest import polars_greater_equal_1_17
 
 
 @pytest.fixture
@@ -38,7 +39,7 @@ def test_sum_horizontal_transformer_repr() -> None:
     assert (
         repr(SumHorizontal(columns=["col1", "col3"], out_col="out"))
         == "SumHorizontalTransformer(columns=('col1', 'col3'), out_col='out', "
-        "exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -46,7 +47,7 @@ def test_sum_horizontal_transformer_str() -> None:
     assert (
         str(SumHorizontal(columns=["col1", "col3"], out_col="out"))
         == "SumHorizontalTransformer(columns=('col1', 'col3'), out_col='out', "
-        "exclude_columns=(), ignore_nulls=True, exist_policy='raise', missing_policy='raise')"
+        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
     )
 
 
@@ -208,7 +209,9 @@ def test_sum_horizontal_transformer_transform_exclude_columns(dataframe: pl.Data
     )
 
 
+@polars_greater_equal_1_17
 def test_sum_horizontal_transformer_transform_ignore_nulls_false() -> None:
+    # ignore_nulls argument was added in polars 1.17
     frame = pl.DataFrame(
         {
             "col1": [None, 12, 13, 14, None],
@@ -223,7 +226,7 @@ def test_sum_horizontal_transformer_transform_ignore_nulls_false() -> None:
             "col4": pl.String,
         },
     )
-    transformer = SumHorizontal(columns=["col1", "col2", "col3"], ignore_nulls=False, out_col="out")
+    transformer = SumHorizontal(columns=["col1", "col2", "col3"], out_col="out", ignore_nulls=False)
     out = transformer.transform(frame)
     assert_frame_equal(
         out,
