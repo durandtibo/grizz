@@ -18,7 +18,7 @@ from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
 if is_sklearn_available():  # pragma: no cover
-    import sklearn
+    from sklearn.impute import SimpleImputer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -134,7 +134,7 @@ class SimpleImputerTransformer(BaseInNTransformer):
         self._exist_policy = exist_policy
 
         check_sklearn()
-        self._imputer = sklearn.impute.SimpleImputer(**kwargs)
+        self._imputer = SimpleImputer(**kwargs)
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
