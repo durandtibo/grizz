@@ -134,7 +134,7 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         valid = frame.select(
             pl.n_unique(*columns).is_between(self._n_min, self._n_max, closed="left")
         )
-        cols_to_drop = [col.name for col in valid.iter_columns() if not col.first()]
+        cols_to_drop = [col.name for col in valid.iter_columns() if not col[0]]
         logger.info(f"Dropping {len(cols_to_drop):,} columns: {cols_to_drop}")
         out = frame.drop(cols_to_drop)
         logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
