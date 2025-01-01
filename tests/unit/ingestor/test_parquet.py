@@ -50,6 +50,28 @@ def test_parquet_ingestor_str_with_kwargs(frame_path: Path) -> None:
     assert str(ParquetIngestor(frame_path, columns=["col1", "col3"])).startswith("ParquetIngestor(")
 
 
+def test_parquet_ingestor_equal_true(tmp_path: Path) -> None:
+    assert ParquetIngestor(tmp_path.joinpath("data.parquet")).equal(
+        ParquetIngestor(tmp_path.joinpath("data.parquet"))
+    )
+
+
+def test_parquet_ingestor_equal_false_different_path(tmp_path: Path) -> None:
+    assert not ParquetIngestor(tmp_path.joinpath("data.parquet")).equal(
+        ParquetIngestor(tmp_path.joinpath("data2.parquet"))
+    )
+
+
+def test_parquet_ingestor_equal_false_different_kwargs(tmp_path: Path) -> None:
+    assert not ParquetIngestor(tmp_path.joinpath("data.parquet")).equal(
+        ParquetIngestor(tmp_path.joinpath("data.parquet"), include_header=False)
+    )
+
+
+def test_parquet_ingestor_equal_false_different_type(tmp_path: Path) -> None:
+    assert not ParquetIngestor(tmp_path.joinpath("data.parquet")).equal(42)
+
+
 def test_parquet_ingestor_ingest(frame_path: Path) -> None:
     assert_frame_equal(
         ParquetIngestor(frame_path).ingest(),

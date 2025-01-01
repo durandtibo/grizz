@@ -8,6 +8,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
+from coola import objects_are_equal
 from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
@@ -48,6 +49,13 @@ class ParquetIngestor(BaseIngestor):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(path={self._path}{str_kwargs(self._kwargs)})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._path == other._path and objects_are_equal(
+            self._kwargs, other._kwargs, equal_nan=equal_nan
+        )
 
     def ingest(self) -> pl.DataFrame:
         check_dataframe_file(self._path)

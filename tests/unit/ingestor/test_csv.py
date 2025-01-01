@@ -48,6 +48,28 @@ def test_csv_ingestor_str_with_kwargs(frame_path: Path) -> None:
     assert str(CsvIngestor(frame_path, usecols=["col1", "col3"])).startswith("CsvIngestor(")
 
 
+def test_csv_ingestor_equal_true(tmp_path: Path) -> None:
+    assert CsvIngestor(tmp_path.joinpath("data.csv")).equal(
+        CsvIngestor(tmp_path.joinpath("data.csv"))
+    )
+
+
+def test_csv_ingestor_equal_false_different_path(tmp_path: Path) -> None:
+    assert not CsvIngestor(tmp_path.joinpath("data.csv")).equal(
+        CsvIngestor(tmp_path.joinpath("data2.csv"))
+    )
+
+
+def test_csv_ingestor_equal_false_different_kwargs(tmp_path: Path) -> None:
+    assert not CsvIngestor(tmp_path.joinpath("data.csv")).equal(
+        CsvIngestor(tmp_path.joinpath("data.csv"), include_header=False)
+    )
+
+
+def test_csv_ingestor_equal_false_different_type(tmp_path: Path) -> None:
+    assert not CsvIngestor(tmp_path.joinpath("data.csv")).equal(42)
+
+
 def test_csv_ingestor_ingest(frame_path: Path) -> None:
     assert_frame_equal(
         CsvIngestor(frame_path).ingest(),
