@@ -6,7 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from grizz.ingestor import ParquetIngestor, TransformIngestor
+from grizz.ingestor import Ingestor, ParquetIngestor, TransformIngestor
 from grizz.transformer import Cast
 
 if TYPE_CHECKING:
@@ -48,6 +48,37 @@ def test_transform_ingestor_str(frame_path: Path) -> None:
             transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
         )
     ).startswith("TransformIngestor(")
+
+
+def test_transform_ingestor_equal_true(frame_path: Path) -> None:
+    assert TransformIngestor(
+        ingestor=ParquetIngestor(path=frame_path),
+        transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ).equal(
+        TransformIngestor(
+            ingestor=ParquetIngestor(path=frame_path),
+            transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+        )
+    )
+
+
+def test_transform_ingestor_equal_false_different_frame(frame_path: Path) -> None:
+    assert not TransformIngestor(
+        ingestor=ParquetIngestor(path=frame_path),
+        transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ).equal(
+        TransformIngestor(
+            ingestor=Ingestor(pl.DataFrame()),
+            transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+        )
+    )
+
+
+def test_transform_ingestor_equal_false_different_type(frame_path: Path) -> None:
+    assert not TransformIngestor(
+        ingestor=ParquetIngestor(path=frame_path),
+        transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ).equal(42)
 
 
 def test_transform_ingestor_ingest(frame_path: Path) -> None:

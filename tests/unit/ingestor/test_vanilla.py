@@ -31,6 +31,18 @@ def test_ingestor_str(dataframe: pl.DataFrame) -> None:
     assert str(Ingestor(frame=dataframe)).startswith("Ingestor(")
 
 
+def test_ingestor_equal_true(dataframe: pl.DataFrame) -> None:
+    assert Ingestor(dataframe).equal(Ingestor(dataframe))
+
+
+def test_ingestor_equal_false_different_frame(dataframe: pl.DataFrame) -> None:
+    assert not Ingestor(dataframe).equal(Ingestor(pl.DataFrame()))
+
+
+def test_ingestor_equal_false_different_type(dataframe: pl.DataFrame) -> None:
+    assert not Ingestor(dataframe).equal(42)
+
+
 def test_ingestor_ingest(dataframe: pl.DataFrame) -> None:
     out = Ingestor(frame=dataframe).ingest()
     assert dataframe is out

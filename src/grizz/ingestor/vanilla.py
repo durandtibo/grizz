@@ -5,7 +5,9 @@ from __future__ import annotations
 __all__ = ["Ingestor"]
 
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
+from coola import objects_are_equal
 
 from grizz.ingestor.base import BaseIngestor
 
@@ -47,6 +49,11 @@ class Ingestor(BaseIngestor):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(shape={self._frame.shape})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self._frame, other._frame, equal_nan=equal_nan)
 
     def ingest(self) -> pl.DataFrame:
         return self._frame
