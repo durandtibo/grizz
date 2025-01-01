@@ -28,6 +28,8 @@ __all__ = [
     "ColumnLowerEqual",
     "ColumnLowerEqualTransformer",
     "ColumnLowerTransformer",
+    "ColumnNotEqual",
+    "ColumnNotEqualTransformer",
     "ColumnSelection",
     "ColumnSelectionTransformer",
     "ConcatColumns",
@@ -172,6 +174,10 @@ from grizz.transformer.column_comparison import (
 )
 from grizz.transformer.column_comparison import ColumnLowerTransformer
 from grizz.transformer.column_comparison import ColumnLowerTransformer as ColumnLower
+from grizz.transformer.column_comparison import ColumnNotEqualTransformer
+from grizz.transformer.column_comparison import (
+    ColumnNotEqualTransformer as ColumnNotEqual,
+)
 from grizz.transformer.columns import (
     BaseIn1Out1Transformer,
     BaseIn2Out1Transformer,
