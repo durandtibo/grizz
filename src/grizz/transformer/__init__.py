@@ -46,6 +46,8 @@ __all__ = [
     "FloatCastTransformer",
     "Function",
     "FunctionTransformer",
+    "GreaterEqual",
+    "GreaterEqualTransformer",
     "IntegerCast",
     "IntegerCastTransformer",
     "JsonDecode",
@@ -130,6 +132,8 @@ from grizz.transformer.columns import (
     BaseInNOut1Transformer,
     BaseInNTransformer,
 )
+from grizz.transformer.comparison import GreaterEqualTransformer
+from grizz.transformer.comparison import GreaterEqualTransformer as GreaterEqual
 from grizz.transformer.concat import ConcatColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer as ConcatColumns
 from grizz.transformer.copy import CopyColumnsTransformer
