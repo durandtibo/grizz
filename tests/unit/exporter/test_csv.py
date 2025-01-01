@@ -47,6 +47,28 @@ def test_csv_exporter_str_with_kwargs(tmp_path: Path) -> None:
     )
 
 
+def test_csv_exporter_equal_true(tmp_path: Path) -> None:
+    assert CsvExporter(tmp_path.joinpath("data.csv")).equal(
+        CsvExporter(tmp_path.joinpath("data.csv"))
+    )
+
+
+def test_csv_exporter_equal_false_different_path(tmp_path: Path) -> None:
+    assert not CsvExporter(tmp_path.joinpath("data.csv")).equal(
+        CsvExporter(tmp_path.joinpath("data2.csv"))
+    )
+
+
+def test_csv_exporter_equal_false_different_kwargs(tmp_path: Path) -> None:
+    assert not CsvExporter(tmp_path.joinpath("data.csv")).equal(
+        CsvExporter(tmp_path.joinpath("data.csv"), include_header=False)
+    )
+
+
+def test_csv_exporter_equal_false_different_type(tmp_path: Path) -> None:
+    assert not CsvExporter(tmp_path.joinpath("data.csv")).equal(42)
+
+
 def test_csv_exporter_export(tmp_path: Path, dataframe: pl.DataFrame) -> None:
     path = tmp_path.joinpath("my_folder/data.csv")
     assert not path.is_file()

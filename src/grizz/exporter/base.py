@@ -6,7 +6,7 @@ __all__ = ["BaseExporter", "is_exporter_config", "setup_exporter"]
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from objectory import AbstractFactory
 from objectory.utils import is_object_config
@@ -40,6 +40,35 @@ class BaseExporter(ABC, metaclass=AbstractFactory):
 
     ```
     """
+
+    # @abstractmethod
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        r"""Indicate if two exporter objects are equal or not.
+
+        Args:
+            other: The other object to compare.
+            equal_nan: Whether to compare NaN's as equal. If ``True``,
+                NaN's in both objects will be considered equal.
+
+        Returns:
+            ``True`` if the two exporters are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import numpy as np
+        >>> from grizz.exporter import CsvExporter
+        >>> obj1 = CsvExporter(path="/path/to/frame.csv")
+        >>> obj2 = CsvExporter(path="/path/to/frame.csv")
+        >>> obj3 = CsvExporter(path="/path/to/frame2.csv")
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def export(self, frame: pl.DataFrame) -> None:
