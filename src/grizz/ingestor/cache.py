@@ -31,9 +31,9 @@ class CacheIngestor(BaseIngestor):
     for ingestion by the fast ingestor during the next cycle.
 
     Args:
-        slow_ingestor: The slow DataFrame ingestor or its
-            configuration.
         fast_ingestor: The fast DataFrame ingestor or its
+            configuration.
+        slow_ingestor: The slow DataFrame ingestor or its
             configuration.
         exporter: The DataFrame exporter or its configuration.
             The DataFrame exporter is responsible for storing the
