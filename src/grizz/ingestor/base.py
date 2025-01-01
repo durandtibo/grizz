@@ -6,7 +6,7 @@ __all__ = ["BaseIngestor", "is_ingestor_config", "setup_ingestor"]
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from objectory import AbstractFactory
 from objectory.utils import is_object_config
@@ -32,6 +32,35 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
 
     ```
     """
+
+    @abstractmethod
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        r"""Indicate if two ingestor objects are equal or not.
+
+        Args:
+            other: The other object to compare.
+            equal_nan: Whether to compare NaN's as equal. If ``True``,
+                NaN's in both objects will be considered equal.
+
+        Returns:
+            ``True`` if the two ingestors are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import numpy as np
+        >>> from grizz.ingestor import CsvIngestor
+        >>> obj1 = CsvIngestor(path="/path/to/frame.csv")
+        >>> obj2 = CsvIngestor(path="/path/to/frame.csv")
+        >>> obj3 = CsvIngestor(path="/path/to/frame2.csv")
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def ingest(self) -> pl.DataFrame:
