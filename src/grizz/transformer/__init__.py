@@ -75,6 +75,8 @@ __all__ = [
     "Normalizer",
     "NormalizerTransformer",
     "NotEqual",
+    "NotEqualMissing",
+    "NotEqualMissingTransformer",
     "NotEqualTransformer",
     "OrdinalEncoder",
     "OrdinalEncoderTransformer",
@@ -152,6 +154,8 @@ from grizz.transformer.comparison import LowerEqualTransformer
 from grizz.transformer.comparison import LowerEqualTransformer as LowerEqual
 from grizz.transformer.comparison import LowerTransformer
 from grizz.transformer.comparison import LowerTransformer as Lower
+from grizz.transformer.comparison import NotEqualMissingTransformer
+from grizz.transformer.comparison import NotEqualMissingTransformer as NotEqualMissing
 from grizz.transformer.comparison import NotEqualTransformer
 from grizz.transformer.comparison import NotEqualTransformer as NotEqual
 from grizz.transformer.concat import ConcatColumnsTransformer
