@@ -36,6 +36,8 @@ __all__ = [
     "DropNullColumnTransformer",
     "DropNullRow",
     "DropNullRowTransformer",
+    "Equal",
+    "EqualTransformer",
     "FillNan",
     "FillNanTransformer",
     "FillNull",
@@ -138,6 +140,8 @@ from grizz.transformer.columns import (
     BaseInNOut1Transformer,
     BaseInNTransformer,
 )
+from grizz.transformer.comparison import EqualTransformer
+from grizz.transformer.comparison import EqualTransformer as Equal
 from grizz.transformer.comparison import GreaterEqualTransformer
 from grizz.transformer.comparison import GreaterEqualTransformer as GreaterEqual
 from grizz.transformer.comparison import GreaterTransformer
