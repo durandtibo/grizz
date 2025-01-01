@@ -20,8 +20,10 @@ __all__ = [
     "ColumnEqualMissing",
     "ColumnEqualMissingTransformer",
     "ColumnEqualTransformer",
+    "ColumnGreater",
     "ColumnGreaterEqual",
     "ColumnGreaterEqualTransformer",
+    "ColumnGreaterTransformer",
     "ColumnSelection",
     "ColumnSelectionTransformer",
     "ConcatColumns",
@@ -155,6 +157,10 @@ from grizz.transformer.column_comparison import ColumnEqualTransformer as Column
 from grizz.transformer.column_comparison import ColumnGreaterEqualTransformer
 from grizz.transformer.column_comparison import (
     ColumnGreaterEqualTransformer as ColumnGreaterEqual,
+)
+from grizz.transformer.column_comparison import ColumnGreaterTransformer
+from grizz.transformer.column_comparison import (
+    ColumnGreaterTransformer as ColumnGreater,
 )
 from grizz.transformer.columns import (
     BaseIn1Out1Transformer,
