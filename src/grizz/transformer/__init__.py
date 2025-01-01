@@ -14,6 +14,8 @@ __all__ = [
     "BinarizerTransformer",
     "Cast",
     "CastTransformer",
+    "CategoricalCast",
+    "CategoricalCastTransformer",
     "CloseColumns",
     "CloseColumnsTransformer",
     "ColumnEqual",
@@ -148,6 +150,8 @@ from grizz.transformer.cardinality import (
 )
 from grizz.transformer.casting import CastTransformer
 from grizz.transformer.casting import CastTransformer as Cast
+from grizz.transformer.casting import CategoricalCastTransformer
+from grizz.transformer.casting import CategoricalCastTransformer as CategoricalCast
 from grizz.transformer.casting import DecimalCastTransformer
 from grizz.transformer.casting import DecimalCastTransformer as DecimalCast
 from grizz.transformer.casting import FloatCastTransformer
