@@ -56,8 +56,10 @@ __all__ = [
     "JsonDecodeTransformer",
     "LabelEncoder",
     "LabelEncoderTransformer",
+    "Lower",
     "LowerEqual",
     "LowerEqualTransformer",
+    "LowerTransformer",
     "MaxAbsScaler",
     "MaxAbsScalerTransformer",
     "MaxHorizontal",
@@ -142,6 +144,8 @@ from grizz.transformer.comparison import GreaterTransformer
 from grizz.transformer.comparison import GreaterTransformer as Greater
 from grizz.transformer.comparison import LowerEqualTransformer
 from grizz.transformer.comparison import LowerEqualTransformer as LowerEqual
+from grizz.transformer.comparison import LowerTransformer
+from grizz.transformer.comparison import LowerTransformer as Lower
 from grizz.transformer.concat import ConcatColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer as ConcatColumns
 from grizz.transformer.copy import CopyColumnsTransformer
