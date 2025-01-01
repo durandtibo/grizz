@@ -6,7 +6,7 @@ from __future__ import annotations
 __all__ = ["TransformIngestor"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from coola.utils import repr_indent, repr_mapping
 
@@ -78,6 +78,11 @@ class TransformIngestor(BaseIngestor):
             repr_mapping({"ingestor": self._ingestor, "transformer": self._transformer})
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._ingestor.equal(other._ingestor, equal_nan=equal_nan)
 
     def ingest(self) -> pl.DataFrame:
         frame = self._ingestor.ingest()

@@ -5,9 +5,10 @@ from __future__ import annotations
 __all__ = ["ClickHouseIngestor"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
+from coola import objects_are_equal
 from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
@@ -57,6 +58,13 @@ class ClickHouseIngestor(BaseIngestor):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._query == other._query and objects_are_equal(
+            self._client, other._client, equal_nan=equal_nan
+        )
 
     def ingest(self) -> pl.DataFrame:
         logger.info(

@@ -6,7 +6,7 @@ from __future__ import annotations
 __all__ = ["CacheIngestor"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from coola.utils import repr_indent, repr_mapping
 
@@ -108,6 +108,15 @@ class CacheIngestor(BaseIngestor):
             )
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return (
+            self._ingestor_slow.equal(other._ingestor_slow, equal_nan=equal_nan)
+            and self._ingestor_fast.equal(other._ingestor_fast, equal_nan=equal_nan)
+            and self._exporter.equal(other._exporter, equal_nan=equal_nan)
+        )
 
     def ingest(self) -> pl.DataFrame:
         try:
