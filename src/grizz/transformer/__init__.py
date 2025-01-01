@@ -16,6 +16,8 @@ __all__ = [
     "CastTransformer",
     "CloseColumns",
     "CloseColumnsTransformer",
+    "ColumnEqual",
+    "ColumnEqualTransformer",
     "ColumnSelection",
     "ColumnSelectionTransformer",
     "ConcatColumns",
@@ -140,6 +142,8 @@ from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.close import CloseColumnsTransformer
 from grizz.transformer.close import CloseColumnsTransformer as CloseColumns
+from grizz.transformer.column_comparison import ColumnEqualTransformer
+from grizz.transformer.column_comparison import ColumnEqualTransformer as ColumnEqual
 from grizz.transformer.columns import (
     BaseIn1Out1Transformer,
     BaseIn2Out1Transformer,
