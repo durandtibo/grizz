@@ -25,27 +25,41 @@ def dataframe() -> pl.DataFrame:
 ######################################
 
 
-def test_parquet_exporter_repr() -> None:
+def test_in_memory_exporter_repr() -> None:
     assert repr(InMemoryExporter()) == "InMemoryExporter(frame=None)"
 
 
-def test_parquet_exporter_repr_with_frame(dataframe: pl.DataFrame) -> None:
+def test_in_memory_exporter_repr_with_frame(dataframe: pl.DataFrame) -> None:
     exporter = InMemoryExporter()
     exporter.export(dataframe)
     assert repr(exporter) == "InMemoryExporter(frame=(5, 3))"
 
 
-def test_parquet_exporter_str() -> None:
+def test_in_memory_exporter_str() -> None:
     assert str(InMemoryExporter()) == "InMemoryExporter(frame=None)"
 
 
-def test_parquet_exporter_str_with_frame(dataframe: pl.DataFrame) -> None:
+def test_in_memory_exporter_str_with_frame(dataframe: pl.DataFrame) -> None:
     exporter = InMemoryExporter()
     exporter.export(dataframe)
     assert str(exporter) == "InMemoryExporter(frame=(5, 3))"
 
 
-def test_parquet_exporter_export(dataframe: pl.DataFrame) -> None:
+def test_in_memory_exporter_equal_true() -> None:
+    assert InMemoryExporter().equal(InMemoryExporter())
+
+
+def test_in_memory_exporter_equal_false_different_frame(dataframe: pl.DataFrame) -> None:
+    exporter = InMemoryExporter()
+    exporter.export(dataframe)
+    assert not InMemoryExporter().equal(exporter)
+
+
+def test_in_memory_exporter_equal_false_different_type() -> None:
+    assert not InMemoryExporter().equal(42)
+
+
+def test_in_memory_exporter_export(dataframe: pl.DataFrame) -> None:
     exporter = InMemoryExporter()
     exporter.export(dataframe)
     assert_frame_equal(
@@ -61,7 +75,7 @@ def test_parquet_exporter_export(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_parquet_exporter_export_overwrite(dataframe: pl.DataFrame) -> None:
+def test_in_memory_exporter_export_overwrite(dataframe: pl.DataFrame) -> None:
     exporter = InMemoryExporter()
     exporter.export(pl.DataFrame({}))
     assert_frame_equal(exporter._frame, pl.DataFrame({}))
@@ -79,7 +93,7 @@ def test_parquet_exporter_export_overwrite(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_parquet_exporter_ingest(dataframe: pl.DataFrame) -> None:
+def test_in_memory_exporter_ingest(dataframe: pl.DataFrame) -> None:
     exporter = InMemoryExporter()
     exporter.export(dataframe)
     assert_frame_equal(
@@ -95,7 +109,7 @@ def test_parquet_exporter_ingest(dataframe: pl.DataFrame) -> None:
     )
 
 
-def test_parquet_exporter_ingest_empty() -> None:
+def test_in_memory_exporter_ingest_empty() -> None:
     exporter = InMemoryExporter()
     with pytest.raises(DataFrameNotFoundError, match="No DataFrame available for ingestion."):
         exporter.ingest()
