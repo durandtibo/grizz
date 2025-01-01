@@ -7,6 +7,8 @@ __all__ = ["ParquetExporter"]
 import logging
 from typing import TYPE_CHECKING, Any
 
+from coola import objects_are_equal
+
 from grizz.exporter.base import BaseExporter
 from grizz.utils.format import str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
@@ -54,6 +56,13 @@ class ParquetExporter(BaseExporter):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(path={self._path}{str_kwargs(self._kwargs)})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._path == other._path and objects_are_equal(
+            self._kwargs, other._kwargs, equal_nan=equal_nan
+        )
 
     def export(self, frame: pl.DataFrame) -> None:
         logger.info(

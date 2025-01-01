@@ -49,6 +49,28 @@ def test_parquet_exporter_str_with_kwargs(tmp_path: Path) -> None:
     )
 
 
+def test_parquet_exporter_equal_true(tmp_path: Path) -> None:
+    assert ParquetExporter(tmp_path.joinpath("data.parquet")).equal(
+        ParquetExporter(tmp_path.joinpath("data.parquet"))
+    )
+
+
+def test_parquet_exporter_equal_false_different_path(tmp_path: Path) -> None:
+    assert not ParquetExporter(tmp_path.joinpath("data.parquet")).equal(
+        ParquetExporter(tmp_path.joinpath("data2.parquet"))
+    )
+
+
+def test_parquet_exporter_equal_false_different_kwargs(tmp_path: Path) -> None:
+    assert not ParquetExporter(tmp_path.joinpath("data.parquet")).equal(
+        ParquetExporter(tmp_path.joinpath("data.parquet"), include_header=False)
+    )
+
+
+def test_parquet_exporter_equal_false_different_type(tmp_path: Path) -> None:
+    assert not ParquetExporter(tmp_path.joinpath("data.parquet")).equal(42)
+
+
 def test_parquet_exporter_export(tmp_path: Path, dataframe: pl.DataFrame) -> None:
     path = tmp_path.joinpath("my_folder/data.parquet")
     assert not path.is_file()

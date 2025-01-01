@@ -6,7 +6,9 @@ from __future__ import annotations
 __all__ = ["InMemoryExporter"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
+from coola import objects_are_equal
 
 from grizz.exceptions import DataFrameNotFoundError
 from grizz.exporter.base import BaseExporter
@@ -66,6 +68,11 @@ class InMemoryExporter(BaseExporter, BaseIngestor):
     def __repr__(self) -> str:
         frame = None if self._frame is None else self._frame.shape
         return f"{self.__class__.__qualname__}(frame={frame})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self._frame, other._frame, equal_nan=equal_nan)
 
     def export(self, frame: pl.DataFrame) -> None:
         logger.info(f"Exporting the DataFrame (shape={frame.shape}) to memory ...")
