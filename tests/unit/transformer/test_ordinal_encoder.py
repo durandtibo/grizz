@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import operator
 import warnings
 from unittest.mock import patch
 
 import polars as pl
 import pytest
 from coola.utils import is_numpy_available
+from feu import compare_version
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -381,9 +383,17 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_false() -> None:
 @sklearn_available
 def test_ordinal_encoder_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> None:
     transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")
-    with pytest.raises(
-        sklearn.exceptions.NotFittedError, match="This OrdinalEncoder instance is not fitted yet."
-    ):
+    # Use a if-else structure because the exception depends on the sklearn version
+    if compare_version("scikit-learn", operator.ge, "1.4.0"):
+        exception = pytest.raises(
+            sklearn.exceptions.NotFittedError,
+            match="This OrdinalEncoder instance is not fitted yet.",
+        )
+    else:
+        exception = pytest.raises(
+            AttributeError, match="'OrdinalEncoder' object has no attribute '_missing_indices'"
+        )
+    with exception:
         transformer.transform(dataframe)
 
 
