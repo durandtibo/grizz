@@ -41,7 +41,7 @@ class BaseExporter(ABC, metaclass=AbstractFactory):
     ```
     """
 
-    # @abstractmethod
+    @abstractmethod
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         r"""Indicate if two exporter objects are equal or not.
 

@@ -6,7 +6,7 @@ from __future__ import annotations
 __all__ = ["TransformExporter"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from coola.utils import repr_indent, repr_mapping
 
@@ -70,6 +70,11 @@ class TransformExporter(BaseExporter):
             repr_mapping({"transformer": self._transformer, "exporter": self._exporter})
         )
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._exporter.equal(other._exporter, equal_nan=equal_nan)
 
     def export(self, frame: pl.DataFrame) -> None:
         frame = self._transformer.transform(frame)
