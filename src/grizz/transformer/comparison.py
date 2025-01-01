@@ -5,6 +5,7 @@ from __future__ import annotations
 
 __all__ = [
     "BaseComparatorTransformer",
+    "EqualMissingTransformer",
     "EqualTransformer",
     "GreaterEqualTransformer",
     "GreaterTransformer",
@@ -215,6 +216,87 @@ class EqualTransformer(BaseComparatorTransformer):
 
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().eq(self._target))
+
+
+class EqualMissingTransformer(BaseComparatorTransformer):
+    r"""Implements a transformer that computes the equal operation where
+    null values are not propagated.
+
+    Args:
+        columns: The columns to compare. ``None`` means all the
+            columns.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message appears.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import EqualMissing
+    >>> transformer = EqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_ind")
+    >>> transformer
+    EqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": [10, 20, 30, 40, 50],
+    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ str  ┆ i64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1    ┆ 1    ┆ 10   ┆ a    │
+    │ 2    ┆ 2    ┆ 20   ┆ b    │
+    │ 3    ┆ 3    ┆ 30   ┆ c    │
+    │ 4    ┆ 4    ┆ 40   ┆ d    │
+    │ 5    ┆ 5    ┆ 50   ┆ e    │
+    └──────┴──────┴──────┴──────┘
+    >>> out = transformer.fit_transform(frame)
+    >>> out
+    shape: (5, 6)
+    ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
+    │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
+    ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
+    │ 1    ┆ 1    ┆ 10   ┆ a    ┆ false    ┆ false    │
+    │ 2    ┆ 2    ┆ 20   ┆ b    ┆ false    ┆ false    │
+    │ 3    ┆ 3    ┆ 30   ┆ c    ┆ true     ┆ false    │
+    │ 4    ┆ 4    ┆ 40   ┆ d    ┆ false    ┆ false    │
+    │ 5    ┆ 5    ┆ 50   ┆ e    ┆ false    ┆ false    │
+    └──────┴──────┴──────┴──────┴──────────┴──────────┘
+
+    ```
+    """
+
+    def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
+        return frame.select(pl.all().eq_missing(self._target))
 
 
 class GreaterEqualTransformer(BaseComparatorTransformer):
