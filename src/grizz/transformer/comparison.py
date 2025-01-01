@@ -38,6 +38,7 @@ class BaseComparatorTransformer(BaseInNTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -106,8 +107,9 @@ class BaseComparatorTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_output_columns(frame)
         logger.info(
-            f"Applying the robust scaling transformation on {len(self.find_columns(frame)):,} "
-            f"columns | prefix={self._prefix!r} | suffix={self._suffix!r}"
+            f"Applying the {self._get_operation_name()} operation on "
+            f"{len(self.find_columns(frame)):,} columns | "
+            f"prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
         data = self._compare(frame.select(columns))
@@ -137,6 +139,14 @@ class BaseComparatorTransformer(BaseInNTransformer):
                 but that contains the result of the comparison.
         """
 
+    @abstractmethod
+    def _get_operation_name(self) -> str:
+        r"""Get the operation name.
+
+        Returns:
+            The operation name.
+        """
+
 
 class EqualTransformer(BaseComparatorTransformer):
     r"""Implements a transformer that computes the equal operation.
@@ -144,6 +154,7 @@ class EqualTransformer(BaseComparatorTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -217,6 +228,9 @@ class EqualTransformer(BaseComparatorTransformer):
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().eq(self._target))
 
+    def _get_operation_name(self) -> str:
+        return "equal"
+
 
 class EqualMissingTransformer(BaseComparatorTransformer):
     r"""Implements a transformer that computes the equal operation where
@@ -225,6 +239,7 @@ class EqualMissingTransformer(BaseComparatorTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -298,6 +313,9 @@ class EqualMissingTransformer(BaseComparatorTransformer):
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().eq_missing(self._target))
 
+    def _get_operation_name(self) -> str:
+        return "equal missing"
+
 
 class GreaterEqualTransformer(BaseComparatorTransformer):
     r"""Implements a transformer that computes the greater than or equal
@@ -306,6 +324,7 @@ class GreaterEqualTransformer(BaseComparatorTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -381,13 +400,18 @@ class GreaterEqualTransformer(BaseComparatorTransformer):
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().ge(self._target))
 
+    def _get_operation_name(self) -> str:
+        return "greater than or equal"
+
 
 class GreaterTransformer(BaseComparatorTransformer):
-    r"""Implements a transformer that computes the greater operation.
+    r"""Implements a transformer that computes the greater than
+    operation.
 
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -461,6 +485,9 @@ class GreaterTransformer(BaseComparatorTransformer):
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().gt(self._target))
 
+    def _get_operation_name(self) -> str:
+        return "greater than"
+
 
 class LowerEqualTransformer(BaseComparatorTransformer):
     r"""Implements a transformer that computes the lower than or equal
@@ -469,6 +496,7 @@ class LowerEqualTransformer(BaseComparatorTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -542,6 +570,9 @@ class LowerEqualTransformer(BaseComparatorTransformer):
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().le(self._target))
 
+    def _get_operation_name(self) -> str:
+        return "lower than or equal"
+
 
 class LowerTransformer(BaseComparatorTransformer):
     r"""Implements a transformer that computes the lower operation.
@@ -549,6 +580,7 @@ class LowerTransformer(BaseComparatorTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -622,6 +654,9 @@ class LowerTransformer(BaseComparatorTransformer):
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().lt(self._target))
 
+    def _get_operation_name(self) -> str:
+        return "lower than"
+
 
 class NotEqualTransformer(BaseComparatorTransformer):
     r"""Implements a transformer that computes the not equal operation.
@@ -629,6 +664,7 @@ class NotEqualTransformer(BaseComparatorTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -702,6 +738,9 @@ class NotEqualTransformer(BaseComparatorTransformer):
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().ne(self._target))
 
+    def _get_operation_name(self) -> str:
+        return "not equal"
+
 
 class NotEqualMissingTransformer(BaseComparatorTransformer):
     r"""Implements a transformer that computes the not equal operation
@@ -710,6 +749,7 @@ class NotEqualMissingTransformer(BaseComparatorTransformer):
     Args:
         columns: The columns to compare. ``None`` means all the
             columns.
+        target: The target value to compare with.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
@@ -784,3 +824,6 @@ class NotEqualMissingTransformer(BaseComparatorTransformer):
 
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
         return frame.select(pl.all().ne_missing(self._target))
+
+    def _get_operation_name(self) -> str:
+        return "not equal missing"
