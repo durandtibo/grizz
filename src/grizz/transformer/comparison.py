@@ -207,7 +207,7 @@ class EqualTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
@@ -292,7 +292,7 @@ class EqualMissingTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
@@ -379,7 +379,7 @@ class GreaterEqualTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
@@ -464,7 +464,7 @@ class GreaterTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
@@ -549,7 +549,7 @@ class LowerEqualTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
@@ -633,7 +633,7 @@ class LowerTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
@@ -717,7 +717,7 @@ class NotEqualTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
@@ -804,7 +804,7 @@ class NotEqualMissingTransformer(BaseComparatorTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
+    >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
