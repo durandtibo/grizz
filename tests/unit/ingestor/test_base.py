@@ -70,7 +70,7 @@ def test_setup_ingestor_incorrect_type(caplog: pytest.LogCaptureFixture) -> None
 ################################################
 
 
-EXPORTER_EQUAL = [
+INGESTOR_EQUAL = [
     pytest.param(
         ExamplePair(
             actual=CsvIngestor("data.csv"),
@@ -88,7 +88,7 @@ EXPORTER_EQUAL = [
 ]
 
 
-EXPORTER_NOT_EQUAL = [
+INGESTOR_NOT_EQUAL = [
     pytest.param(
         ExamplePair(
             actual=42.0,
@@ -136,7 +136,7 @@ def test_ingestor_equality_comparator_equal_true_same_object(config: EqualityCon
     assert IngestorEqualityComparator().equal(x, x, config)
 
 
-@pytest.mark.parametrize("example", EXPORTER_EQUAL)
+@pytest.mark.parametrize("example", INGESTOR_EQUAL)
 def test_ingestor_equality_comparator_equal_true(
     example: ExamplePair,
     config: EqualityConfig,
@@ -148,7 +148,7 @@ def test_ingestor_equality_comparator_equal_true(
         assert not caplog.messages
 
 
-@pytest.mark.parametrize("example", EXPORTER_EQUAL)
+@pytest.mark.parametrize("example", INGESTOR_EQUAL)
 def test_ingestor_equality_comparator_equal_true_show_difference(
     example: ExamplePair,
     config: EqualityConfig,
@@ -161,7 +161,7 @@ def test_ingestor_equality_comparator_equal_true_show_difference(
         assert not caplog.messages
 
 
-@pytest.mark.parametrize("example", EXPORTER_NOT_EQUAL)
+@pytest.mark.parametrize("example", INGESTOR_NOT_EQUAL)
 def test_ingestor_equality_comparator_equal_false(
     example: ExamplePair,
     config: EqualityConfig,
@@ -173,7 +173,7 @@ def test_ingestor_equality_comparator_equal_false(
         assert not caplog.messages
 
 
-@pytest.mark.parametrize("example", EXPORTER_NOT_EQUAL)
+@pytest.mark.parametrize("example", INGESTOR_NOT_EQUAL)
 def test_ingestor_equality_comparator_equal_false_show_difference(
     example: ExamplePair,
     config: EqualityConfig,
@@ -187,7 +187,7 @@ def test_ingestor_equality_comparator_equal_false_show_difference(
 
 
 @pytest.mark.parametrize("function", COMPARATOR_FUNCTIONS)
-@pytest.mark.parametrize("example", EXPORTER_EQUAL)
+@pytest.mark.parametrize("example", INGESTOR_EQUAL)
 @pytest.mark.parametrize("show_difference", [True, False])
 def test_objects_are_equal_true(
     function: Callable,
@@ -201,7 +201,7 @@ def test_objects_are_equal_true(
 
 
 @pytest.mark.parametrize("function", COMPARATOR_FUNCTIONS)
-@pytest.mark.parametrize("example", EXPORTER_NOT_EQUAL)
+@pytest.mark.parametrize("example", INGESTOR_NOT_EQUAL)
 def test_objects_are_equal_false(
     function: Callable, example: ExamplePair, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -211,7 +211,7 @@ def test_objects_are_equal_false(
 
 
 @pytest.mark.parametrize("function", COMPARATOR_FUNCTIONS)
-@pytest.mark.parametrize("example", EXPORTER_NOT_EQUAL)
+@pytest.mark.parametrize("example", INGESTOR_NOT_EQUAL)
 def test_objects_are_equal_false_show_difference(
     function: Callable, example: ExamplePair, caplog: pytest.LogCaptureFixture
 ) -> None:
