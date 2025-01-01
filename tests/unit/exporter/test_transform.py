@@ -47,6 +47,37 @@ def test_transform_exporter_str(tmp_path: Path) -> None:
     ).startswith("TransformExporter(")
 
 
+def test_transform_exporter_equal_true(tmp_path: Path) -> None:
+    assert TransformExporter(
+        exporter=ParquetExporter(path=tmp_path.joinpath("data.parquet")),
+        transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ).equal(
+        TransformExporter(
+            exporter=ParquetExporter(path=tmp_path.joinpath("data.parquet")),
+            transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+        )
+    )
+
+
+def test_transform_exporter_equal_false_different_exporter(tmp_path: Path) -> None:
+    assert not TransformExporter(
+        exporter=ParquetExporter(path=tmp_path.joinpath("data.parquet")),
+        transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ).equal(
+        TransformExporter(
+            exporter=ParquetExporter(path=tmp_path.joinpath("data2.parquet")),
+            transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+        )
+    )
+
+
+def test_transform_exporter_equal_false_different_type(tmp_path: Path) -> None:
+    assert not TransformExporter(
+        exporter=ParquetExporter(path=tmp_path.joinpath("data.parquet")),
+        transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ).equal(42)
+
+
 def test_transform_exporter_ingest(tmp_path: Path, dataframe: pl.DataFrame) -> None:
     path = tmp_path.joinpath("data.parquet")
     assert not path.is_file()
