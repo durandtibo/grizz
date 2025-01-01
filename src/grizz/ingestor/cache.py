@@ -31,9 +31,9 @@ class CacheIngestor(BaseIngestor):
     for ingestion by the fast ingestor during the next cycle.
 
     Args:
-        ingestor_slow: The slow DataFrame ingestor or its
+        slow_ingestor: The slow DataFrame ingestor or its
             configuration.
-        ingestor_fast: The fast DataFrame ingestor or its
+        fast_ingestor: The fast DataFrame ingestor or its
             configuration.
         exporter: The DataFrame exporter or its configuration.
             The DataFrame exporter is responsible for storing the
@@ -48,7 +48,7 @@ class CacheIngestor(BaseIngestor):
     >>> import polars as pl
     >>> from grizz.ingestor import CacheIngestor, Ingestor
     >>> from grizz.exporter import InMemoryExporter
-    >>> ingestor_slow = Ingestor(
+    >>> slow_ingestor = Ingestor(
     ...     pl.DataFrame(
     ...         {
     ...             "col1": ["1", "2", "3", "4", "5"],
@@ -59,14 +59,14 @@ class CacheIngestor(BaseIngestor):
     ... )
     >>> exporter_ingestor = InMemoryExporter()
     >>> ingestor = CacheIngestor(
-    ...     ingestor_slow=ingestor_slow,
-    ...     ingestor_fast=exporter_ingestor,
+    ...     fast_ingestor=exporter_ingestor,
+    ...     slow_ingestor=slow_ingestor,
     ...     exporter=exporter_ingestor,
     ... )
     >>> ingestor
     CacheIngestor(
-      (ingestor_slow): Ingestor(shape=(5, 3))
-      (ingestor_fast): InMemoryExporter(frame=None)
+      (fast_ingestor): InMemoryExporter(frame=None)
+      (slow_ingestor): Ingestor(shape=(5, 3))
       (exporter): InMemoryExporter(frame=None)
     )
     >>> frame = ingestor.ingest()
@@ -89,20 +89,21 @@ class CacheIngestor(BaseIngestor):
 
     def __init__(
         self,
-        ingestor_slow: BaseIngestor | dict,
-        ingestor_fast: BaseIngestor | dict,
+        fast_ingestor: BaseIngestor | dict,
+        slow_ingestor: BaseIngestor | dict,
         exporter: BaseExporter | dict,
     ) -> None:
-        self._ingestor_slow = setup_ingestor(ingestor_slow)
-        self._ingestor_fast = setup_ingestor(ingestor_fast)
+        self._fast_ingestor = setup_ingestor(fast_ingestor)
+        self._slow_ingestor = setup_ingestor(slow_ingestor)
+
         self._exporter = setup_exporter(exporter)
 
     def __repr__(self) -> str:
         args = repr_indent(
             repr_mapping(
                 {
-                    "ingestor_slow": self._ingestor_slow,
-                    "ingestor_fast": self._ingestor_fast,
+                    "fast_ingestor": self._fast_ingestor,
+                    "slow_ingestor": self._slow_ingestor,
                     "exporter": self._exporter,
                 }
             )
@@ -113,15 +114,15 @@ class CacheIngestor(BaseIngestor):
         if not isinstance(other, self.__class__):
             return False
         return (
-            self._ingestor_slow.equal(other._ingestor_slow, equal_nan=equal_nan)
-            and self._ingestor_fast.equal(other._ingestor_fast, equal_nan=equal_nan)
+            self._fast_ingestor.equal(other._fast_ingestor, equal_nan=equal_nan)
+            and self._slow_ingestor.equal(other._slow_ingestor, equal_nan=equal_nan)
             and self._exporter.equal(other._exporter, equal_nan=equal_nan)
         )
 
     def ingest(self) -> pl.DataFrame:
         try:
-            frame = self._ingestor_fast.ingest()
+            frame = self._fast_ingestor.ingest()
         except DataFrameNotFoundError:
-            frame = self._ingestor_slow.ingest()
+            frame = self._slow_ingestor.ingest()
             self._exporter.export(frame)
         return frame
