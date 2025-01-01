@@ -8,11 +8,15 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
+from coola.equality.comparators import BaseEqualityComparator
+from coola.equality.handlers import EqualNanHandler, SameObjectHandler, SameTypeHandler
+from coola.equality.testers import EqualityTester
 from objectory import AbstractFactory
 from objectory.utils import is_object_config
 
 if TYPE_CHECKING:
     import polars as pl
+    from coola.equality import EqualityConfig
 
 logger = logging.getLogger(__name__)
 
@@ -148,3 +152,25 @@ def setup_ingestor(
     if not isinstance(ingestor, BaseIngestor):
         logger.warning(f"ingestor is not a `BaseIngestor` (received: {type(ingestor)})")
     return ingestor
+
+
+class IngestorEqualityComparator(BaseEqualityComparator[BaseIngestor]):
+    r"""Implement an equality comparator for ``BaseIngestor``
+    objects."""
+
+    def __init__(self) -> None:
+        self._handler = SameObjectHandler()
+        self._handler.chain(SameTypeHandler()).chain(EqualNanHandler())
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, self.__class__)
+
+    def clone(self) -> IngestorEqualityComparator:
+        return self.__class__()
+
+    def equal(self, actual: BaseIngestor, expected: Any, config: EqualityConfig) -> bool:
+        return self._handler.handle(actual, expected, config=config)
+
+
+if not EqualityTester.has_comparator(BaseIngestor):  # pragma: no cover
+    EqualityTester.add_comparator(BaseIngestor, IngestorEqualityComparator())
