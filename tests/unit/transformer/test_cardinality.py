@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -41,6 +42,59 @@ def test_filter_cardinality_transformer_str() -> None:
         str(FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5))
         == "FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, "
         "exclude_columns=(), missing_policy='raise')"
+    )
+
+
+def test_filter_cardinality_transformer_equal_true() -> None:
+    assert FilterCardinality(columns=["col1", "col3"]).equal(
+        FilterCardinality(columns=["col1", "col3"])
+    )
+
+
+def test_filter_cardinality_transformer_equal_false_different_columns() -> None:
+    assert not FilterCardinality(columns=["col1", "col3"]).equal(
+        FilterCardinality(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_filter_cardinality_transformer_equal_false_different_n_min() -> None:
+    assert not FilterCardinality(columns=["col1", "col3"]).equal(
+        FilterCardinality(columns=["col1", "col3"], n_min=2)
+    )
+
+
+def test_filter_cardinality_transformer_equal_false_different_n_max() -> None:
+    assert not FilterCardinality(columns=["col1", "col3"]).equal(
+        FilterCardinality(columns=["col1", "col3"], n_max=5)
+    )
+
+
+def test_filter_cardinality_transformer_equal_false_different_exclude_columns() -> None:
+    assert not FilterCardinality(columns=["col1", "col3"]).equal(
+        FilterCardinality(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_filter_cardinality_transformer_equal_false_different_missing_policy() -> None:
+    assert not FilterCardinality(columns=["col1", "col3"]).equal(
+        FilterCardinality(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_filter_cardinality_transformer_equal_false_different_type() -> None:
+    assert not FilterCardinality(columns=["col1", "col3"]).equal(42)
+
+
+def test_filter_cardinality_transformer_get_args() -> None:
+    assert objects_are_equal(
+        FilterCardinality(columns=["col1", "col2", "col3"]).get_args(),
+        {
+            "columns": ("col1", "col2", "col3"),
+            "n_min": 0,
+            "n_max": float("inf"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+        },
     )
 
 

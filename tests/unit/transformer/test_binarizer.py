@@ -116,7 +116,7 @@ def test_binarizer_transformer_get_args() -> None:
             "exist_policy": "raise",
             "missing_policy": "raise",
             "threshold": 1.0,
-        }
+        },
     )
 
 
