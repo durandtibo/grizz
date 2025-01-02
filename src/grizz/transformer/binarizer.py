@@ -152,15 +152,17 @@ class BinarizerTransformer(BaseInNTransformer):
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         if not isinstance(other, self.__class__):
             return False
-        return (
-            self._columns == other._columns
-            and self._prefix == other._prefix
-            and self._suffix == other._suffix
-            and self._exclude_columns == other._exclude_columns
-            and self._exist_policy == other._exist_policy
-            and self._missing_policy == other._missing_policy
-            and objects_are_equal(self._kwargs, other._kwargs, equal_nan=equal_nan)
-        )
+        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+
+    def get_args(self) -> dict:
+        return {
+            "columns": self._columns,
+            "prefix": self._prefix,
+            "suffix": self._suffix,
+            "exclude_columns": self._exclude_columns,
+            "exist_policy": self._exist_policy,
+            "missing_policy": self._missing_policy,
+        } | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
