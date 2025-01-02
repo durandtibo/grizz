@@ -3,7 +3,7 @@ of two columns are element-wise equal within a tolerance."""
 
 from __future__ import annotations
 
-__all__ = ["CloseColumnsTransformer"]
+__all__ = ["ColumnCloseTransformer"]
 
 import logging
 from typing import TYPE_CHECKING
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class CloseColumnsTransformer(BaseIn2Out1Transformer):
+class ColumnCloseTransformer(BaseIn2Out1Transformer):
     r"""Implement a transformer to compute a column that indicates if the
     values of two columns are element-wise equal within a tolerance.
 
@@ -60,10 +60,10 @@ class CloseColumnsTransformer(BaseIn2Out1Transformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import CloseColumns
-    >>> transformer = CloseColumns(actual="col1", expected="col2", out_col="out")
+    >>> from grizz.transformer import ColumnClose
+    >>> transformer = ColumnClose(actual="col1", expected="col2", out_col="out")
     >>> transformer
-    CloseColumnsTransformer(actual='col1', expected='col2', out_col='out', atol=1e-08, rtol=1e-05, equal_nan=False, exist_policy='raise', missing_policy='raise')
+    ColumnCloseTransformer(actual='col1', expected='col2', out_col='out', atol=1e-08, rtol=1e-05, equal_nan=False, exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
