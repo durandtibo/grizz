@@ -4,9 +4,15 @@ from __future__ import annotations
 
 __all__ = ["compute_pairwise_cooccurrence"]
 
+from unittest.mock import Mock
 
-import numpy as np
 import polars as pl
+from coola.utils import check_numpy, is_numpy_available
+
+if is_numpy_available():
+    import numpy as np
+else:  # pragma: no cover
+    np = Mock()
 
 
 def compute_pairwise_cooccurrence(frame: pl.DataFrame, remove_diagonal: bool = False) -> np.ndarray:
@@ -45,6 +51,7 @@ def compute_pairwise_cooccurrence(frame: pl.DataFrame, remove_diagonal: bool = F
 
     ```
     """
+    check_numpy()
     if frame.shape[1] == 0:
         return np.zeros((0, 0), dtype=int)
     data = frame.cast(pl.Boolean).fill_null(False).to_numpy().astype(int)

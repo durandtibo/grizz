@@ -1,17 +1,24 @@
 from __future__ import annotations
 
-import numpy as np
+from unittest.mock import patch
+
 import polars as pl
 import pytest
 from coola import objects_are_equal
+from coola.testing import numpy_available
+from coola.utils import is_numpy_available
 
 from grizz.utils.cooccurrence import compute_pairwise_cooccurrence
+
+if is_numpy_available():
+    import numpy as np
 
 ###################################################
 #     Tests for compute_pairwise_cooccurrence     #
 ###################################################
 
 
+@numpy_available
 @pytest.mark.parametrize(
     "frame",
     [
@@ -26,6 +33,7 @@ def test_compute_pairwise_cooccurrence_1_column(frame: pl.DataFrame) -> None:
     )
 
 
+@numpy_available
 def test_compute_pairwise_cooccurrence_1_column_no_diagonal() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
@@ -35,6 +43,7 @@ def test_compute_pairwise_cooccurrence_1_column_no_diagonal() -> None:
     )
 
 
+@numpy_available
 @pytest.mark.parametrize(
     "frame",
     [
@@ -55,6 +64,7 @@ def test_compute_pairwise_cooccurrence_2_columns(frame: pl.DataFrame) -> None:
     )
 
 
+@numpy_available
 def test_compute_pairwise_cooccurrence_2_columns_no_diagonal() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
@@ -64,6 +74,7 @@ def test_compute_pairwise_cooccurrence_2_columns_no_diagonal() -> None:
     )
 
 
+@numpy_available
 @pytest.mark.parametrize(
     "frame",
     [
@@ -97,6 +108,7 @@ def test_compute_pairwise_cooccurrence_3_columns(frame: pl.DataFrame) -> None:
     )
 
 
+@numpy_available
 def test_compute_pairwise_cooccurrence_3_columns_no_diagonal() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
@@ -113,6 +125,7 @@ def test_compute_pairwise_cooccurrence_3_columns_no_diagonal() -> None:
     )
 
 
+@numpy_available
 def test_compute_pairwise_cooccurrence_empty() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
@@ -122,6 +135,7 @@ def test_compute_pairwise_cooccurrence_empty() -> None:
     )
 
 
+@numpy_available
 def test_compute_pairwise_cooccurrence_empty_rows() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
@@ -131,6 +145,7 @@ def test_compute_pairwise_cooccurrence_empty_rows() -> None:
     )
 
 
+@numpy_available
 def test_compute_pairwise_cooccurrence_null() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
@@ -144,3 +159,13 @@ def test_compute_pairwise_cooccurrence_null() -> None:
         ),
         np.array([[2, 2, 1], [2, 3, 1], [1, 1, 2]], dtype=int),
     )
+
+
+def test_compute_pairwise_cooccurrence_no_numpy() -> None:
+    with (
+        patch("coola.utils.imports.is_numpy_available", lambda: False),
+        pytest.raises(RuntimeError, match="'numpy' package is required but not installed."),
+    ):
+        compute_pairwise_cooccurrence(
+            pl.DataFrame({"col1": [0, 1, 1, 0, 0], "col2": [0, 1, 0, 1, 0]})
+        )
