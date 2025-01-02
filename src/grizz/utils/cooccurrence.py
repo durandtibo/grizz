@@ -4,12 +4,9 @@ from __future__ import annotations
 
 __all__ = ["compute_pairwise_cooccurrence"]
 
-from typing import TYPE_CHECKING
 
 import numpy as np
-
-if TYPE_CHECKING:
-    import polars as pl
+import polars as pl
 
 
 def compute_pairwise_cooccurrence(frame: pl.DataFrame, remove_diagonal: bool = False) -> np.ndarray:
@@ -50,7 +47,7 @@ def compute_pairwise_cooccurrence(frame: pl.DataFrame, remove_diagonal: bool = F
     """
     if frame.shape[1] == 0:
         return np.zeros((0, 0), dtype=int)
-    data = frame.to_numpy().astype(bool).astype(int)
+    data = frame.cast(pl.Boolean).fill_null(False).to_numpy().astype(int)
     co = data.transpose().dot(data)
     if remove_diagonal:
         np.fill_diagonal(co, 0)

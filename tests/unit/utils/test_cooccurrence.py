@@ -129,3 +129,18 @@ def test_compute_pairwise_cooccurrence_empty_rows() -> None:
         ),
         np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype=int),
     )
+
+
+def test_compute_pairwise_cooccurrence_null() -> None:
+    assert objects_are_equal(
+        compute_pairwise_cooccurrence(
+            pl.DataFrame(
+                {
+                    "col1": [0, 1, None, 0, 0, 1, 0],
+                    "col2": [0, 1, 0, 1, 0, 1, 0],
+                    "col3": [0, 0, 0, 0, None, 1, 1],
+                }
+            ),
+        ),
+        np.array([[2, 2, 1], [2, 3, 1], [1, 1, 2]], dtype=int),
+    )
