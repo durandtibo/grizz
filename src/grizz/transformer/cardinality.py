@@ -6,9 +6,10 @@ from __future__ import annotations
 __all__ = ["FilterCardinalityTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
+from coola import objects_are_equal
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
@@ -118,6 +119,20 @@ class FilterCardinalityTransformer(BaseInNTransformer):
             }
         )
         return f"{self.__class__.__qualname__}({args})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+
+    def get_args(self) -> dict:
+        return {
+            "columns": self._columns,
+            "n_min": self._n_min,
+            "n_max": self._n_max,
+            "exclude_columns": self._exclude_columns,
+            "missing_policy": self._missing_policy,
+        }
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
