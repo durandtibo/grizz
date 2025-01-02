@@ -19,7 +19,7 @@ import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
-from grizz.utils.format import str_kwargs, str_size_diff
+from grizz.utils.format import str_size_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -112,15 +112,16 @@ class CastTransformer(BaseInNTransformer):
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "dtype": self._dtype,
-                "exclude_columns": self._exclude_columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+        args = repr_mapping_line(self.get_args())
+        return f"{self.__class__.__qualname__}({args})"
+
+    def get_args(self) -> dict:
+        return {
+            "columns": self._columns,
+            "dtype": self._dtype,
+            "exclude_columns": self._exclude_columns,
+            "missing_policy": self._missing_policy,
+        } | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -474,15 +475,16 @@ class CategoricalCastTransformer(BaseIn1Out1Transformer):
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "in_col": self._in_col,
-                "out_col": self._out_col,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+        args = repr_mapping_line(self.get_args())
+        return f"{self.__class__.__qualname__}({args})"
+
+    def get_args(self) -> dict:
+        return {
+            "in_col": self._in_col,
+            "out_col": self._out_col,
+            "exist_policy": self._exist_policy,
+            "missing_policy": self._missing_policy,
+        } | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
