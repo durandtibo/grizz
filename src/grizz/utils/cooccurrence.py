@@ -15,14 +15,14 @@ else:  # pragma: no cover
     np = Mock()
 
 
-def compute_pairwise_cooccurrence(frame: pl.DataFrame, remove_diagonal: bool = False) -> np.ndarray:
+def compute_pairwise_cooccurrence(frame: pl.DataFrame, ignore_self: bool = False) -> np.ndarray:
     r"""Compute the pairwise column co-occurrence.
 
     Args:
         frame: The input DataFrame. The column values are expected to
             be 0/1 or true/false.
-        remove_diagonal: If ``True``, the diagonal of the co-occurrence
-            matrix is set to 0.
+        ignore_self: If ``True``, the diagonal of the co-occurrence
+            matrix (a.k.a. self-co-occurrence) is set to 0.
 
     Returns:
         The co-occurrence matrix.
@@ -44,7 +44,7 @@ def compute_pairwise_cooccurrence(frame: pl.DataFrame, remove_diagonal: bool = F
     array([[3, 2, 1],
            [2, 3, 1],
            [1, 1, 3]])
-    >>> compute_pairwise_cooccurrence(frame, remove_diagonal=True)
+    >>> compute_pairwise_cooccurrence(frame, ignore_self=True)
     array([[0, 2, 1],
            [2, 0, 1],
            [1, 1, 0]])
@@ -56,6 +56,6 @@ def compute_pairwise_cooccurrence(frame: pl.DataFrame, remove_diagonal: bool = F
         return np.zeros((0, 0), dtype=int)
     data = frame.cast(pl.Boolean).fill_null(False).to_numpy().astype(int)
     co = data.transpose().dot(data)
-    if remove_diagonal:
+    if ignore_self:
         np.fill_diagonal(co, 0)
     return co

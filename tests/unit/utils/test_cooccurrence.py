@@ -34,11 +34,9 @@ def test_compute_pairwise_cooccurrence_1_column(frame: pl.DataFrame) -> None:
 
 
 @numpy_available
-def test_compute_pairwise_cooccurrence_1_column_no_diagonal() -> None:
+def test_compute_pairwise_cooccurrence_1_column_ignore_self() -> None:
     assert objects_are_equal(
-        compute_pairwise_cooccurrence(
-            pl.DataFrame({"col1": [0, 1, 1, 0, 0]}), remove_diagonal=True
-        ),
+        compute_pairwise_cooccurrence(pl.DataFrame({"col1": [0, 1, 1, 0, 0]}), ignore_self=True),
         np.array([[0]], dtype=int),
     )
 
@@ -65,12 +63,12 @@ def test_compute_pairwise_cooccurrence_2_columns(frame: pl.DataFrame) -> None:
 
 
 @numpy_available
-def test_compute_pairwise_cooccurrence_2_columns_no_diagonal() -> None:
+def test_compute_pairwise_cooccurrence_2_columns_ignore_self() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
-            pl.DataFrame({"col1": [0, 1, 1, 0, 0], "col2": [0, 1, 0, 1, 0]})
+            pl.DataFrame({"col1": [0, 1, 1, 0, 0], "col2": [0, 1, 0, 1, 0]}), ignore_self=True
         ),
-        np.array([[2, 1], [1, 2]], dtype=int),
+        np.array([[0, 1], [1, 0]], dtype=int),
     )
 
 
@@ -109,7 +107,7 @@ def test_compute_pairwise_cooccurrence_3_columns(frame: pl.DataFrame) -> None:
 
 
 @numpy_available
-def test_compute_pairwise_cooccurrence_3_columns_no_diagonal() -> None:
+def test_compute_pairwise_cooccurrence_3_columns_ignore_self() -> None:
     assert objects_are_equal(
         compute_pairwise_cooccurrence(
             pl.DataFrame(
@@ -119,7 +117,7 @@ def test_compute_pairwise_cooccurrence_3_columns_no_diagonal() -> None:
                     "col3": [0, 0, 0, 0, 1, 1, 1],
                 }
             ),
-            remove_diagonal=True,
+            ignore_self=True,
         ),
         np.array([[0, 2, 1], [2, 0, 1], [1, 1, 0]], dtype=int),
     )
