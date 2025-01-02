@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -102,6 +103,21 @@ def test_binarizer_transformer_equal_false_different_kwargs() -> None:
 
 def test_binarizer_transformer_equal_false_different_type() -> None:
     assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(42)
+
+
+def test_binarizer_transformer_get_args() -> None:
+    assert objects_are_equal(
+        Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin", threshold=1.0).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "prefix": "",
+            "suffix": "_bin",
+            "exclude_columns": (),
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "threshold": 1.0,
+        }
+    )
 
 
 @sklearn_available
