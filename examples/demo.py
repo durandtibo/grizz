@@ -14,7 +14,7 @@ from grizz.ingestor import BaseIngestor, ParquetIngestor
 from grizz.transformer import (
     AbsDiffHorizontal,
     BaseTransformer,
-    CloseColumns,
+    ColumnClose,
     CopyColumn,
     Diff,
     DiffHorizontal,
@@ -65,7 +65,7 @@ def make_transformer(data_path: Path) -> BaseTransformer:  # noqa: ARG001
         FloatCast(columns=["cc1"], dtype=pl.Float32),
         DiffHorizontal(in1_col="col1", in2_col="col2", out_col="col_diff"),
         AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="abs_diff"),
-        CloseColumns(actual="col1", expected="cc1", out_col="close_1"),
+        ColumnClose(actual="col1", expected="cc1", out_col="close_1"),
         Diff(in_col="col1", out_col="diff_1", shift=1),
         SumHorizontal(columns=["col1", "col2"], out_col="sum_12"),
     ]

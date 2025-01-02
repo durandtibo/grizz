@@ -13,7 +13,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer import CloseColumns
+from grizz.transformer import ColumnClose
 
 
 @pytest.fixture
@@ -28,49 +28,47 @@ def dataframe() -> pl.DataFrame:
     )
 
 
-#############################################
-#     Tests for CloseColumnsTransformer     #
-#############################################
+############################################
+#     Tests for ColumnCloseTransformer     #
+############################################
 
 
-def test_close_columns_transformer_repr() -> None:
-    assert str(CloseColumns(actual="col1", expected="col2", out_col="out")).startswith(
-        "CloseColumnsTransformer("
+def test_column_close_transformer_repr() -> None:
+    assert str(ColumnClose(actual="col1", expected="col2", out_col="out")).startswith(
+        "ColumnCloseTransformer("
     )
 
 
-def test_close_columns_transformer_str() -> None:
-    assert str(CloseColumns(actual="col1", expected="col2", out_col="out")).startswith(
-        "CloseColumnsTransformer("
+def test_column_close_transformer_str() -> None:
+    assert str(ColumnClose(actual="col1", expected="col2", out_col="out")).startswith(
+        "ColumnCloseTransformer("
     )
 
 
-def test_close_columns_transformer_fit(
+def test_column_close_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out")
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out")
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
-        "Skipping 'CloseColumnsTransformer.fit' as there are no parameters available to fit"
+        "Skipping 'ColumnCloseTransformer.fit' as there are no parameters available to fit"
     )
 
 
-def test_close_columns_transformer_fit_missing_policy_ignore_in1(
+def test_column_close_transformer_fit_missing_policy_ignore_in1(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(
-        actual="col", expected="col2", out_col="out", missing_policy="ignore"
-    )
+    transformer = ColumnClose(actual="col", expected="col2", out_col="out", missing_policy="ignore")
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         transformer.fit(dataframe)
 
 
-def test_close_columns_transformer_fit_missing_policy_ignore_in2(
+def test_column_close_transformer_fit_missing_policy_ignore_in2(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(
+    transformer = ColumnClose(
         actual="col1", expected="missing", out_col="out", missing_policy="ignore"
     )
     with warnings.catch_warnings():
@@ -78,36 +76,36 @@ def test_close_columns_transformer_fit_missing_policy_ignore_in2(
         transformer.fit(dataframe)
 
 
-def test_close_columns_transformer_fit_missing_policy_raise_in1(
+def test_column_close_transformer_fit_missing_policy_raise_in1(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col", expected="col2", out_col="out")
+    transformer = ColumnClose(actual="col", expected="col2", out_col="out")
     with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
-def test_close_columns_transformer_fit_missing_policy_raise_in2(
+def test_column_close_transformer_fit_missing_policy_raise_in2(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col1", expected="missing", out_col="out")
+    transformer = ColumnClose(actual="col1", expected="missing", out_col="out")
     with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
-def test_close_columns_transformer_fit_missing_policy_warn_in1(
+def test_column_close_transformer_fit_missing_policy_warn_in1(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col", expected="col2", out_col="out", missing_policy="warn")
+    transformer = ColumnClose(actual="col", expected="col2", out_col="out", missing_policy="warn")
     with pytest.warns(
         ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
     ):
         transformer.fit(dataframe)
 
 
-def test_close_columns_transformer_fit_missing_policy_warn_in2(
+def test_column_close_transformer_fit_missing_policy_warn_in2(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(
+    transformer = ColumnClose(
         actual="col1", expected="missing", out_col="out", missing_policy="warn"
     )
     with pytest.warns(
@@ -117,8 +115,8 @@ def test_close_columns_transformer_fit_missing_policy_warn_in2(
         transformer.fit(dataframe)
 
 
-def test_close_columns_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out")
+def test_column_close_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out")
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
         out,
@@ -134,8 +132,8 @@ def test_close_columns_transformer_fit_transform(dataframe: pl.DataFrame) -> Non
     )
 
 
-def test_close_columns_transformer_transform_float(dataframe: pl.DataFrame) -> None:
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out")
+def test_column_close_transformer_transform_float(dataframe: pl.DataFrame) -> None:
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -151,7 +149,7 @@ def test_close_columns_transformer_transform_float(dataframe: pl.DataFrame) -> N
     )
 
 
-def test_close_columns_transformer_transform_int() -> None:
+def test_column_close_transformer_transform_int() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1, 2, 3, 4, 5],
@@ -160,7 +158,7 @@ def test_close_columns_transformer_transform_int() -> None:
         },
         schema={"col1": pl.Int64, "col2": pl.Int64, "col3": pl.String},
     )
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out")
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out")
     out = transformer.transform(frame)
     assert_frame_equal(
         out,
@@ -176,7 +174,7 @@ def test_close_columns_transformer_transform_int() -> None:
     )
 
 
-def test_close_columns_transformer_transform_atol() -> None:
+def test_column_close_transformer_transform_atol() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1.0, 1.00001, 1.0001, 1.001, 1.01, 1.1],
@@ -185,7 +183,7 @@ def test_close_columns_transformer_transform_atol() -> None:
         },
         schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
     )
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out", atol=1e-3, rtol=0.0)
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out", atol=1e-3, rtol=0.0)
     out = transformer.transform(frame)
     assert_frame_equal(
         out,
@@ -201,7 +199,7 @@ def test_close_columns_transformer_transform_atol() -> None:
     )
 
 
-def test_close_columns_transformer_transform_rtol() -> None:
+def test_column_close_transformer_transform_rtol() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1.0, 1.00001, 1.0001, 1.001, 1.01, 1.1],
@@ -210,7 +208,7 @@ def test_close_columns_transformer_transform_rtol() -> None:
         },
         schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
     )
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out", rtol=1e-3, atol=0.0)
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out", rtol=1e-3, atol=0.0)
     out = transformer.transform(frame)
     assert_frame_equal(
         out,
@@ -226,7 +224,7 @@ def test_close_columns_transformer_transform_rtol() -> None:
     )
 
 
-def test_close_columns_transformer_transform_equal_nan_true() -> None:
+def test_column_close_transformer_transform_equal_nan_true() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1.0, 2.0, float("nan"), 1.0, float("nan"), None, 1.0, None],
@@ -235,7 +233,7 @@ def test_close_columns_transformer_transform_equal_nan_true() -> None:
         },
         schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
     )
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out", equal_nan=True)
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out", equal_nan=True)
     out = transformer.transform(frame)
     assert_frame_equal(
         out,
@@ -251,7 +249,7 @@ def test_close_columns_transformer_transform_equal_nan_true() -> None:
     )
 
 
-def test_close_columns_transformer_transform_equal_nan_false() -> None:
+def test_column_close_transformer_transform_equal_nan_false() -> None:
     frame = pl.DataFrame(
         {
             "col1": [1.0, 2.0, float("nan"), 1.0, float("nan"), None, 1.0, None],
@@ -260,7 +258,7 @@ def test_close_columns_transformer_transform_equal_nan_false() -> None:
         },
         schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.String},
     )
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out")
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out")
     out = transformer.transform(frame)
     assert_frame_equal(
         out,
@@ -276,12 +274,12 @@ def test_close_columns_transformer_transform_equal_nan_false() -> None:
     )
 
 
-def test_close_columns_transformer_transform_empty() -> None:
+def test_column_close_transformer_transform_empty() -> None:
     frame = pl.DataFrame(
         {"col1": [], "col2": []},
         schema={"col1": pl.Float32, "col2": pl.Float32},
     )
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="out")
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="out")
     out = transformer.transform(frame)
     assert_frame_equal(
         out,
@@ -292,12 +290,10 @@ def test_close_columns_transformer_transform_empty() -> None:
     )
 
 
-def test_close_columns_transformer_transform_exist_policy_ignore(
+def test_column_close_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(
-        actual="col1", expected="col2", out_col="col3", exist_policy="ignore"
-    )
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="col3", exist_policy="ignore")
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         out = transformer.transform(dataframe)
@@ -314,18 +310,18 @@ def test_close_columns_transformer_transform_exist_policy_ignore(
     )
 
 
-def test_close_columns_transformer_transform_exist_policy_raise(
+def test_column_close_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="col3")
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="col3")
     with pytest.raises(ColumnExistsError, match="column 'col3' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
-def test_close_columns_transformer_transform_exist_policy_warn(
+def test_column_close_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col1", expected="col2", out_col="col3", exist_policy="warn")
+    transformer = ColumnClose(actual="col1", expected="col2", out_col="col3", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
         match="column 'col3' already exists in the DataFrame and will be overwritten",
@@ -344,12 +340,10 @@ def test_close_columns_transformer_transform_exist_policy_warn(
     )
 
 
-def test_close_columns_transformer_transform_missing_policy_ignore_in1(
+def test_column_close_transformer_transform_missing_policy_ignore_in1(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(
-        actual="col", expected="col2", out_col="out", missing_policy="ignore"
-    )
+    transformer = ColumnClose(actual="col", expected="col2", out_col="out", missing_policy="ignore")
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         out = transformer.transform(dataframe)
@@ -366,10 +360,10 @@ def test_close_columns_transformer_transform_missing_policy_ignore_in1(
     )
 
 
-def test_close_columns_transformer_transform_missing_policy_ignore_in2(
+def test_column_close_transformer_transform_missing_policy_ignore_in2(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(
+    transformer = ColumnClose(
         actual="col1", expected="missing", out_col="out", missing_policy="ignore"
     )
     with warnings.catch_warnings():
@@ -388,26 +382,26 @@ def test_close_columns_transformer_transform_missing_policy_ignore_in2(
     )
 
 
-def test_close_columns_transformer_transform_missing_policy_raise_in1(
+def test_column_close_transformer_transform_missing_policy_raise_in1(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col", expected="col2", out_col="out")
+    transformer = ColumnClose(actual="col", expected="col2", out_col="out")
     with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
-def test_close_columns_transformer_transform_missing_policy_raise_in2(
+def test_column_close_transformer_transform_missing_policy_raise_in2(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col1", expected="missing", out_col="out")
+    transformer = ColumnClose(actual="col1", expected="missing", out_col="out")
     with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
-def test_close_columns_transformer_transform_missing_policy_warn_in1(
+def test_column_close_transformer_transform_missing_policy_warn_in1(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(actual="col", expected="col2", out_col="out", missing_policy="warn")
+    transformer = ColumnClose(actual="col", expected="col2", out_col="out", missing_policy="warn")
     with pytest.warns(
         ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
     ):
@@ -425,10 +419,10 @@ def test_close_columns_transformer_transform_missing_policy_warn_in1(
     )
 
 
-def test_close_columns_transformer_transform_missing_policy_warn_in2(
+def test_column_close_transformer_transform_missing_policy_warn_in2(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = CloseColumns(
+    transformer = ColumnClose(
         actual="col1", expected="missing", out_col="out", missing_policy="warn"
     )
     with pytest.warns(

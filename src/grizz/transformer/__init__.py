@@ -16,8 +16,8 @@ __all__ = [
     "CastTransformer",
     "CategoricalCast",
     "CategoricalCastTransformer",
-    "CloseColumns",
-    "CloseColumnsTransformer",
+    "ColumnClose",
+    "ColumnCloseTransformer",
     "ColumnEqual",
     "ColumnEqualMissing",
     "ColumnEqualMissingTransformer",
@@ -158,8 +158,8 @@ from grizz.transformer.casting import FloatCastTransformer
 from grizz.transformer.casting import FloatCastTransformer as FloatCast
 from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
-from grizz.transformer.close import CloseColumnsTransformer
-from grizz.transformer.close import CloseColumnsTransformer as CloseColumns
+from grizz.transformer.close import ColumnCloseTransformer
+from grizz.transformer.close import ColumnCloseTransformer as ColumnClose
 from grizz.transformer.column_comparison import ColumnEqualMissingTransformer
 from grizz.transformer.column_comparison import (
     ColumnEqualMissingTransformer as ColumnEqualMissing,
