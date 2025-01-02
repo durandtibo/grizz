@@ -125,19 +125,20 @@ class ColumnCloseTransformer(BaseIn2Out1Transformer):
         self._equal_nan = equal_nan
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "actual": self._in1_col,
-                "expected": self._in2_col,
-                "out_col": self._out_col,
-                "atol": self._atol,
-                "rtol": self._rtol,
-                "equal_nan": self._equal_nan,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
+        args = repr_mapping_line(self.get_args())
         return f"{self.__class__.__qualname__}({args})"
+
+    def get_args(self) -> dict:
+        return {
+            "actual": self._in1_col,
+            "expected": self._in2_col,
+            "out_col": self._out_col,
+            "atol": self._atol,
+            "rtol": self._rtol,
+            "equal_nan": self._equal_nan,
+            "exist_policy": self._exist_policy,
+            "missing_policy": self._missing_policy,
+        }
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

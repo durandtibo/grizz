@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -34,7 +35,7 @@ def dataframe() -> pl.DataFrame:
 
 
 def test_column_close_transformer_repr() -> None:
-    assert str(ColumnClose(actual="col1", expected="col2", out_col="out")).startswith(
+    assert repr(ColumnClose(actual="col1", expected="col2", out_col="out")).startswith(
         "ColumnCloseTransformer("
     )
 
@@ -42,6 +43,80 @@ def test_column_close_transformer_repr() -> None:
 def test_column_close_transformer_str() -> None:
     assert str(ColumnClose(actual="col1", expected="col2", out_col="out")).startswith(
         "ColumnCloseTransformer("
+    )
+
+
+def test_column_close_transformer_equal_true() -> None:
+    assert ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out")
+    )
+
+
+def test_column_close_transformer_equal_false_actual() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col", expected="col2", out_col="out")
+    )
+
+
+def test_column_close_transformer_equal_false_expected() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col", out_col="out")
+    )
+
+
+def test_column_close_transformer_equal_false_out_col() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out2")
+    )
+
+
+def test_column_close_transformer_equal_false_atol() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out", atol=1e-5)
+    )
+
+
+def test_column_close_transformer_equal_false_rtol() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out", rtol=1e-3)
+    )
+
+
+def test_column_close_transformer_equal_false_equal_nan() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out", equal_nan=True)
+    )
+
+
+def test_column_close_transformer_equal_false_exist_policy() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_close_transformer_equal_false_missing_policy() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_close_transformer_equal_false_different_type() -> None:
+    assert not ColumnClose(actual="col1", expected="col2", out_col="out").equal(42)
+
+
+def test_column_close_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnClose(actual="col1", expected="col2", out_col="out").get_args(),
+        {
+            "actual": "col1",
+            "expected": "col2",
+            "out_col": "out",
+            "atol": 1e-8,
+            "rtol": 1e-5,
+            "equal_nan": False,
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
