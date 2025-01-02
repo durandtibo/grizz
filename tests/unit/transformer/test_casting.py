@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -59,6 +60,59 @@ def test_cast_transformer_str_with_kwargs() -> None:
     assert str(Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
         "CastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
         "missing_policy='raise', strict=False)"
+    )
+
+
+def test_cast_transformer_equal_true() -> None:
+    assert Cast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        Cast(columns=["col1", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_cast_transformer_equal_false_different_columns() -> None:
+    assert not Cast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        Cast(columns=["col1", "col2", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_cast_transformer_equal_false_different_dtype() -> None:
+    assert not Cast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        Cast(columns=["col1", "col3"], dtype=pl.Float32)
+    )
+
+
+def test_cast_transformer_equal_false_different_exclude_columns() -> None:
+    assert not Cast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        Cast(columns=["col1", "col3"], dtype=pl.Int32, exclude_columns=["col2"])
+    )
+
+
+def test_cast_transformer_equal_false_different_missing_policy() -> None:
+    assert not Cast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        Cast(columns=["col1", "col3"], dtype=pl.Int32, missing_policy="warn")
+    )
+
+
+def test_cast_transformer_equal_false_different_kwargs() -> None:
+    assert not Cast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)
+    )
+
+
+def test_cast_transformer_equal_false_different_type() -> None:
+    assert not Cast(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
+
+
+def test_cast_transformer_get_args() -> None:
+    assert objects_are_equal(
+        Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "dtype": pl.Int32,
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "strict": False,
+        },
     )
 
 
@@ -380,6 +434,59 @@ def test_decimal_cast_transformer_str_with_kwargs() -> None:
     )
 
 
+def test_decimal_cast_transformer_equal_true() -> None:
+    assert DecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_decimal_cast_transformer_equal_false_different_columns() -> None:
+    assert not DecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        DecimalCast(columns=["col1", "col2", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_decimal_cast_transformer_equal_false_different_dtype() -> None:
+    assert not DecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Float32)
+    )
+
+
+def test_decimal_cast_transformer_equal_false_different_exclude_columns() -> None:
+    assert not DecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, exclude_columns=["col2"])
+    )
+
+
+def test_decimal_cast_transformer_equal_false_different_missing_policy() -> None:
+    assert not DecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, missing_policy="warn")
+    )
+
+
+def test_decimal_cast_transformer_equal_false_different_kwargs() -> None:
+    assert not DecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)
+    )
+
+
+def test_decimal_cast_transformer_equal_false_different_type() -> None:
+    assert not DecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
+
+
+def test_decimal_cast_transformer_get_args() -> None:
+    assert objects_are_equal(
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "dtype": pl.Int32,
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "strict": False,
+        },
+    )
+
+
 def test_decimal_cast_transformer_fit(
     frame_decimal: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -635,6 +742,59 @@ def test_float_cast_transformer_str_with_kwargs() -> None:
     )
 
 
+def test_float_cast_transformer_equal_true() -> None:
+    assert FloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_float_cast_transformer_equal_false_different_columns() -> None:
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        FloatCast(columns=["col1", "col2", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_float_cast_transformer_equal_false_different_dtype() -> None:
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Float32)
+    )
+
+
+def test_float_cast_transformer_equal_false_different_exclude_columns() -> None:
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, exclude_columns=["col2"])
+    )
+
+
+def test_float_cast_transformer_equal_false_different_missing_policy() -> None:
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, missing_policy="warn")
+    )
+
+
+def test_float_cast_transformer_equal_false_different_kwargs() -> None:
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)
+    )
+
+
+def test_float_cast_transformer_equal_false_different_type() -> None:
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
+
+
+def test_float_cast_transformer_get_args() -> None:
+    assert objects_are_equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "dtype": pl.Int32,
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "strict": False,
+        },
+    )
+
+
 def test_float_cast_transformer_fit(
     frame_float: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -878,6 +1038,59 @@ def test_integer_cast_transformer_str_with_kwargs() -> None:
     )
 
 
+def test_integer_cast_transformer_equal_true() -> None:
+    assert IntegerCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        IntegerCast(columns=["col1", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_integer_cast_transformer_equal_false_different_columns() -> None:
+    assert not IntegerCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        IntegerCast(columns=["col1", "col2", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_integer_cast_transformer_equal_false_different_dtype() -> None:
+    assert not IntegerCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        IntegerCast(columns=["col1", "col3"], dtype=pl.Float32)
+    )
+
+
+def test_integer_cast_transformer_equal_false_different_exclude_columns() -> None:
+    assert not IntegerCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, exclude_columns=["col2"])
+    )
+
+
+def test_integer_cast_transformer_equal_false_different_missing_policy() -> None:
+    assert not IntegerCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, missing_policy="warn")
+    )
+
+
+def test_integer_cast_transformer_equal_false_different_kwargs() -> None:
+    assert not IntegerCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)
+    )
+
+
+def test_integer_cast_transformer_equal_false_different_type() -> None:
+    assert not IntegerCast(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
+
+
+def test_integer_cast_transformer_get_args() -> None:
+    assert objects_are_equal(
+        IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "dtype": pl.Int32,
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "strict": False,
+        },
+    )
+
+
 def test_integer_cast_transformer_fit(
     frame_integer: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -1099,10 +1312,77 @@ def test_categorical_cast_transformer_repr() -> None:
     )
 
 
+def test_categorical_cast_transformer_repr_with_kwargs() -> None:
+    assert repr(CategoricalCast(in_col="col4", out_col="out", ordering="lexical")) == (
+        "CategoricalCastTransformer(in_col='col4', out_col='out', "
+        "exist_policy='raise', missing_policy='raise', ordering='lexical')"
+    )
+
+
 def test_categorical_cast_transformer_str() -> None:
     assert str(CategoricalCast(in_col="col4", out_col="out")) == (
         "CategoricalCastTransformer(in_col='col4', out_col='out', "
         "exist_policy='raise', missing_policy='raise')"
+    )
+
+
+def test_categorical_cast_transformer_str_with_kwargs() -> None:
+    assert str(CategoricalCast(in_col="col4", out_col="out", ordering="lexical")) == (
+        "CategoricalCastTransformer(in_col='col4', out_col='out', "
+        "exist_policy='raise', missing_policy='raise', ordering='lexical')"
+    )
+
+
+def test_categorical_cast_transformer_equal_true() -> None:
+    assert CategoricalCast(in_col="col4", out_col="out").equal(
+        CategoricalCast(in_col="col4", out_col="out")
+    )
+
+
+def test_categorical_cast_transformer_equal_false_different_in_col() -> None:
+    assert not CategoricalCast(in_col="col4", out_col="out").equal(
+        CategoricalCast(in_col="col3", out_col="out")
+    )
+
+
+def test_categorical_cast_transformer_equal_false_different_out_col() -> None:
+    assert not CategoricalCast(in_col="col4", out_col="out").equal(
+        CategoricalCast(in_col="col4", out_col="out2")
+    )
+
+
+def test_categorical_cast_transformer_equal_false_different_exist_policy() -> None:
+    assert not CategoricalCast(in_col="col4", out_col="out").equal(
+        CategoricalCast(in_col="col4", out_col="out", exist_policy="warn")
+    )
+
+
+def test_categorical_cast_transformer_equal_false_different_missing_policy() -> None:
+    assert not CategoricalCast(in_col="col4", out_col="out").equal(
+        CategoricalCast(in_col="col4", out_col="out", missing_policy="warn")
+    )
+
+
+def test_categorical_cast_transformer_equal_false_different_kwargs() -> None:
+    assert not CategoricalCast(in_col="col4", out_col="out").equal(
+        CategoricalCast(in_col="col4", out_col="out", ordering="lexical")
+    )
+
+
+def test_categorical_cast_transformer_equal_false_different_type() -> None:
+    assert not CategoricalCast(in_col="col4", out_col="out").equal(42)
+
+
+def test_categorical_cast_transformer_get_args() -> None:
+    assert objects_are_equal(
+        CategoricalCast(in_col="col4", out_col="out", ordering="lexical").get_args(),
+        {
+            "in_col": "col4",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "ordering": "lexical",
+        },
     )
 
 
