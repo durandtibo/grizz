@@ -52,6 +52,58 @@ def test_binarizer_transformer_str() -> None:
     )
 
 
+def test_binarizer_transformer_equal_true() -> None:
+    assert Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin")
+    )
+
+
+def test_binarizer_transformer_equal_false_different_columns() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col2", "col3"], prefix="", suffix="_bin")
+    )
+
+
+def test_binarizer_transformer_equal_false_different_prefix() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col3"], prefix="bin_", suffix="_bin")
+    )
+
+
+def test_binarizer_transformer_equal_false_different_suffix() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col3"], prefix="", suffix="")
+    )
+
+
+def test_binarizer_transformer_equal_false_different_exclude_columns() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin", exclude_columns=["col4"])
+    )
+
+
+def test_binarizer_transformer_equal_false_different_exist_policy() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin", exist_policy="warn")
+    )
+
+
+def test_binarizer_transformer_equal_false_different_missing_policy() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin", missing_policy="warn")
+    )
+
+
+def test_binarizer_transformer_equal_false_different_kwargs() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(
+        Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin", threshold=1.0)
+    )
+
+
+def test_binarizer_transformer_equal_false_different_type() -> None:
+    assert not Binarizer(columns=["col1", "col3"], prefix="", suffix="_bin").equal(42)
+
+
 @sklearn_available
 def test_binarizer_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture

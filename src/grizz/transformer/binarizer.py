@@ -9,6 +9,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
+from coola import objects_are_equal
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
@@ -147,6 +148,19 @@ class BinarizerTransformer(BaseInNTransformer):
             }
         )
         return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return (
+            self._columns == other._columns
+            and self._prefix == other._prefix
+            and self._suffix == other._suffix
+            and self._exclude_columns == other._exclude_columns
+            and self._exist_policy == other._exist_policy
+            and self._missing_policy == other._missing_policy
+            and objects_are_equal(self._kwargs, other._kwargs, equal_nan=equal_nan)
+        )
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
