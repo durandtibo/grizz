@@ -12,8 +12,9 @@ __all__ = [
 
 import logging
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from coola import objects_are_equal
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.base import BaseTransformer
@@ -111,6 +112,14 @@ class BaseIn1Out1Transformer(BaseTransformer):
             return frame
         self._check_output_column(frame)
         return self._transform(frame)
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+
+    def get_args(self) -> dict:
+        raise NotImplementedError
 
     def _check_input_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the input column is missing.
@@ -287,6 +296,14 @@ class BaseIn2Out1Transformer(BaseTransformer):
         self._check_output_column(frame)
         return self._transform(frame)
 
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+
+    def get_args(self) -> dict:
+        raise NotImplementedError
+
     def _check_input_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if any of the input columns is missing.
 
@@ -425,6 +442,14 @@ class BaseInNTransformer(BaseTransformer):
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
         return self._transform(frame)
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+
+    def get_args(self) -> dict:
+        raise NotImplementedError
 
     def find_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the columns to transform.

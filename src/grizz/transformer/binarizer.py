@@ -9,12 +9,10 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola import objects_are_equal
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
-from grizz.utils.format import str_kwargs
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -137,22 +135,8 @@ class BinarizerTransformer(BaseInNTransformer):
         self._kwargs = kwargs
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+        args = repr_mapping_line(self.get_args())
+        return f"{self.__class__.__qualname__}({args})"
 
     def get_args(self) -> dict:
         return {
