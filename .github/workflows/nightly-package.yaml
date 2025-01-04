@@ -243,6 +243,7 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
         polars-version: [
+          1.19.0,
           1.18.0,
           1.17.1,
           1.16.0,
@@ -485,6 +486,42 @@ jobs:
         with:
           package-name: 'scikit-learn'
           package-version: ${{ matrix.scikit-learn-version }}
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run some checks
+        run: |
+          python tests/package_checks.py
+
+
+  scipy:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
+        scipy-version: [ 1.15.0, 1.14.1, 1.13.1, 1.12.0, 1.11.4, 1.10.1 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install grizz
+        run: |
+          pip install grizz
+
+      - name: Install valid package version
+        uses: durandtibo/pip-install-package-action@v0.3.1
+        with:
+          package-name: 'scipy'
+          package-version: ${{ matrix.scipy-version }}
           python-version: ${{ matrix.python-version }}
 
       - name: Run some checks
