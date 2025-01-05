@@ -32,7 +32,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install-all
 
       - name: Show installed packages
@@ -77,7 +76,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Show installed packages

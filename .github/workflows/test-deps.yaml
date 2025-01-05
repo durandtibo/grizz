@@ -33,7 +33,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -82,7 +81,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -131,7 +129,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -200,7 +197,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -254,7 +250,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -303,7 +298,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -361,7 +355,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -420,7 +413,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -469,7 +461,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -518,7 +509,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
@@ -567,7 +557,6 @@ jobs:
 
       - name: Install packages
         run: |
-          make config-poetry
           make install
 
       - name: Install valid package version
