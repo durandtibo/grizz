@@ -36,7 +36,7 @@ def test_compute_temporal_stats() -> None:
             },
         ),
         column="col",
-        dt_column="datetime",
+        temporal_column="datetime",
         period="1mo",
     )
     assert_frame_equal(
@@ -97,7 +97,7 @@ def test_compute_temporal_stats_empty() -> None:
             },
         ),
         column="col",
-        dt_column="datetime",
+        temporal_column="datetime",
         period="1mo",
     )
     assert_frame_equal(
@@ -171,7 +171,7 @@ def dataframe() -> pl.DataFrame:
 
 def test_to_temporal_frames_monthly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
-        to_temporal_frames(dataframe, dt_column="datetime", period="1mo"),
+        to_temporal_frames(dataframe, temporal_column="datetime", period="1mo"),
         (
             [
                 pl.DataFrame(
@@ -226,7 +226,7 @@ def test_to_temporal_frames_monthly(dataframe: pl.DataFrame) -> None:
 
 def test_to_temporal_frames_yearly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
-        to_temporal_frames(dataframe, dt_column="datetime", period="1y"),
+        to_temporal_frames(dataframe, temporal_column="datetime", period="1y"),
         (
             [
                 pl.DataFrame(
@@ -254,7 +254,7 @@ def test_to_temporal_frames_yearly(dataframe: pl.DataFrame) -> None:
 
 def test_to_temporal_frames_empty() -> None:
     assert objects_are_equal(
-        to_temporal_frames(pl.DataFrame({}), dt_column="datetime", period="1mo"), ([], [])
+        to_temporal_frames(pl.DataFrame({}), temporal_column="datetime", period="1mo"), ([], [])
     )
 
 

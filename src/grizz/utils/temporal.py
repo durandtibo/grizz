@@ -13,7 +13,7 @@ from grizz.utils.interval import interval_to_strftime_format
 def compute_temporal_stats(
     frame: pl.DataFrame,
     column: str,
-    dt_column: str,
+    temporal_column: str,
     period: str,
 ) -> pl.DataFrame:
     r"""Return a DataFrame with stats for each temporal window.
@@ -21,7 +21,7 @@ def compute_temporal_stats(
     Args:
         frame: The DataFrame to analyze.
         column: The column to analyze.
-        dt_column: The datetime column used to create the temporal
+        temporal_column: The temporal column used to create the temporal
             DataFrames.
         period: The temporal period e.g. monthly or daily.
 
@@ -54,7 +54,7 @@ def compute_temporal_stats(
     ...         },
     ...     ),
     ...     column="col",
-    ...     dt_column="datetime",
+    ...     temporal_column="datetime",
     ...     period="1mo",
     ... )
     >>> stats
@@ -73,9 +73,9 @@ def compute_temporal_stats(
     ```
     """
     return (
-        frame.select(column, dt_column)
-        .sort(dt_column)
-        .group_by_dynamic(dt_column, every=period)
+        frame.select(column, temporal_column)
+        .sort(temporal_column)
+        .group_by_dynamic(temporal_column, every=period)
         .agg(
             pl.col(column).len().cast(pl.Int64).alias("count"),
             pl.col(column).n_unique().cast(pl.Int64).alias("nunique"),
@@ -93,13 +93,13 @@ def compute_temporal_stats(
             pl.col(column).quantile(0.99).cast(pl.Float64).alias("q99"),
             pl.col(column).max().cast(pl.Float64).alias("max"),
         )
-        .rename({dt_column: "step"})
+        .rename({temporal_column: "step"})
     )
 
 
 def to_temporal_frames(
     frame: pl.DataFrame,
-    dt_column: str,
+    temporal_column: str,
     period: str,
 ) -> tuple[list[pl.DataFrame], list[str]]:
     r"""Return a list of temporal DataFrames and the associated time
@@ -107,7 +107,7 @@ def to_temporal_frames(
 
     Args:
         frame: The DataFrame to analyze.
-        dt_column: The datetime column used to create the temporal
+        temporal_column: The temporal column used to create the temporal
             DataFrames.
         period: The temporal period e.g. monthly or daily.
 
@@ -141,7 +141,7 @@ def to_temporal_frames(
     ...             "datetime": pl.Datetime(time_unit="us", time_zone="UTC"),
     ...         },
     ...     ),
-    ...     dt_column="datetime",
+    ...     temporal_column="datetime",
     ...     period="1mo",
     ... )
     >>> frames
@@ -184,7 +184,7 @@ def to_temporal_frames(
     if frame.is_empty():
         return [], []
 
-    groups = frame.sort(dt_column).group_by_dynamic(dt_column, every=period)
+    groups = frame.sort(temporal_column).group_by_dynamic(temporal_column, every=period)
     steps = to_step_names(groups=groups, period=period)
     frames = [frame for _, frame in groups]
     return frames, steps

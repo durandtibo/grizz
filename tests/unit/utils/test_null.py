@@ -188,7 +188,7 @@ def dataframe_empty() -> pl.DataFrame:
 def test_compute_temporal_null_count(dataframe: pl.DataFrame, columns: Sequence[str]) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
-            frame=dataframe, columns=columns, dt_column="datetime", period="1mo"
+            frame=dataframe, columns=columns, temporal_column="datetime", period="1mo"
         ),
         (
             np.array([2, 0, 0, 1], dtype=np.int64),
@@ -202,7 +202,7 @@ def test_compute_temporal_null_count(dataframe: pl.DataFrame, columns: Sequence[
 def test_compute_temporal_null_count_subset(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
-            frame=dataframe, columns=["col1"], dt_column="datetime", period="1mo"
+            frame=dataframe, columns=["col1"], temporal_column="datetime", period="1mo"
         ),
         (
             np.array([1, 0, 0, 0], dtype=np.int64),
@@ -216,7 +216,7 @@ def test_compute_temporal_null_count_subset(dataframe: pl.DataFrame) -> None:
 def test_compute_temporal_null_count_empty_columns(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
-            frame=dataframe, columns=[], dt_column="datetime", period="1mo"
+            frame=dataframe, columns=[], temporal_column="datetime", period="1mo"
         ),
         (
             np.array([0, 0, 0, 0], dtype=np.int64),
@@ -232,7 +232,7 @@ def test_compute_temporal_null_count_empty(dataframe_empty: pl.DataFrame) -> Non
         compute_temporal_null_count(
             frame=dataframe_empty,
             columns=["col1", "col2"],
-            dt_column="datetime",
+            temporal_column="datetime",
             period="1mo",
         ),
         (np.array([], dtype=np.int64), np.array([], dtype=np.int64), []),
@@ -243,7 +243,7 @@ def test_compute_temporal_null_count_empty(dataframe_empty: pl.DataFrame) -> Non
 def test_compute_temporal_null_count_monthly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
-            frame=dataframe, columns=["col1", "col2"], dt_column="datetime", period="1mo"
+            frame=dataframe, columns=["col1", "col2"], temporal_column="datetime", period="1mo"
         ),
         (
             np.array([2, 0, 0, 1], dtype=np.int64),
@@ -257,7 +257,7 @@ def test_compute_temporal_null_count_monthly(dataframe: pl.DataFrame) -> None:
 def test_compute_temporal_null_count_biweekly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_null_count(
-            frame=dataframe, columns=["col1", "col2"], dt_column="datetime", period="2w"
+            frame=dataframe, columns=["col1", "col2"], temporal_column="datetime", period="2w"
         ),
         (
             np.array([2, 0, 0, 1], dtype=np.int64),

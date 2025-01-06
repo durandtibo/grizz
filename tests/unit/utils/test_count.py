@@ -82,7 +82,7 @@ def test_compute_temporal_count_month(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_count(
             frame=dataframe,
-            dt_column="datetime",
+            temporal_column="datetime",
             period="1mo",
         ),
         (
@@ -97,7 +97,7 @@ def test_compute_temporal_count_biweekly(dataframe: pl.DataFrame) -> None:
     assert objects_are_equal(
         compute_temporal_count(
             frame=dataframe,
-            dt_column="datetime",
+            temporal_column="datetime",
             period="2w",
         ),
         (
@@ -115,7 +115,7 @@ def test_compute_temporal_count_empty() -> None:
                 {"datetime": []},
                 schema={"datetime": pl.Datetime(time_unit="us", time_zone="UTC")},
             ),
-            dt_column="datetime",
+            temporal_column="datetime",
             period="1mo",
         ),
         (np.array([], dtype=np.int64), []),
@@ -149,7 +149,7 @@ def test_compute_temporal_value_counts() -> None:
             },
         ),
         column="col",
-        dt_column="datetime",
+        temporal_column="datetime",
         period="1mo",
     )
     assert objects_are_equal(
@@ -181,7 +181,7 @@ def test_compute_temporal_value_counts_drop_nulls() -> None:
             },
         ),
         column="col",
-        dt_column="datetime",
+        temporal_column="datetime",
         period="1mo",
         drop_nulls=True,
     )
@@ -203,7 +203,7 @@ def test_compute_temporal_value_counts_empty() -> None:
             },
         ),
         column="col",
-        dt_column="datetime",
+        temporal_column="datetime",
         period="1mo",
     )
     assert objects_are_equal(counts, np.zeros((0, 0), dtype=np.int64))
