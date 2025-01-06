@@ -120,7 +120,7 @@ def compute_null_count(frame: pl.DataFrame) -> np.ndarray:
 def compute_temporal_null_count(
     frame: pl.DataFrame,
     columns: Sequence[str],
-    dt_column: str,
+    temporal_column: str,
     period: str,
 ) -> tuple[np.ndarray, np.ndarray, list]:
     r"""Compute the number of null values per temporal segments.
@@ -128,7 +128,7 @@ def compute_temporal_null_count(
     Args:
         frame: The DataFrame to analyze.
         columns: The list of columns to analyze.
-        dt_column: The datetime column used to analyze
+        temporal_column: The temporal column used to analyze
             the temporal distribution.
         period: The temporal period e.g. monthly or daily.
 
@@ -165,7 +165,7 @@ def compute_temporal_null_count(
     ...         },
     ...     ),
     ...     columns=["col1", "col2"],
-    ...     dt_column="datetime",
+    ...     temporal_column="datetime",
     ...     period="1mo",
     ... )
     >>> nulls
@@ -178,16 +178,16 @@ def compute_temporal_null_count(
     ```
     """
     check_numpy()
-    frame_na = frame.select(cs.by_name(columns).is_null().cast(pl.Int64), pl.col(dt_column))
-    groups = frame_na.sort(dt_column).group_by_dynamic(dt_column, every=period)
+    frame_na = frame.select(cs.by_name(columns).is_null().cast(pl.Int64), pl.col(temporal_column))
+    groups = frame_na.sort(temporal_column).group_by_dynamic(temporal_column, every=period)
     steps = to_step_names(groups=groups, period=period)
 
     nulls = np.zeros(len(steps), dtype=np.int64)
     totals = np.zeros(len(steps), dtype=np.int64)
     if columns:
-        nulls += groups.agg(cs.by_name(columns).sum()).drop(dt_column).sum_horizontal().to_numpy()
+        nulls += groups.agg(cs.by_name(columns).sum()).drop(temporal_column).sum_horizontal().to_numpy()
         totals += (
-            groups.agg(cs.by_name(columns).count()).drop(dt_column).sum_horizontal().to_numpy()
+            groups.agg(cs.by_name(columns).count()).drop(temporal_column).sum_horizontal().to_numpy()
         )
     return nulls, totals, steps
 

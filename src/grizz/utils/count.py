@@ -57,14 +57,14 @@ def compute_nunique(frame: pl.DataFrame) -> np.ndarray:
 
 def compute_temporal_count(
     frame: pl.DataFrame,
-    dt_column: str,
+    temporal_column: str,
     period: str,
 ) -> tuple[np.ndarray, list[str]]:
     r"""Prepare the data to create the figure and table.
 
     Args:
         frame: The DataFrame to analyze.
-        dt_column: The datetime column used to analyze
+        temporal_column: The temporal column used to analyze
             the temporal distribution.
         period: The temporal period e.g. monthly or daily.
 
@@ -98,7 +98,7 @@ def compute_temporal_count(
     ...             "datetime": pl.Datetime(time_unit="us", time_zone="UTC"),
     ...         },
     ...     ),
-    ...     dt_column="datetime",
+    ...     temporal_column="datetime",
     ...     period="1mo",
     ... )
     >>> counts
@@ -113,7 +113,7 @@ def compute_temporal_count(
         return np.array([], dtype=np.int64), []
 
     groups = (
-        frame.select(pl.col(dt_column).alias("datetime"), pl.lit(1).alias("count"))
+        frame.select(pl.col(temporal_column).alias("datetime"), pl.lit(1).alias("count"))
         .sort("datetime")
         .group_by_dynamic("datetime", every=period)
     )
@@ -125,7 +125,7 @@ def compute_temporal_count(
 def compute_temporal_value_counts(
     frame: pl.DataFrame,
     column: str,
-    dt_column: str,
+    temporal_column: str,
     period: str,
     drop_nulls: bool = False,
 ) -> tuple[np.ndarray, list[str], list[str]]:
@@ -134,7 +134,7 @@ def compute_temporal_value_counts(
     Args:
         frame: The DataFrame to analyze.
         column: The column to analyze the temporal value counts.
-        dt_column: The datetime column used to analyze
+        temporal_column: The temporal column used to analyze
             the temporal distribution.
         period: The temporal period e.g. monthly or daily.
         drop_nulls: If ``True``, the null values are ignored.
@@ -175,7 +175,7 @@ def compute_temporal_value_counts(
     ...         },
     ...     ),
     ...     column="col1",
-    ...     dt_column="datetime",
+    ...     temporal_column="datetime",
     ...     period="1mo",
     ... )
     >>> counts
@@ -195,7 +195,7 @@ def compute_temporal_value_counts(
     if frame.is_empty():
         return np.zeros((0, 0), dtype=np.int64), [], []
 
-    frame = frame.select(pl.col(dt_column).alias("__datetime__"), pl.col(column).alias("value"))
+    frame = frame.select(pl.col(temporal_column).alias("__datetime__"), pl.col(column).alias("value"))
     if drop_nulls:
         frame = frame.drop_nulls()
 
