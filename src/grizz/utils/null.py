@@ -185,9 +185,14 @@ def compute_temporal_null_count(
     nulls = np.zeros(len(steps), dtype=np.int64)
     totals = np.zeros(len(steps), dtype=np.int64)
     if columns:
-        nulls += groups.agg(cs.by_name(columns).sum()).drop(temporal_column).sum_horizontal().to_numpy()
+        nulls += (
+            groups.agg(cs.by_name(columns).sum()).drop(temporal_column).sum_horizontal().to_numpy()
+        )
         totals += (
-            groups.agg(cs.by_name(columns).count()).drop(temporal_column).sum_horizontal().to_numpy()
+            groups.agg(cs.by_name(columns).count())
+            .drop(temporal_column)
+            .sum_horizontal()
+            .to_numpy()
         )
     return nulls, totals, steps
 
