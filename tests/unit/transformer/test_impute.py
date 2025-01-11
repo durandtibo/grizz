@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from coola.utils import is_numpy_available
 from polars.testing import assert_frame_equal
 
@@ -45,16 +46,105 @@ def dataframe() -> pl.DataFrame:
 @sklearn_available
 def test_simple_imputer_transformer_repr() -> None:
     assert repr(SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")) == (
-        "SimpleImputerTransformer(columns=('col1', 'col3'), prefix='', suffix='_imp', "
-        "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
+        "SimpleImputerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
+        "suffix='_imp')"
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_str() -> None:
     assert str(SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")) == (
-        "SimpleImputerTransformer(columns=('col1', 'col3'), prefix='', suffix='_imp', "
-        "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
+        "SimpleImputerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
+        "suffix='_imp')"
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_true() -> None:
+    assert SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_columns() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col2", "col3"], prefix="", suffix="_imp")
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_prefix() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="bin_", suffix="_imp")
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_suffix() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="")
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_exclude_columns() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", exclude_columns=["col4"])
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_exist_policy() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", exist_policy="warn")
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_missing_policy() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", missing_policy="warn")
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_propagate_nulls() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", propagate_nulls=False)
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_kwargs() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", strategy="mean")
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_equal_false_different_type() -> None:
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(42)
+
+
+@sklearn_available
+def test_simple_imputer_transformer_get_args() -> None:
+    assert objects_are_equal(
+        SimpleImputer(
+            columns=["col1", "col3"], prefix="", suffix="_imp", strategy="mean"
+        ).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "prefix": "",
+            "suffix": "_imp",
+            "exclude_columns": (),
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "propagate_nulls": True,
+            "strategy": "mean",
+        },
     )
 
 

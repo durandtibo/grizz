@@ -9,11 +9,9 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
-from grizz.utils.format import str_kwargs
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -38,9 +36,6 @@ class SimpleImputerTransformer(BaseInNTransformer):
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
-        propagate_nulls: If set to ``True``, the ``None`` values are
-            propagated after the transformation. If ``False``, the
-            ``None`` values are replaced by NaNs.
         exist_policy: The policy on how to handle existing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -57,6 +52,9 @@ class SimpleImputerTransformer(BaseInNTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
+        propagate_nulls: If set to ``True``, the ``None`` values are
+            propagated after the transformation. If ``False``, the
+            ``None`` values are replaced by NaNs.
         **kwargs: Additional arguments passed to
             ``sklearn.impute.SimpleImputer``.
 
@@ -68,7 +66,7 @@ class SimpleImputerTransformer(BaseInNTransformer):
     >>> from grizz.transformer import SimpleImputer
     >>> transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
     >>> transformer
-    SimpleImputerTransformer(columns=('col1', 'col3'), prefix='', suffix='_imp', exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')
+    SimpleImputerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', suffix='_imp')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, None, 3, 4, 5],
@@ -116,9 +114,9 @@ class SimpleImputerTransformer(BaseInNTransformer):
         prefix: str,
         suffix: str,
         exclude_columns: Sequence[str] = (),
-        propagate_nulls: bool = True,
         exist_policy: str = "raise",
         missing_policy: str = "raise",
+        propagate_nulls: bool = True,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -137,19 +135,13 @@ class SimpleImputerTransformer(BaseInNTransformer):
         self._imputer = SimpleImputer(**kwargs)
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "propagate_nulls": self._propagate_nulls,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+    def get_args(self) -> dict:
+        return super().get_args() | {
+            "exist_policy": self._exist_policy,
+            "propagate_nulls": self._propagate_nulls,
+            "prefix": self._prefix,
+            "suffix": self._suffix,
+        } | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
@@ -166,7 +158,6 @@ class SimpleImputerTransformer(BaseInNTransformer):
         )
         columns = self.find_common_columns(frame)
         data = frame.select(columns)
-
         x = self._imputer.transform(data.to_numpy())
         data_imp = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
