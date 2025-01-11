@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -94,29 +95,74 @@ def dataframe() -> pl.DataFrame:
 
 def test_to_datetime_transformer_repr() -> None:
     assert repr(ToDatetime(columns=["col1", "col3"])) == (
-        "ToDatetimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise')"
+        "ToDatetimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None)"
     )
 
 
 def test_to_datetime_transformer_repr_with_kwargs() -> None:
     assert repr(ToDatetime(columns=["col1", "col3"], strict=False)) == (
-        "ToDatetimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "ToDatetimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None, strict=False)"
     )
 
 
 def test_to_datetime_transformer_str() -> None:
     assert str(ToDatetime(columns=["col1", "col3"])) == (
-        "ToDatetimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise')"
+        "ToDatetimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None)"
     )
 
 
 def test_to_datetime_transformer_str_with_kwargs() -> None:
     assert str(ToDatetime(columns=["col1", "col3"], strict=False)) == (
-        "ToDatetimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "ToDatetimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None, strict=False)"
+    )
+
+
+def test_to_datetime_transformer_equal_true() -> None:
+    assert ToDatetime(columns=["col1", "col3"]).equal(ToDatetime(columns=["col1", "col3"]))
+
+
+def test_to_datetime_transformer_equal_false_different_columns() -> None:
+    assert not ToDatetime(columns=["col1", "col3"]).equal(
+        ToDatetime(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_to_datetime_transformer_equal_false_different_exclude_columns() -> None:
+    assert not ToDatetime(columns=["col1", "col3"]).equal(
+        ToDatetime(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_to_datetime_transformer_equal_false_different_exist_policy() -> None:
+    assert not ToDatetime(columns=["col1", "col3"]).equal(
+        ToDatetime(columns=["col1", "col3"], exist_policy="warn")
+    )
+
+
+def test_to_datetime_transformer_equal_false_different_missing_policy() -> None:
+    assert not ToDatetime(columns=["col1", "col3"]).equal(
+        ToDatetime(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_to_datetime_transformer_equal_false_different_type() -> None:
+    assert not ToDatetime(columns=["col1", "col3"]).equal(42)
+
+
+def test_to_datetime_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ToDatetime(columns=["col1", "col3"], strict=True).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "format": None,
+            "strict": True,
+        },
     )
 
 
