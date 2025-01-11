@@ -36,6 +36,21 @@ def test_function_transformer_str() -> None:
     assert str(Function(func=my_filter)).startswith("FunctionTransformer(")
 
 
+def test_function_transformer_equal_true() -> None:
+    assert Function(func=my_filter).equal(Function(func=my_filter))
+
+
+def test_function_transformer_equal_false_different_columns() -> None:
+    def filter2(frame: pl.DataFrame) -> pl.DataFrame:
+        return frame
+
+    assert not Function(func=my_filter).equal(Function(func=filter2))
+
+
+def test_function_transformer_equal_false_different_type() -> None:
+    assert not Function(func=my_filter).equal(42)
+
+
 def test_function_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
