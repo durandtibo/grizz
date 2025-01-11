@@ -49,6 +49,7 @@ def test_clickhouse_ingestor_str() -> None:
 
 
 @clickhouse_connect_available
+@pyarrow_available
 def test_clickhouse_ingestor_equal_true() -> None:
     client_mock = Mock(spec=Client)
     assert ClickHouseIngestor(query="select * from source.dataset", client=client_mock).equal(
@@ -57,6 +58,7 @@ def test_clickhouse_ingestor_equal_true() -> None:
 
 
 @clickhouse_connect_available
+@pyarrow_available
 def test_clickhouse_ingestor_equal_false_different_query() -> None:
     client_mock = Mock(spec=Client)
     assert not ClickHouseIngestor(query="select * from source.dataset", client=client_mock).equal(
@@ -65,6 +67,7 @@ def test_clickhouse_ingestor_equal_false_different_query() -> None:
 
 
 @clickhouse_connect_available
+@pyarrow_available
 def test_clickhouse_ingestor_equal_false_different_client() -> None:
     assert not ClickHouseIngestor(
         query="select * from source.dataset", client=Mock(spec=Client)
@@ -72,6 +75,7 @@ def test_clickhouse_ingestor_equal_false_different_client() -> None:
 
 
 @clickhouse_connect_available
+@pyarrow_available
 def test_clickhouse_ingestor_equal_false_different_type() -> None:
     assert not ClickHouseIngestor(
         query="select * from source.dataset", client=Mock(spec=Client)
