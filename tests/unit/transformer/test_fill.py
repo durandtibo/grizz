@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -59,6 +60,52 @@ def test_fill_nan_transformer_str_with_kwargs() -> None:
     assert str(FillNan(columns=["col1", "col4"], value=100)) == (
         "FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
         "missing_policy='raise', value=100)"
+    )
+
+
+def test_fill_nan_transformer_equal_true() -> None:
+    assert FillNan(columns=["col1", "col3"]).equal(FillNan(columns=["col1", "col3"]))
+
+
+def test_fill_nan_transformer_equal_false_different_columns() -> None:
+    assert not FillNan(columns=["col1", "col3"]).equal(FillNan(columns=["col1", "col2", "col3"]))
+
+
+def test_fill_nan_transformer_equal_false_different_exclude_columns() -> None:
+    assert not FillNan(columns=["col1", "col3"]).equal(
+        FillNan(columns=["col1", "col3"], exclude_columns=["col4"])
+    )
+
+
+def test_fill_nan_transformer_equal_false_different_exist_policy() -> None:
+    assert not FillNan(columns=["col1", "col3"]).equal(
+        FillNan(columns=["col1", "col3"], exist_policy="warn")
+    )
+
+
+def test_fill_nan_transformer_equal_false_different_missing_policy() -> None:
+    assert not FillNan(columns=["col1", "col3"]).equal(
+        FillNan(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_fill_nan_transformer_equal_false_different_kwargs() -> None:
+    assert not FillNan(columns=["col1", "col3"]).equal(FillNan(columns=["col1", "col3"], value=100))
+
+
+def test_fill_nan_transformer_equal_false_different_type() -> None:
+    assert not FillNan(columns=["col1", "col3"]).equal(42)
+
+
+def test_fill_nan_transformer_get_args() -> None:
+    assert objects_are_equal(
+        FillNan(columns=["col1", "col3"], value=100).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "value": 100,
+        },
     )
 
 
@@ -314,6 +361,54 @@ def test_fill_null_transformer_str_with_kwargs() -> None:
     assert str(FillNull(columns=["col1", "col4"], value=100)) == (
         "FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), "
         "missing_policy='raise', value=100)"
+    )
+
+
+def test_fill_null_transformer_equal_true() -> None:
+    assert FillNull(columns=["col1", "col3"]).equal(FillNull(columns=["col1", "col3"]))
+
+
+def test_fill_null_transformer_equal_false_different_columns() -> None:
+    assert not FillNull(columns=["col1", "col3"]).equal(FillNull(columns=["col1", "col2", "col3"]))
+
+
+def test_fill_null_transformer_equal_false_different_exclude_columns() -> None:
+    assert not FillNull(columns=["col1", "col3"]).equal(
+        FillNull(columns=["col1", "col3"], exclude_columns=["col4"])
+    )
+
+
+def test_fill_null_transformer_equal_false_different_exist_policy() -> None:
+    assert not FillNull(columns=["col1", "col3"]).equal(
+        FillNull(columns=["col1", "col3"], exist_policy="warn")
+    )
+
+
+def test_fill_null_transformer_equal_false_different_missing_policy() -> None:
+    assert not FillNull(columns=["col1", "col3"]).equal(
+        FillNull(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_fill_null_transformer_equal_false_different_kwargs() -> None:
+    assert not FillNull(columns=["col1", "col3"]).equal(
+        FillNull(columns=["col1", "col3"], value=100)
+    )
+
+
+def test_fill_null_transformer_equal_false_different_type() -> None:
+    assert not FillNull(columns=["col1", "col3"]).equal(42)
+
+
+def test_fill_null_transformer_get_args() -> None:
+    assert objects_are_equal(
+        FillNull(columns=["col1", "col3"], value=100).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "value": 100,
+        },
     )
 
 
