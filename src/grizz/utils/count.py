@@ -195,7 +195,9 @@ def compute_temporal_value_counts(
     if frame.is_empty():
         return np.zeros((0, 0), dtype=np.int64), [], []
 
-    frame = frame.select(pl.col(temporal_column).alias("__datetime__"), pl.col(column).alias("value"))
+    frame = frame.select(
+        pl.col(temporal_column).alias("__datetime__"), pl.col(column).alias("value")
+    )
     if drop_nulls:
         frame = frame.drop_nulls()
 
