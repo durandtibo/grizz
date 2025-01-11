@@ -78,14 +78,7 @@ class BaseIn1Out1Transformer(BaseTransformer):
         self._missing_policy = missing_policy
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "in_col": self._in_col,
-                "out_col": self._out_col,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
+        args = repr_mapping_line(self.get_args())
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
@@ -119,7 +112,12 @@ class BaseIn1Out1Transformer(BaseTransformer):
         return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
 
     def get_args(self) -> dict:
-        raise NotImplementedError
+        return {
+            "in_col": self._in_col,
+            "out_col": self._out_col,
+            "exist_policy": self._exist_policy,
+            "missing_policy": self._missing_policy,
+        }
 
     def _check_input_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the input column is missing.
@@ -248,15 +246,7 @@ class BaseIn2Out1Transformer(BaseTransformer):
         self._missing_policy = missing_policy
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "in1_col": self._in1_col,
-                "in2_col": self._in2_col,
-                "out_col": self._out_col,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
+        args = repr_mapping_line(self.get_args())
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
@@ -302,7 +292,13 @@ class BaseIn2Out1Transformer(BaseTransformer):
         return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
 
     def get_args(self) -> dict:
-        raise NotImplementedError
+        return {
+            "in1_col": self._in1_col,
+            "in2_col": self._in2_col,
+            "out_col": self._out_col,
+            "exist_policy": self._exist_policy,
+            "missing_policy": self._missing_policy,
+        }
 
     def _check_input_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if any of the input columns is missing.
@@ -422,13 +418,7 @@ class BaseInNTransformer(BaseTransformer):
         self._missing_policy = missing_policy
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "exclude_columns": self._exclude_columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
+        args = repr_mapping_line(self.get_args())
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
@@ -449,7 +439,11 @@ class BaseInNTransformer(BaseTransformer):
         return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
 
     def get_args(self) -> dict:
-        raise NotImplementedError
+        return {
+            "columns": self._columns,
+            "exclude_columns": self._exclude_columns,
+            "missing_policy": self._missing_policy,
+        }
 
     def find_columns(self, frame: pl.DataFrame) -> tuple[str, ...]:
         r"""Find the columns to transform.
@@ -689,15 +683,7 @@ class BaseInNOut1Transformer(BaseInNTransformer):
         self._exist_policy = exist_policy
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "out_col": self._out_col,
-                "exclude_columns": self._exclude_columns,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
+        args = repr_mapping_line(self.get_args())
         return f"{self.__class__.__qualname__}({args})"
 
     def fit(self, frame: pl.DataFrame) -> None:
@@ -708,6 +694,15 @@ class BaseInNOut1Transformer(BaseInNTransformer):
         self._check_input_columns(frame)
         self._check_output_column(frame)
         return self._transform(frame)
+
+    def get_args(self) -> dict:
+        return {
+            "columns": self._columns,
+            "out_col": self._out_col,
+            "exclude_columns": self._exclude_columns,
+            "exist_policy": self._exist_policy,
+            "missing_policy": self._missing_policy,
+        }
 
     def _check_output_column(self, frame: pl.DataFrame) -> None:
         r"""Check if the output column already exists.
