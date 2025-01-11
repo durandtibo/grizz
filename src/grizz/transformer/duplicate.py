@@ -9,10 +9,9 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 import polars.selectors as cs
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_kwargs, str_shape_diff
+from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -47,7 +46,7 @@ class DropDuplicateTransformer(BaseInNTransformer):
     >>> from grizz.transformer import DropDuplicate
     >>> transformer = DropDuplicate(keep="first", maintain_order=True)
     >>> transformer
-    DropDuplicateTransformer(columns=None, exclude_columns=(), missing_policy='raise', keep=first, maintain_order=True)
+    DropDuplicateTransformer(columns=None, exclude_columns=(), missing_policy='raise', keep='first', maintain_order=True)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 1],
@@ -100,15 +99,8 @@ class DropDuplicateTransformer(BaseInNTransformer):
         )
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "exclude_columns": self._exclude_columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+    def get_args(self) -> dict:
+        return super().get_args() | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
