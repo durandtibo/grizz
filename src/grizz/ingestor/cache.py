@@ -15,7 +15,6 @@ from grizz.exporter.base import BaseExporter, setup_exporter
 from grizz.ingestor.base import BaseIngestor, setup_ingestor
 
 if TYPE_CHECKING:
-
     import polars as pl
 
 logger = logging.getLogger(__name__)
