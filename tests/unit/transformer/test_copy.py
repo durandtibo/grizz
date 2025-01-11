@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -45,6 +46,50 @@ def test_copy_column_transformer_str() -> None:
     assert str(CopyColumn(in_col="col1", out_col="out")) == (
         "CopyColumnTransformer(in_col='col1', out_col='out', exist_policy='raise', "
         "missing_policy='raise')"
+    )
+
+
+def test_copy_column_transformer_equal_true() -> None:
+    assert CopyColumn(in_col="col1", out_col="out").equal(CopyColumn(in_col="col1", out_col="out"))
+
+
+def test_copy_column_transformer_equal_false_different_in_col() -> None:
+    assert not CopyColumn(in_col="col1", out_col="out").equal(
+        CopyColumn(in_col="col", out_col="out")
+    )
+
+
+def test_copy_column_transformer_equal_false_different_out_col() -> None:
+    assert not CopyColumn(in_col="col1", out_col="out").equal(
+        CopyColumn(in_col="col1", out_col="col")
+    )
+
+
+def test_copy_column_transformer_equal_false_different_exist_policy() -> None:
+    assert not CopyColumn(in_col="col1", out_col="out").equal(
+        CopyColumn(in_col="col1", out_col="out", exist_policy="warn")
+    )
+
+
+def test_copy_column_transformer_equal_false_different_missing_policy() -> None:
+    assert not CopyColumn(in_col="col1", out_col="out").equal(
+        CopyColumn(in_col="col1", out_col="out", missing_policy="warn")
+    )
+
+
+def test_copy_column_transformer_equal_false_different_type() -> None:
+    assert not CopyColumn(in_col="col1", out_col="out").equal(42)
+
+
+def test_copy_column_transformer_get_args() -> None:
+    assert objects_are_equal(
+        CopyColumn(in_col="col1", out_col="out").get_args(),
+        {
+            "in_col": "col1",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
@@ -261,15 +306,75 @@ def test_copy_column_transformer_transform_missing_policy_warn(
 
 def test_copy_columns_transformer_repr() -> None:
     assert repr(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
-        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s')"
     )
 
 
 def test_copy_columns_transformer_str() -> None:
     assert str(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
-        "CopyColumnsTransformer(columns=('col1', 'col3'), prefix='p_', suffix='_s', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s')"
+    )
+
+
+def test_copy_columns_transformer_equal_true() -> None:
+    assert CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(
+        CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")
+    )
+
+
+def test_copy_columns_transformer_equal_false_prefix() -> None:
+    assert not CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(
+        CopyColumns(columns=["col1", "col3"], prefix="prefix_", suffix="_s")
+    )
+
+
+def test_copy_columns_transformer_equal_false_suffix() -> None:
+    assert not CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(
+        CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_suffix")
+    )
+
+
+def test_copy_columns_transformer_equal_false_different_columns() -> None:
+    assert not CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(
+        CopyColumns(columns=["col1", "col2", "col3"], prefix="p_", suffix="_s")
+    )
+
+
+def test_copy_columns_transformer_equal_false_different_exclude_columns() -> None:
+    assert not CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(
+        CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s", exclude_columns=["col2"])
+    )
+
+
+def test_copy_columns_transformer_equal_false_different_exist_policy() -> None:
+    assert not CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(
+        CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s", exist_policy="warn")
+    )
+
+
+def test_copy_columns_transformer_equal_false_different_missing_policy() -> None:
+    assert not CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(
+        CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s", missing_policy="warn")
+    )
+
+
+def test_copy_columns_transformer_equal_false_different_type() -> None:
+    assert not CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").equal(42)
+
+
+def test_copy_columns_transformer_get_args() -> None:
+    assert objects_are_equal(
+        CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s").get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "prefix": "p_",
+            "suffix": "_s",
+            "exclude_columns": (),
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
