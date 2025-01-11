@@ -14,7 +14,6 @@ from grizz.transformer.base import BaseTransformer
 from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
-
     import polars as pl
 
 logger = logging.getLogger(__name__)

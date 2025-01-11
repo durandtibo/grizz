@@ -12,7 +12,6 @@ from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
-
     import polars as pl
 
 
