@@ -64,6 +64,8 @@ __all__ = [
     "FillNullTransformer",
     "FilterCardinality",
     "FilterCardinalityTransformer",
+    "FirstRow",
+    "FirstRowTransformer",
     "FloatCast",
     "FloatCastTransformer",
     "Function",
@@ -272,6 +274,8 @@ from grizz.transformer.replace import ReplaceTransformer
 from grizz.transformer.replace import ReplaceTransformer as Replace
 from grizz.transformer.robust_scaler import RobustScalerTransformer
 from grizz.transformer.robust_scaler import RobustScalerTransformer as RobustScaler
+from grizz.transformer.row import FirstRowTransformer
+from grizz.transformer.row import FirstRowTransformer as FirstRow
 from grizz.transformer.selection import ColumnSelectionTransformer
 from grizz.transformer.selection import ColumnSelectionTransformer as ColumnSelection
 from grizz.transformer.sequential import SequentialTransformer
