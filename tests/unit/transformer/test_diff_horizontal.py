@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -38,6 +39,55 @@ def test_abs_diff_horizontal_transformer_repr() -> None:
 def test_abs_diff_horizontal_transformer_str() -> None:
     assert str(AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="diff")).startswith(
         "AbsDiffHorizontalTransformer("
+    )
+
+
+def test_abs_diff_horizontal_transformer_equal_true() -> None:
+    assert AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_abs_diff_horizontal_transformer_equal_false_different_in1_col() -> None:
+    assert not AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        AbsDiffHorizontal(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_abs_diff_horizontal_transformer_equal_false_different_in2_col() -> None:
+    assert not AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        AbsDiffHorizontal(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_abs_diff_horizontal_transformer_equal_false_different_out_col() -> None:
+    assert not AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_abs_diff_horizontal_transformer_equal_false_different_exist_policy() -> None:
+    assert not AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_abs_diff_horizontal_transformer_equal_false_different_missing_policy() -> None:
+    assert not AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_abs_diff_horizontal_transformer_get_args() -> None:
+    assert objects_are_equal(
+        AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
@@ -349,6 +399,55 @@ def test_diff_horizontal_transformer_repr() -> None:
 def test_diff_horizontal_transformer_str() -> None:
     assert str(DiffHorizontal(in1_col="col1", in2_col="col2", out_col="diff")).startswith(
         "DiffHorizontalTransformer("
+    )
+
+
+def test_diff_horizontal_transformer_equal_true() -> None:
+    assert DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_diff_horizontal_transformer_equal_false_different_in1_col() -> None:
+    assert not DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        DiffHorizontal(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_diff_horizontal_transformer_equal_false_different_in2_col() -> None:
+    assert not DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        DiffHorizontal(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_diff_horizontal_transformer_equal_false_different_out_col() -> None:
+    assert not DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        DiffHorizontal(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_diff_horizontal_transformer_equal_false_different_exist_policy() -> None:
+    assert not DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_diff_horizontal_transformer_equal_false_different_missing_policy() -> None:
+    assert not DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").equal(
+        DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_diff_horizontal_transformer_get_args() -> None:
+    assert objects_are_equal(
+        DiffHorizontal(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
