@@ -8,7 +8,6 @@ import logging
 from typing import TYPE_CHECKING
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
@@ -138,7 +137,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
     >>> from grizz.transformer import CopyColumns
     >>> transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="_raw")
     >>> transformer
-    CopyColumnsTransformer(columns=('col1', 'col3'), prefix='', suffix='_raw', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', prefix='', suffix='_raw')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -198,18 +197,12 @@ class CopyColumnsTransformer(BaseInNTransformer):
         check_column_exist_policy(exist_policy)
         self._exist_policy = exist_policy
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args})"
+    def get_args(self) -> dict:
+        return super().get_args() | {
+            "exist_policy": self._exist_policy,
+            "prefix": self._prefix,
+            "suffix": self._suffix,
+        }
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -218,7 +211,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self.check_output_columns(frame)
+        self._check_output_columns(frame)
         logger.info(
             f"Copying {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
             f"suffix={self._suffix!r} ..."
@@ -230,7 +223,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
         logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out
 
-    def check_output_columns(self, frame: pl.DataFrame) -> None:
+    def _check_output_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if the output columns already exist.
 
         Args:
