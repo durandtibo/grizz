@@ -1,8 +1,8 @@
-r"""Contain the implementation of a clickhouse ingestor."""
+r"""Contain the implementation of a ClickHouse ingestor."""
 
 from __future__ import annotations
 
-__all__ = ["ClickHouseIngestor"]
+__all__ = ["ClickHouseArrowIngestor"]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -26,14 +26,14 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ClickHouseIngestor(BaseIngestor):
-    r"""Implement a clickhouse DataFrame ingestor.
+class ClickHouseArrowIngestor(BaseIngestor):
+    r"""Implement a ClickHouse DataFrame ingestor that uses Arrow.
 
     This ingestor requires ``clickhouse_connect`` and ``pyarrow``.
 
     Args:
         query: The query to get the data.
-        client: The clickhouse client or its configuration.
+        client: The ClickHouse client or its configuration.
             Please check the documentation of
             ``clickhouse_connect.get_client`` to get more information.
 
@@ -41,10 +41,10 @@ class ClickHouseIngestor(BaseIngestor):
 
     ```pycon
 
-    >>> from grizz.ingestor import ClickHouseIngestor
+    >>> from grizz.ingestor import ClickHouseArrowIngestor
     >>> import clickhouse_connect
     >>> client = clickhouse_connect.get_client()  # doctest: +SKIP
-    >>> ingestor = ClickHouseIngestor(query="", client=client)  # doctest: +SKIP
+    >>> ingestor = ClickHouseArrowIngestor(query="", client=client)  # doctest: +SKIP
     >>> frame = ingestor.ingest()  # doctest: +SKIP
 
     ```
@@ -68,7 +68,7 @@ class ClickHouseIngestor(BaseIngestor):
 
     def ingest(self) -> pl.DataFrame:
         logger.info(
-            f"Ingesting data from clickhouse... \n\n"
+            f"Ingesting data from ClickHouse... \n\n"
             "---------------------------------------------------------------------------------\n"
             f"query:\n{self._query}\n"
             "---------------------------------------------------------------------------------\n\n"
