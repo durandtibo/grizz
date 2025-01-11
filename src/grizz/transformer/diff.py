@@ -52,7 +52,7 @@ class DiffTransformer(BaseIn1Out1Transformer):
     >>> from grizz.transformer import Diff
     >>> transformer = Diff(in_col="col1", out_col="diff")
     >>> transformer
-    DiffTransformer(in_col='col1', out_col='diff', shift=1, exist_policy='raise', missing_policy='raise')
+    DiffTransformer(in_col='col1', out_col='diff', exist_policy='raise', missing_policy='raise', shift=1)
     >>> frame = pl.DataFrame({"col1": [1, 2, 3, 4, 5], "col2": ["a", "b", "c", "d", "e"]})
     >>> frame
     shape: (5, 2)
@@ -101,17 +101,8 @@ class DiffTransformer(BaseIn1Out1Transformer):
         )
         self._shift = shift
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "in_col": self._in_col,
-                "out_col": self._out_col,
-                "shift": self._shift,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args})"
+    def get_args(self) -> dict:
+        return super().get_args() | {"shift": self._shift}
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -35,6 +36,51 @@ def test_diff_transformer_repr() -> None:
 
 def test_diff_transformer_str() -> None:
     assert str(Diff(in_col="col1", out_col="diff")).startswith("DiffTransformer(")
+
+
+def test_diff_transformer_equal_true() -> None:
+    assert Diff(in_col="col4", out_col="out").equal(Diff(in_col="col4", out_col="out"))
+
+
+def test_diff_transformer_equal_false_different_in_col() -> None:
+    assert not Diff(in_col="col4", out_col="out").equal(Diff(in_col="col3", out_col="out"))
+
+
+def test_diff_transformer_equal_false_different_out_col() -> None:
+    assert not Diff(in_col="col4", out_col="out").equal(Diff(in_col="col4", out_col="out2"))
+
+
+def test_diff_transformer_equal_false_different_exist_policy() -> None:
+    assert not Diff(in_col="col4", out_col="out").equal(
+        Diff(in_col="col4", out_col="out", exist_policy="warn")
+    )
+
+
+def test_diff_transformer_equal_false_different_missing_policy() -> None:
+    assert not Diff(in_col="col4", out_col="out").equal(
+        Diff(in_col="col4", out_col="out", missing_policy="warn")
+    )
+
+
+def test_diff_transformer_equal_false_different_shift() -> None:
+    assert not Diff(in_col="col4", out_col="out").equal(Diff(in_col="col4", out_col="out", shift=2))
+
+
+def test_diff_transformer_equal_false_different_type() -> None:
+    assert not Diff(in_col="col4", out_col="out").equal(42)
+
+
+def test_diff_transformer_get_args() -> None:
+    assert objects_are_equal(
+        Diff(in_col="col4", out_col="out", shift=1).get_args(),
+        {
+            "in_col": "col4",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "shift": 1,
+        },
+    )
 
 
 def test_diff_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture) -> None:
