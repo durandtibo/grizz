@@ -10,10 +10,8 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 import polars.selectors as cs
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -56,7 +54,7 @@ class ToDatetimeTransformer(BaseInNTransformer):
     >>> from grizz.transformer import ToDatetime
     >>> transformer = ToDatetime(columns=["col1"])
     >>> transformer
-    ToDatetimeTransformer(columns=('col1',), format=None, exclude_columns=(), missing_policy='raise')
+    ToDatetimeTransformer(columns=('col1',), exclude_columns=(), missing_policy='raise', format=None)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [
@@ -123,16 +121,8 @@ class ToDatetimeTransformer(BaseInNTransformer):
         self._format = format
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "format": self._format,
-                "exclude_columns": self._exclude_columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+    def get_args(self) -> dict:
+        return super().get_args() | {"format": self._format} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
