@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -37,7 +38,7 @@ def test_drop_duplicate_transformer_repr() -> None:
 def test_drop_duplicate_transformer_repr_with_kwargs() -> None:
     assert repr(DropDuplicate(columns=["col1", "col3"], keep="first")) == (
         "DropDuplicateTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', keep=first)"
+        "missing_policy='raise', keep='first')"
     )
 
 
@@ -51,7 +52,57 @@ def test_drop_duplicate_transformer_str() -> None:
 def test_drop_duplicate_transformer_str_with_kwargs() -> None:
     assert str(DropDuplicate(columns=["col1", "col3"], keep="first")) == (
         "DropDuplicateTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', keep=first)"
+        "missing_policy='raise', keep='first')"
+    )
+
+
+def test_drop_duplicate_transformer_equal_true() -> None:
+    assert DropDuplicate(columns=["col1", "col3"]).equal(DropDuplicate(columns=["col1", "col3"]))
+
+
+def test_drop_duplicate_transformer_equal_false_different_columns() -> None:
+    assert not DropDuplicate(columns=["col1", "col3"]).equal(
+        DropDuplicate(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_drop_duplicate_transformer_equal_false_different_exclude_columns() -> None:
+    assert not DropDuplicate(columns=["col1", "col3"]).equal(
+        DropDuplicate(columns=["col1", "col3"], exclude_columns=["col4"])
+    )
+
+
+def test_drop_duplicate_transformer_equal_false_different_exist_policy() -> None:
+    assert not DropDuplicate(columns=["col1", "col3"]).equal(
+        DropDuplicate(columns=["col1", "col3"], exist_policy="warn")
+    )
+
+
+def test_drop_duplicate_transformer_equal_false_different_missing_policy() -> None:
+    assert not DropDuplicate(columns=["col1", "col3"]).equal(
+        DropDuplicate(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_drop_duplicate_transformer_equal_false_different_kwargs() -> None:
+    assert not DropDuplicate(columns=["col1", "col3"]).equal(
+        DropDuplicate(columns=["col1", "col3"], threshold=1.0)
+    )
+
+
+def test_drop_duplicate_transformer_equal_false_different_type() -> None:
+    assert not DropDuplicate(columns=["col1", "col3"]).equal(42)
+
+
+def test_drop_duplicate_transformer_get_args() -> None:
+    assert objects_are_equal(
+        DropDuplicate(columns=["col1", "col3"], keep="first").get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "keep": "first",
+        },
     )
 
 
