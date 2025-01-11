@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -53,6 +54,55 @@ def test_column_equal_transformer_str() -> None:
     assert str(ColumnEqual(in1_col="col1", in2_col="col2", out_col="out")) == (
         "ColumnEqualTransformer(in1_col='col1', in2_col='col2', out_col='out', "
         "exist_policy='raise', missing_policy='raise')"
+    )
+
+
+def test_column_equal_transformer_equal_true() -> None:
+    assert ColumnEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqual(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_equal_transformer_equal_false_different_in1_col() -> None:
+    assert not ColumnEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqual(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_equal_transformer_equal_false_different_in2_col() -> None:
+    assert not ColumnEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqual(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_equal_transformer_equal_false_different_out_col() -> None:
+    assert not ColumnEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqual(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_equal_transformer_equal_false_different_exist_policy() -> None:
+    assert not ColumnEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqual(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_equal_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqual(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_equal_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnEqual(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
@@ -275,7 +325,56 @@ def test_column_equal_missing_transformer_str() -> None:
     )
 
 
-def test_column_equal_missing_transformer_fit(
+def test_column_equal_missing_transformer_equal_true() -> None:
+    assert ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_equal_missing_transformer_equal_false_different_in1_col() -> None:
+    assert not ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqualMissing(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_equal_missing_transformer_equal_false_different_in2_col() -> None:
+    assert not ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqualMissing(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_equal_missing_transformer_equal_false_different_out_col() -> None:
+    assert not ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_equal_missing_transformer_equal_false_different_exist_policy() -> None:
+    assert not ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_equal_missing_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_equal_missing_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
+    )
+
+
+def test_column_equal_missing_missing_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
     transformer = ColumnEqualMissing(in1_col="col1", in2_col="col2", out_col="out")
@@ -501,6 +600,55 @@ def test_column_greater_equal_transformer_str() -> None:
     assert str(ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out")) == (
         "ColumnGreaterEqualTransformer(in1_col='col1', in2_col='col2', out_col='out', "
         "exist_policy='raise', missing_policy='raise')"
+    )
+
+
+def test_column_greater_equal_transformer_equal_true() -> None:
+    assert ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_greater_equal_transformer_equal_false_different_in1_col() -> None:
+    assert not ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreaterEqual(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_greater_equal_transformer_equal_false_different_in2_col() -> None:
+    assert not ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreaterEqual(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_greater_equal_transformer_equal_false_different_out_col() -> None:
+    assert not ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_greater_equal_transformer_equal_false_different_exist_policy() -> None:
+    assert not ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_greater_equal_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_greater_equal_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnGreaterEqual(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
@@ -733,6 +881,55 @@ def test_column_greater_transformer_str() -> None:
     )
 
 
+def test_column_greater_equal_true() -> None:
+    assert ColumnGreater(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreater(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_greater_equal_false_different_in1_col() -> None:
+    assert not ColumnGreater(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreater(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_greater_equal_false_different_in2_col() -> None:
+    assert not ColumnGreater(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreater(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_greater_equal_false_different_out_col() -> None:
+    assert not ColumnGreater(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreater(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_greater_equal_false_different_exist_policy() -> None:
+    assert not ColumnGreater(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreater(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_greater_equal_false_different_missing_policy() -> None:
+    assert not ColumnGreater(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnGreater(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_greater_get_args() -> None:
+    assert objects_are_equal(
+        ColumnGreater(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
+    )
+
+
 def test_column_greater_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -955,6 +1152,55 @@ def test_column_lower_equal_transformer_str() -> None:
     assert str(ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out")) == (
         "ColumnLowerEqualTransformer(in1_col='col1', in2_col='col2', out_col='out', "
         "exist_policy='raise', missing_policy='raise')"
+    )
+
+
+def test_column_lower_equal_transformer_equal_true() -> None:
+    assert ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_lower_equal_transformer_equal_false_different_in1_col() -> None:
+    assert not ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLowerEqual(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_lower_equal_transformer_equal_false_different_in2_col() -> None:
+    assert not ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLowerEqual(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_lower_equal_transformer_equal_false_different_out_col() -> None:
+    assert not ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_lower_equal_transformer_equal_false_different_exist_policy() -> None:
+    assert not ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_lower_equal_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_lower_equal_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnLowerEqual(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
@@ -1187,6 +1433,55 @@ def test_column_lower_transformer_str() -> None:
     )
 
 
+def test_column_lower_transformer_equal_true() -> None:
+    assert ColumnLower(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLower(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_lower_transformer_equal_false_different_in1_col() -> None:
+    assert not ColumnLower(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLower(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_lower_transformer_equal_false_different_in2_col() -> None:
+    assert not ColumnLower(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLower(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_lower_transformer_equal_false_different_out_col() -> None:
+    assert not ColumnLower(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLower(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_lower_transformer_equal_false_different_exist_policy() -> None:
+    assert not ColumnLower(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLower(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_lower_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnLower(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnLower(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_lower_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnLower(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
+    )
+
+
 def test_column_lower_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
@@ -1405,6 +1700,55 @@ def test_column_not_equal_transformer_str() -> None:
     assert str(ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out")) == (
         "ColumnNotEqualTransformer(in1_col='col1', in2_col='col2', out_col='out', "
         "exist_policy='raise', missing_policy='raise')"
+    )
+
+
+def test_column_not_equal_transformer_equal_true() -> None:
+    assert ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_not_equal_transformer_equal_false_different_in1_col() -> None:
+    assert not ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqual(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_not_equal_transformer_equal_false_different_in2_col() -> None:
+    assert not ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqual(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_not_equal_transformer_equal_false_different_out_col() -> None:
+    assert not ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_not_equal_transformer_equal_false_different_exist_policy() -> None:
+    assert not ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_not_equal_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_not_equal_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnNotEqual(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
@@ -1632,6 +1976,55 @@ def test_column_not_equal_missing_transformer_str() -> None:
     assert str(ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out")) == (
         "ColumnNotEqualMissingTransformer(in1_col='col1', in2_col='col2', out_col='out', "
         "exist_policy='raise', missing_policy='raise')"
+    )
+
+
+def test_column_not_equal_missing_transformer_equal_true() -> None:
+    assert ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_not_equal_missing_transformer_equal_false_different_in1_col() -> None:
+    assert not ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqualMissing(in1_col="col", in2_col="col2", out_col="out")
+    )
+
+
+def test_column_not_equal_missing_transformer_equal_false_different_in2_col() -> None:
+    assert not ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqualMissing(in1_col="col1", in2_col="col", out_col="out")
+    )
+
+
+def test_column_not_equal_missing_transformer_equal_false_different_out_col() -> None:
+    assert not ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="col")
+    )
+
+
+def test_column_not_equal_missing_transformer_equal_false_different_exist_policy() -> None:
+    assert not ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out", exist_policy="warn")
+    )
+
+
+def test_column_not_equal_missing_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out").equal(
+        ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out", missing_policy="warn")
+    )
+
+
+def test_column_not_equal_missing_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnNotEqualMissing(in1_col="col1", in2_col="col2", out_col="out").get_args(),
+        {
+            "in1_col": "col1",
+            "in2_col": "col2",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
     )
 
 
