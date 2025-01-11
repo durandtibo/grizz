@@ -6,7 +6,9 @@ from __future__ import annotations
 __all__ = ["FunctionTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
+from coola import objects_are_equal
 
 from grizz.transformer.base import BaseTransformer
 
@@ -64,6 +66,11 @@ class FunctionTransformer(BaseTransformer):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(func={self._func})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self._func, other._func, equal_nan=equal_nan)
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
