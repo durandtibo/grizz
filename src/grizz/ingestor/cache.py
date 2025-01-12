@@ -25,7 +25,7 @@ class CacheIngestor(BaseIngestor):
     falling back to the slow ingestor if needed.
 
     Internally, this ingestor attempts to load the DataFrame using
-    the fast ingestor. If a DataFrameNotFoundError is raised,
+    the fast ingestor. If a ``DataFrameNotFoundError`` is raised,
     it falls back to the slow ingestor, then exports the DataFrame
     for ingestion by the fast ingestor during the next cycle.
 
@@ -94,7 +94,6 @@ class CacheIngestor(BaseIngestor):
     ) -> None:
         self._fast_ingestor = setup_ingestor(fast_ingestor)
         self._slow_ingestor = setup_ingestor(slow_ingestor)
-
         self._exporter = setup_exporter(exporter)
 
     def __repr__(self) -> str:
@@ -120,8 +119,11 @@ class CacheIngestor(BaseIngestor):
 
     def ingest(self) -> pl.DataFrame:
         try:
+            logger.info("Ingesting data with the fast ingestor...")
             frame = self._fast_ingestor.ingest()
         except DataFrameNotFoundError:
+            logger.info("Ingesting data with the slow ingestor...")
             frame = self._slow_ingestor.ingest()
+            logger.info("Exporting the data...")
             self._exporter.export(frame)
         return frame
