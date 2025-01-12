@@ -136,12 +136,16 @@ class SimpleImputerTransformer(BaseInNTransformer):
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
-        return super().get_args() | {
-            "exist_policy": self._exist_policy,
-            "propagate_nulls": self._propagate_nulls,
-            "prefix": self._prefix,
-            "suffix": self._suffix,
-        } | self._kwargs
+        return (
+            super().get_args()
+            | {
+                "exist_policy": self._exist_policy,
+                "propagate_nulls": self._propagate_nulls,
+                "prefix": self._prefix,
+                "suffix": self._suffix,
+            }
+            | self._kwargs
+        )
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
