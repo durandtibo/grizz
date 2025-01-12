@@ -74,7 +74,8 @@ class ClickHouseArrowIngestor(BaseIngestor):
             "---------------------------------------------------------------------------------\n\n"
         )
         with timeblock("DataFrame ingestion time: {time}"):
-            frame = pl.from_arrow(self._client.query_arrow(query=self._query))
+            data = self._client.query_arrow(query=self._query)
+            frame = pl.from_arrow(data)
             frame = frame.select(sorted(frame.columns))
             logger.info(
                 f"DataFrame ingested | shape={frame.shape}  "
