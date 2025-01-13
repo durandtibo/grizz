@@ -57,6 +57,46 @@ def test_label_encoder_transformer_str() -> None:
 
 
 @sklearn_available
+def test_label_encoder_transformer_equal_true() -> None:
+    assert LabelEncoder(in_col="col1", out_col="out").equal(
+        LabelEncoder(in_col="col1", out_col="out")
+    )
+
+
+@sklearn_available
+def test_label_encoder_transformer_equal_false_different_in_col() -> None:
+    assert not LabelEncoder(in_col="col1", out_col="out").equal(
+        LabelEncoder(in_col="col3", out_col="out")
+    )
+
+
+@sklearn_available
+def test_label_encoder_transformer_equal_false_different_out_col() -> None:
+    assert not LabelEncoder(in_col="col1", out_col="out").equal(
+        LabelEncoder(in_col="col1", out_col="out2")
+    )
+
+
+@sklearn_available
+def test_label_encoder_transformer_equal_false_different_exist_policy() -> None:
+    assert not LabelEncoder(in_col="col1", out_col="out").equal(
+        LabelEncoder(in_col="col1", out_col="out", exist_policy="warn")
+    )
+
+
+@sklearn_available
+def test_label_encoder_transformer_equal_false_different_missing_policy() -> None:
+    assert not LabelEncoder(in_col="col1", out_col="out").equal(
+        LabelEncoder(in_col="col1", out_col="out", missing_policy="warn")
+    )
+
+
+@sklearn_available
+def test_label_encoder_transformer_equal_false_different_type() -> None:
+    assert not LabelEncoder(in_col="col1", out_col="out").equal(42)
+
+
+@sklearn_available
 def test_label_encoder_transformer_fit(dataframe: pl.DataFrame) -> None:
     transformer = LabelEncoder(in_col="col1", out_col="out")
     transformer.fit(dataframe)
