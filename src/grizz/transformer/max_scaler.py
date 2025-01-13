@@ -8,7 +8,6 @@ import logging
 from typing import TYPE_CHECKING
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
@@ -62,9 +61,9 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import MaxAbsScaler
-    >>> transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_scaled")
+    >>> transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_out")
     >>> transformer
-    MaxAbsScalerTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')
+    MaxAbsScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', suffix='_out')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -89,17 +88,17 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
     >>> out = transformer.fit_transform(frame)
     >>> out
     shape: (5, 6)
-    ┌──────┬──────┬──────┬──────┬─────────────┬─────────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_scaled ┆ col3_scaled │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---         ┆ ---         │
-    │ i64  ┆ str  ┆ i64  ┆ str  ┆ f64         ┆ f64         │
-    ╞══════╪══════╪══════╪══════╪═════════════╪═════════════╡
-    │ 1    ┆ 1    ┆ 10   ┆ a    ┆ 0.2         ┆ 0.2         │
-    │ 2    ┆ 2    ┆ 20   ┆ b    ┆ 0.4         ┆ 0.4         │
-    │ 3    ┆ 3    ┆ 30   ┆ c    ┆ 0.6         ┆ 0.6         │
-    │ 4    ┆ 4    ┆ 40   ┆ d    ┆ 0.8         ┆ 0.8         │
-    │ 5    ┆ 5    ┆ 50   ┆ e    ┆ 1.0         ┆ 1.0         │
-    └──────┴──────┴──────┴──────┴─────────────┴─────────────┘
+    ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
+    │ i64  ┆ str  ┆ i64  ┆ str  ┆ f64      ┆ f64      │
+    ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
+    │ 1    ┆ 1    ┆ 10   ┆ a    ┆ 0.2      ┆ 0.2      │
+    │ 2    ┆ 2    ┆ 20   ┆ b    ┆ 0.4      ┆ 0.4      │
+    │ 3    ┆ 3    ┆ 30   ┆ c    ┆ 0.6      ┆ 0.6      │
+    │ 4    ┆ 4    ┆ 40   ┆ d    ┆ 0.8      ┆ 0.8      │
+    │ 5    ┆ 5    ┆ 50   ┆ e    ┆ 1.0      ┆ 1.0      │
+    └──────┴──────┴──────┴──────┴──────────┴──────────┘
 
     ```
     """
@@ -129,19 +128,13 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         check_sklearn()
         self._scaler = sklearn.preprocessing.MaxAbsScaler()
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "propagate_nulls": self._propagate_nulls,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args})"
+    def get_args(self) -> dict:
+        return super().get_args() | {
+            "exist_policy": self._exist_policy,
+            "propagate_nulls": self._propagate_nulls,
+            "prefix": self._prefix,
+            "suffix": self._suffix,
+        }
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
@@ -160,11 +153,11 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         data = frame.select(columns)
 
         x = self._scaler.transform(data.to_numpy())
-        data_scaled = pl.from_numpy(x, schema=data.columns)
+        data_out = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
-            data_scaled = propagate_nulls(data_scaled, data)
+            data_out = propagate_nulls(data_out, data)
         return frame.with_columns(
-            data_scaled.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
+            data_out.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
         )
 
     def _check_output_columns(self, frame: pl.DataFrame) -> None:
