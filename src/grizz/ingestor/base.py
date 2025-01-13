@@ -53,7 +53,6 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
 
         ```pycon
 
-        >>> import numpy as np
         >>> from grizz.ingestor import CsvIngestor
         >>> obj1 = CsvIngestor(path="/path/to/frame.csv")
         >>> obj2 = CsvIngestor(path="/path/to/frame.csv")
