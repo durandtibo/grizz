@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -47,6 +48,59 @@ def test_max_horizontal_transformer_str() -> None:
         str(MaxHorizontal(columns=["col1", "col3"], out_col="out"))
         == "MaxHorizontalTransformer(columns=('col1', 'col3'), out_col='out', "
         "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+    )
+
+
+def test_max_horizontal_transformer_equal_true() -> None:
+    assert MaxHorizontal(columns=["col1", "col3"], out_col="out").equal(
+        MaxHorizontal(columns=["col1", "col3"], out_col="out")
+    )
+
+
+def test_max_horizontal_transformer_equal_false_different_columns() -> None:
+    assert not MaxHorizontal(columns=["col1", "col3"], out_col="out").equal(
+        MaxHorizontal(columns=["col1", "col2", "col3"], out_col="out")
+    )
+
+
+def test_max_horizontal_transformer_equal_false_different_out_col() -> None:
+    assert not MaxHorizontal(columns=["col1", "col3"], out_col="out").equal(
+        MaxHorizontal(columns=["col1", "col3"], out_col="col")
+    )
+
+
+def test_max_horizontal_transformer_equal_false_different_exclude_columns() -> None:
+    assert not MaxHorizontal(columns=["col1", "col3"], out_col="out").equal(
+        MaxHorizontal(columns=["col1", "col3"], out_col="out", exclude_columns=["col2"])
+    )
+
+
+def test_max_horizontal_transformer_equal_false_different_exist_policy() -> None:
+    assert not MaxHorizontal(columns=["col1", "col3"], out_col="out").equal(
+        MaxHorizontal(columns=["col1", "col3"], out_col="out", exist_policy="warn")
+    )
+
+
+def test_max_horizontal_transformer_equal_false_different_missing_policy() -> None:
+    assert not MaxHorizontal(columns=["col1", "col3"], out_col="out").equal(
+        MaxHorizontal(columns=["col1", "col3"], out_col="out", missing_policy="warn")
+    )
+
+
+def test_max_horizontal_transformer_equal_false_different_type() -> None:
+    assert not MaxHorizontal(columns=["col1", "col3"], out_col="out").equal(42)
+
+
+def test_max_horizontal_transformer_get_args() -> None:
+    assert objects_are_equal(
+        MaxHorizontal(columns=["col1", "col3"], out_col="out").get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "out_col": "out",
+        },
     )
 
 

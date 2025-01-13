@@ -97,6 +97,19 @@ def test_label_encoder_transformer_equal_false_different_type() -> None:
 
 
 @sklearn_available
+def test_label_encoder_transformer_get_args() -> None:
+    assert objects_are_equal(
+        LabelEncoder(in_col="col1", out_col="out").get_args(),
+        {
+            "in_col": "col1",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
+    )
+
+
+@sklearn_available
 def test_label_encoder_transformer_fit(dataframe: pl.DataFrame) -> None:
     transformer = LabelEncoder(in_col="col1", out_col="out")
     transformer.fit(dataframe)
