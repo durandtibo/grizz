@@ -11,7 +11,7 @@ __all__ = [
 
 import logging
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from objectory import AbstractFactory
 from objectory.utils import is_object_config
@@ -72,6 +72,35 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
 
     ```
     """
+
+    @abstractmethod
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        r"""Indicate if two objects are equal or not.
+
+        Args:
+            other: The other object to compare.
+            equal_nan: Whether to compare NaN's as equal. If ``True``,
+                NaN's in both objects will be considered equal.
+
+        Returns:
+            ``True`` if the two are equal, otherwise ``False``.
+
+        Example usage:
+
+        ```pycon
+
+        >>> import polars as pl
+        >>> from grizz.transformer import Cast
+        >>> obj1 = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> obj2 = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> obj3 = Cast(columns=["col2", "col3"], dtype=pl.Float32)
+        >>> obj1.equal(obj2)
+        True
+        >>> obj1.equal(obj3)
+        False
+
+        ```
+        """
 
     @abstractmethod
     def fit(self, frame: pl.DataFrame) -> None:
