@@ -185,5 +185,5 @@ def test_cache_ingestor_ingest_missing_file(tmp_path: Path) -> None:
         slow_ingestor=CsvIngestor(path),
         exporter=ParquetExporter(path),
     )
-    with pytest.raises(DataFrameNotFoundError, match="DataFrame file does not exist"):
+    with pytest.raises(DataFrameNotFoundError, match="DataFrame path does not exist"):
         ingestor.ingest()
