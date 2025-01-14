@@ -156,9 +156,7 @@ class MaxAbsScalerTransformer(BaseInNTransformer):
         data_out = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
             data_out = propagate_nulls(data_out, data)
-        return frame.with_columns(
-            data_out.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
-        )
+        return frame.with_columns(data_out.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
 
     def _check_output_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if the output columns already exist.
