@@ -1,3 +1,4 @@
+# noqa: A005
 r"""Contain ``polars.DataFrame`` transformers to copy columns."""
 
 from __future__ import annotations
