@@ -1,3 +1,4 @@
+# noqa: A005
 r"""Contain the implementation of a CSV DataFrame exporter."""
 
 from __future__ import annotations

@@ -6,7 +6,7 @@ __all__ = ["ParquetFileIngestor", "ParquetIngestor"]
 
 import logging
 from pathlib import Path
-from typing import IO, Any, TypeAlias, Union
+from typing import IO, Any, Union
 
 import polars as pl
 from coola import objects_are_equal
@@ -17,7 +17,7 @@ from grizz.ingestor.utils import check_dataframe_file
 from grizz.utils.format import human_byte, str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
 
-FileSource: TypeAlias = Union[
+FileSource = Union[
     str,
     Path,
     IO[bytes],
