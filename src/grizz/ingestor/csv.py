@@ -12,7 +12,7 @@ from coola import objects_are_equal
 from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
-from grizz.ingestor.utils import check_dataframe_path
+from grizz.ingestor.utils import check_dataframe_file
 from grizz.utils.format import human_byte, str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
 
@@ -58,7 +58,7 @@ class CsvIngestor(BaseIngestor):
         )
 
     def ingest(self) -> pl.DataFrame:
-        check_dataframe_path(self._path)
+        check_dataframe_file(self._path)
         logger.info(f"Ingesting CSV data from {self._path} | size={human_file_size(self._path)}...")
         with timeblock("DataFrame ingestion time: {time}"):
             frame = pl.read_csv(self._path, **self._kwargs)
