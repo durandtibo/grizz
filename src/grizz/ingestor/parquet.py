@@ -1,4 +1,4 @@
-r"""Contain the implementation of a parquet ingestor."""
+r"""Contain the implementation of parquet ingestors."""
 
 from __future__ import annotations
 
