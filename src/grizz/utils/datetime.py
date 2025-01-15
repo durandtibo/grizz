@@ -1,3 +1,4 @@
+# noqa: A005
 r"""Contain utility functions for datetime and date objects."""
 
 from __future__ import annotations

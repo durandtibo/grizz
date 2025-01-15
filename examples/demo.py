@@ -10,7 +10,7 @@ from pathlib import Path
 import polars as pl
 from coola.utils.imports import is_numpy_available, numpy_available
 
-from grizz.ingestor import BaseIngestor, ParquetIngestor
+from grizz.ingestor import BaseIngestor, ParquetFileIngestor
 from grizz.transformer import (
     AbsDiffHorizontal,
     BaseTransformer,
@@ -51,7 +51,7 @@ def make_ingestor(data_path: Path) -> BaseIngestor:
     path = data_path.joinpath("data.parquet")
     path.parent.mkdir(exist_ok=True, parents=True)
     data.write_parquet(path)
-    return ParquetIngestor(path)
+    return ParquetFileIngestor(path)
 
 
 def make_transformer(data_path: Path) -> BaseTransformer:  # noqa: ARG001
