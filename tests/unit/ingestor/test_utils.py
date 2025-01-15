@@ -24,5 +24,5 @@ def test_check_dataframe_file_exists(tmp_path: Path) -> None:
 
 def test_check_dataframe_file_missing(tmp_path: Path) -> None:
     path = tmp_path.joinpath("data.txt")
-    with pytest.raises(DataFrameNotFoundError, match="DataFrame path does not exist"):
+    with pytest.raises(DataFrameNotFoundError, match="DataFrame file does not exist"):
         check_dataframe_file(path)
