@@ -28,10 +28,10 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
 
     ```pycon
 
-    >>> from grizz.ingestor import ParquetIngestor
-    >>> ingestor = ParquetIngestor(path="/path/to/frame.parquet")
+    >>> from grizz.ingestor import ParquetFileIngestor
+    >>> ingestor = ParquetFileIngestor(path="/path/to/frame.parquet")
     >>> ingestor
-    ParquetIngestor(path=/path/to/frame.parquet)
+    ParquetFileIngestor(path=/path/to/frame.parquet)
     >>> frame = ingestor.ingest()  # doctest: +SKIP
 
     ```
@@ -79,8 +79,8 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
 
         ```pycon
 
-        >>> from grizz.ingestor import ParquetIngestor
-        >>> ingestor = ParquetIngestor(path="/path/to/frame.parquet")
+        >>> from grizz.ingestor import ParquetFileIngestor
+        >>> ingestor = ParquetFileIngestor(path="/path/to/frame.parquet")
         >>> frame = ingestor.ingest()  # doctest: +SKIP
 
         ```
