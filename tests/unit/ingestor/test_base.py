@@ -11,7 +11,7 @@ from objectory import OBJECT_TARGET
 
 from grizz.ingestor import (
     CsvIngestor,
-    ParquetIngestor,
+    ParquetFileIngestor,
     is_ingestor_config,
     setup_ingestor,
 )
@@ -80,8 +80,8 @@ INGESTOR_EQUAL = [
     ),
     pytest.param(
         ExamplePair(
-            actual=ParquetIngestor("data.parquet"),
-            expected=ParquetIngestor("data.parquet"),
+            actual=ParquetFileIngestor("data.parquet"),
+            expected=ParquetFileIngestor("data.parquet"),
         ),
         id="parquet ingestor",
     ),

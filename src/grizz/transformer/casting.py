@@ -9,6 +9,7 @@ __all__ = [
     "DecimalCastTransformer",
     "FloatCastTransformer",
     "IntegerCastTransformer",
+    "NumericCastTransformer",
 ]
 
 import logging
@@ -382,6 +383,87 @@ class IntegerCastTransformer(CastTransformer):
     def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
         return frame.with_columns(
             frame.select((cs.by_name(columns) & cs.integer()).cast(self._dtype, **self._kwargs))
+        )
+
+
+class NumericCastTransformer(CastTransformer):
+    r"""Implement a transformer to convert columns of numeric type to a
+    new data type.
+
+    Args:
+        columns: The columns to convert. ``None`` means all the
+            columns.
+        dtype: The target data type.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: The keyword arguments for ``cast``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import NumericCast
+    >>> transformer = NumericCast(columns=["col1", "col2"], dtype=pl.Float32)
+    >>> transformer
+    NumericCastTransformer(columns=('col1', 'col2'), dtype=Float32, exclude_columns=(), missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+    ...         "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...     },
+    ...     schema={
+    ...         "col1": pl.Int64,
+    ...         "col2": pl.Float32,
+    ...         "col3": pl.Float64,
+    ...         "col4": pl.String,
+    ...     },
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ f32  ┆ f64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1    ┆ 1.0  ┆ 1.0  ┆ a    │
+    │ 2    ┆ 2.0  ┆ 2.0  ┆ b    │
+    │ 3    ┆ 3.0  ┆ 3.0  ┆ c    │
+    │ 4    ┆ 4.0  ┆ 4.0  ┆ d    │
+    │ 5    ┆ 5.0  ┆ 5.0  ┆ e    │
+    └──────┴──────┴──────┴──────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ f32  ┆ f32  ┆ f64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1.0  ┆ 1.0  ┆ 1.0  ┆ a    │
+    │ 2.0  ┆ 2.0  ┆ 2.0  ┆ b    │
+    │ 3.0  ┆ 3.0  ┆ 3.0  ┆ c    │
+    │ 4.0  ┆ 4.0  ┆ 4.0  ┆ d    │
+    │ 5.0  ┆ 5.0  ┆ 5.0  ┆ e    │
+    └──────┴──────┴──────┴──────┘
+
+    ```
+    """
+
+    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+        return frame.with_columns(
+            frame.select((cs.by_name(columns) & cs.numeric()).cast(self._dtype, **self._kwargs))
         )
 
 

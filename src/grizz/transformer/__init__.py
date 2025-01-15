@@ -100,6 +100,8 @@ __all__ = [
     "NotEqualMissing",
     "NotEqualMissingTransformer",
     "NotEqualTransformer",
+    "NumericCast",
+    "NumericCastTransformer",
     "OrdinalEncoder",
     "OrdinalEncoderTransformer",
     "PowerTransformer",
@@ -160,6 +162,8 @@ from grizz.transformer.casting import FloatCastTransformer
 from grizz.transformer.casting import FloatCastTransformer as FloatCast
 from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
+from grizz.transformer.casting import NumericCastTransformer
+from grizz.transformer.casting import NumericCastTransformer as NumericCast
 from grizz.transformer.close import ColumnCloseTransformer
 from grizz.transformer.close import ColumnCloseTransformer as ColumnClose
 from grizz.transformer.column_comparison import ColumnEqualMissingTransformer
