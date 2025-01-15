@@ -31,7 +31,7 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
     >>> from grizz.ingestor import ParquetFileIngestor
     >>> ingestor = ParquetFileIngestor(path="/path/to/frame.parquet")
     >>> ingestor
-    ParquetFileIngestor(path=/path/to/frame.parquet)
+    ParquetFileIngestor(source=/path/to/frame.parquet)
     >>> frame = ingestor.ingest()  # doctest: +SKIP
 
     ```
