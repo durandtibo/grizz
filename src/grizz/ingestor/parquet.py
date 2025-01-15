@@ -2,7 +2,7 @@ r"""Contain the implementation of a parquet ingestor."""
 
 from __future__ import annotations
 
-__all__ = ["ParquetIngestor"]
+__all__ = ["ParquetFileIngestor"]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ParquetIngestor(BaseIngestor):
+class ParquetFileIngestor(BaseIngestor):
     r"""Implement a parquet DataFrame ingestor.
 
     Args:
@@ -34,10 +34,10 @@ class ParquetIngestor(BaseIngestor):
 
     ```pycon
 
-    >>> from grizz.ingestor import ParquetIngestor
-    >>> ingestor = ParquetIngestor(path="/path/to/frame.parquet")
+    >>> from grizz.ingestor import ParquetFileIngestor
+    >>> ingestor = ParquetFileIngestor(path="/path/to/frame.parquet")
     >>> ingestor
-    ParquetIngestor(path=/path/to/frame.parquet)
+    ParquetFileIngestor(path=/path/to/frame.parquet)
     >>> frame = ingestor.ingest()  # doctest: +SKIP
 
     ```

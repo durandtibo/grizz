@@ -8,7 +8,7 @@ from polars.testing import assert_frame_equal
 
 from grizz.exceptions import DataFrameNotFoundError
 from grizz.exporter import ParquetExporter
-from grizz.ingestor import CacheIngestor, CsvIngestor, ParquetIngestor
+from grizz.ingestor import CacheIngestor, CsvIngestor, ParquetFileIngestor
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -36,7 +36,7 @@ def frame_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
 def test_cache_ingestor_repr(tmp_path: Path, frame_path: Path) -> None:
     path = tmp_path.joinpath("data.parquet")
     ingestor = CacheIngestor(
-        fast_ingestor=ParquetIngestor(path),
+        fast_ingestor=ParquetFileIngestor(path),
         slow_ingestor=CsvIngestor(frame_path),
         exporter=ParquetExporter(path),
     )
@@ -46,7 +46,7 @@ def test_cache_ingestor_repr(tmp_path: Path, frame_path: Path) -> None:
 def test_cache_ingestor_str(tmp_path: Path, frame_path: Path) -> None:
     path = tmp_path.joinpath("data.parquet")
     ingestor = CacheIngestor(
-        fast_ingestor=ParquetIngestor(path),
+        fast_ingestor=ParquetFileIngestor(path),
         slow_ingestor=CsvIngestor(frame_path),
         exporter=ParquetExporter(path),
     )
@@ -55,12 +55,12 @@ def test_cache_ingestor_str(tmp_path: Path, frame_path: Path) -> None:
 
 def test_cache_ingestor_equal_true(tmp_path: Path) -> None:
     assert CacheIngestor(
-        fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+        fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
         slow_ingestor=CsvIngestor(tmp_path.joinpath("data.csv")),
         exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
     ).equal(
         CacheIngestor(
-            fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+            fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
             slow_ingestor=CsvIngestor(tmp_path.joinpath("data.csv")),
             exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
         )
@@ -69,12 +69,12 @@ def test_cache_ingestor_equal_true(tmp_path: Path) -> None:
 
 def test_cache_ingestor_equal_false_different_fast_ingestor(tmp_path: Path) -> None:
     assert not CacheIngestor(
-        fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+        fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
         slow_ingestor=CsvIngestor(tmp_path.joinpath("data.csv")),
         exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
     ).equal(
         CacheIngestor(
-            fast_ingestor=ParquetIngestor(tmp_path.joinpath("data2.parquet")),
+            fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data2.parquet")),
             slow_ingestor=CsvIngestor(tmp_path.joinpath("data.csv")),
             exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
         )
@@ -83,12 +83,12 @@ def test_cache_ingestor_equal_false_different_fast_ingestor(tmp_path: Path) -> N
 
 def test_cache_ingestor_equal_false_different_slow_ingestor(tmp_path: Path) -> None:
     assert not CacheIngestor(
-        fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+        fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
         slow_ingestor=CsvIngestor(tmp_path.joinpath("data.csv")),
         exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
     ).equal(
         CacheIngestor(
-            fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+            fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
             slow_ingestor=CsvIngestor(tmp_path.joinpath("data2.csv")),
             exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
         )
@@ -97,12 +97,12 @@ def test_cache_ingestor_equal_false_different_slow_ingestor(tmp_path: Path) -> N
 
 def test_cache_ingestor_equal_false_different_exporter(tmp_path: Path) -> None:
     assert not CacheIngestor(
-        fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+        fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
         slow_ingestor=CsvIngestor(tmp_path.joinpath("data.csv")),
         exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
     ).equal(
         CacheIngestor(
-            fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+            fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
             slow_ingestor=CsvIngestor(tmp_path.joinpath("data2.csv")),
             exporter=ParquetExporter(tmp_path.joinpath("data2.parquet")),
         )
@@ -111,7 +111,7 @@ def test_cache_ingestor_equal_false_different_exporter(tmp_path: Path) -> None:
 
 def test_cache_ingestor_equal_false_different_type(tmp_path: Path) -> None:
     assert not CacheIngestor(
-        fast_ingestor=ParquetIngestor(tmp_path.joinpath("data.parquet")),
+        fast_ingestor=ParquetFileIngestor(tmp_path.joinpath("data.parquet")),
         slow_ingestor=CsvIngestor(tmp_path.joinpath("data.csv")),
         exporter=ParquetExporter(tmp_path.joinpath("data.parquet")),
     ).equal(42)
@@ -120,7 +120,7 @@ def test_cache_ingestor_equal_false_different_type(tmp_path: Path) -> None:
 def test_cache_ingestor_ingest_slow(tmp_path: Path, frame_path: Path) -> None:
     path = tmp_path.joinpath("data.parquet")
     ingestor = CacheIngestor(
-        fast_ingestor=ParquetIngestor(path),
+        fast_ingestor=ParquetFileIngestor(path),
         slow_ingestor=CsvIngestor(frame_path),
         exporter=ParquetExporter(path),
     )
@@ -159,7 +159,7 @@ def test_cache_ingestor_ingest_fast(tmp_path: Path, frame_path: Path) -> None:
         schema={"col1": pl.Float32, "col2": pl.String, "col3": pl.Float32},
     ).write_parquet(path)
     ingestor = CacheIngestor(
-        fast_ingestor=ParquetIngestor(path),
+        fast_ingestor=ParquetFileIngestor(path),
         slow_ingestor=CsvIngestor(frame_path),
         exporter=ParquetExporter(path),
     )
@@ -181,7 +181,7 @@ def test_cache_ingestor_ingest_fast(tmp_path: Path, frame_path: Path) -> None:
 def test_cache_ingestor_ingest_missing_file(tmp_path: Path) -> None:
     path = tmp_path.joinpath("data")
     ingestor = CacheIngestor(
-        fast_ingestor=ParquetIngestor(path),
+        fast_ingestor=ParquetFileIngestor(path),
         slow_ingestor=CsvIngestor(path),
         exporter=ParquetExporter(path),
     )
