@@ -110,7 +110,7 @@ class DropNanColumnTransformer(BaseInNTransformer):
         if frame.is_empty():
             return frame
         columns = self.find_common_columns(frame)
-        pct = frame.select((cs.numeric() & cs.by_name(columns)).is_nan()).sum() / frame.shape[0]
+        pct = frame.select((cs.float() & cs.by_name(columns)).is_nan()).sum() / frame.shape[0]
         cols = list(compress(pct.columns, (pct >= self._threshold).row(0)))
         logger.info(
             f"Dropping {len(cols):,} columns that have too "
@@ -201,6 +201,6 @@ class DropNanRowTransformer(BaseInNTransformer):
             f"{len(self.find_columns(frame)):,} columns...."
         )
         columns = self.find_common_columns(frame)
-        out = frame.filter(~pl.all_horizontal((cs.numeric() & cs.by_name(columns)).is_nan()))
+        out = frame.filter(~pl.all_horizontal((cs.float() & cs.by_name(columns)).is_nan()))
         logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out
