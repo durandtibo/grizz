@@ -50,6 +50,8 @@ __all__ = [
     "DiffTransformer",
     "DropDuplicate",
     "DropDuplicateTransformer",
+    "DropNanColumn",
+    "DropNanColumnTransformer",
     "DropNanRow",
     "DropNanRowTransformer",
     "DropNullColumn",
@@ -262,6 +264,8 @@ from grizz.transformer.min import MinHorizontalTransformer
 from grizz.transformer.min import MinHorizontalTransformer as MinHorizontal
 from grizz.transformer.min_max_scaler import MinMaxScalerTransformer
 from grizz.transformer.min_max_scaler import MinMaxScalerTransformer as MinMaxScaler
+from grizz.transformer.nan import DropNanColumnTransformer
+from grizz.transformer.nan import DropNanColumnTransformer as DropNanColumn
 from grizz.transformer.nan import DropNanRowTransformer
 from grizz.transformer.nan import DropNanRowTransformer as DropNanRow
 from grizz.transformer.normalizer import NormalizerTransformer
