@@ -57,16 +57,38 @@ class DropNanColumnTransformer(BaseInNTransformer):
     DropNanColumnTransformer(columns=None, threshold=1.0, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
-    ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
-    ...         "col2": [1, None, 3, None, 5],
-    ...         "col3": [None, None, None, None, None],
+    ...         "col1": [1.0, 2.0, 3.0, 4.0, float("nan")],
+    ...         "col2": [1.0, float("nan"), 3.0, float("nan"), 5.0],
+    ...         "col3": [float("nan"), float("nan"), float("nan"), float("nan"), float("nan")],
     ...     }
     ... )
     >>> frame
     shape: (5, 3)
+    ┌──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 │
+    │ ---  ┆ ---  ┆ ---  │
+    │ f64  ┆ f64  ┆ f64  │
+    ╞══════╪══════╪══════╡
+    │ 1.0  ┆ 1.0  ┆ NaN  │
+    │ 2.0  ┆ NaN  ┆ NaN  │
+    │ 3.0  ┆ 3.0  ┆ NaN  │
+    │ 4.0  ┆ NaN  ┆ NaN  │
+    │ NaN  ┆ 5.0  ┆ NaN  │
+    └──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 2)
+    ┌──────┬──────┐
+    │ col1 ┆ col2 │
+    │ ---  ┆ ---  │
+    │ f64  ┆ f64  │
+    ╞══════╪══════╡
+    │ 1.0  ┆ 1.0  │
+    │ 2.0  ┆ NaN  │
+    │ 3.0  ┆ 3.0  │
+    │ 4.0  ┆ NaN  │
+    │ NaN  ┆ 5.0  │
+    └──────┴──────┘
 
     ```
     """
