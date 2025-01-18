@@ -9,7 +9,6 @@ import logging
 from typing import TYPE_CHECKING
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.format import str_shape_diff
@@ -106,10 +105,6 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         )
         self._n_min = n_min
         self._n_max = n_max
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
 
     def get_args(self) -> dict:
         return {

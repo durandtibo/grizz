@@ -8,8 +8,6 @@ __all__ = ["ColumnCloseTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-from coola.utils.format import repr_mapping_line
-
 from grizz.transformer.columns import BaseIn2Out1Transformer
 from grizz.utils.format import str_boolean_series_stats
 
@@ -123,10 +121,6 @@ class ColumnCloseTransformer(BaseIn2Out1Transformer):
         self._atol = float(atol)
         self._rtol = float(rtol)
         self._equal_nan = equal_nan
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
 
     def get_args(self) -> dict:
         return {

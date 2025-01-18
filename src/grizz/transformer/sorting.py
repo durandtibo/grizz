@@ -7,11 +7,8 @@ __all__ = ["SortColumnsTransformer", "SortTransformer"]
 import logging
 from typing import TYPE_CHECKING, Any
 
-from coola.utils.format import repr_mapping_line
-
 from grizz.transformer.base import BaseTransformer
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_kwargs
 
 logger = logging.getLogger(__name__)
 
@@ -93,15 +90,8 @@ class SortTransformer(BaseInNTransformer):
         )
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "exclude_columns": self._exclude_columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+    def get_args(self) -> dict:
+        return super().get_args() | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -173,6 +163,11 @@ class SortColumnsTransformer(BaseTransformer):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(reverse={self._reverse})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:  # noqa: ARG002
+        if not isinstance(other, self.__class__):
+            return False
+        return self._reverse == other._reverse
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

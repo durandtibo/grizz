@@ -6,7 +6,7 @@ from __future__ import annotations
 __all__ = ["SqlTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from coola.utils import repr_indent, repr_mapping
 
@@ -67,6 +67,11 @@ class SqlTransformer(BaseTransformer):
     def __repr__(self) -> str:
         args = repr_indent(repr_mapping({"query": self._query}))
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:  # noqa: ARG002
+        if not isinstance(other, self.__class__):
+            return False
+        return self._query == other._query
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

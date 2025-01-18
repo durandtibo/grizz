@@ -39,6 +39,22 @@ def test_sql_transformer_str() -> None:
     )
 
 
+def test_sql_transformer_equal_true() -> None:
+    assert SqlTransformer(query="SELECT col1, col4 FROM self WHERE col1 > 2").equal(
+        SqlTransformer(query="SELECT col1, col4 FROM self WHERE col1 > 2")
+    )
+
+
+def test_sql_transformer_equal_false_different_query() -> None:
+    assert not SqlTransformer(query="SELECT col1, col4 FROM self WHERE col1 > 2").equal(
+        SqlTransformer(query="")
+    )
+
+
+def test_sql_transformer_equal_false_different_type() -> None:
+    assert not SqlTransformer(query="SELECT col1, col4 FROM self WHERE col1 > 2").equal(42)
+
+
 def test_sql_transformer_fit(dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture) -> None:
     transformer = SqlTransformer(query="SELECT col1, col4 FROM self WHERE col1 > 2")
     with caplog.at_level(logging.INFO):
