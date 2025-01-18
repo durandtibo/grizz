@@ -58,7 +58,7 @@ class CastTransformer(BaseInNTransformer):
     >>> from grizz.transformer import Cast
     >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
-    CastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), missing_policy='raise')
+    CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -113,12 +113,7 @@ class CastTransformer(BaseInNTransformer):
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
-        return {
-            "columns": self._columns,
-            "dtype": self._dtype,
-            "exclude_columns": self._exclude_columns,
-            "missing_policy": self._missing_policy,
-        } | self._kwargs
+        return super().get_args() | {"dtype": self._dtype} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -168,7 +163,7 @@ class DecimalCastTransformer(CastTransformer):
     >>> from grizz.transformer import DecimalCast
     >>> transformer = DecimalCast(columns=["col1", "col2"], dtype=pl.Float32)
     >>> transformer
-    DecimalCastTransformer(columns=('col1', 'col2'), dtype=Float32, exclude_columns=(), missing_policy='raise')
+    DecimalCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Float32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -249,7 +244,7 @@ class FloatCastTransformer(CastTransformer):
     >>> from grizz.transformer import FloatCast
     >>> transformer = FloatCast(columns=["col1", "col2"], dtype=pl.Int32)
     >>> transformer
-    FloatCastTransformer(columns=('col1', 'col2'), dtype=Int32, exclude_columns=(), missing_policy='raise')
+    FloatCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Int32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -330,7 +325,7 @@ class IntegerCastTransformer(CastTransformer):
     >>> from grizz.transformer import IntegerCast
     >>> transformer = IntegerCast(columns=["col1", "col2"], dtype=pl.Float32)
     >>> transformer
-    IntegerCastTransformer(columns=('col1', 'col2'), dtype=Float32, exclude_columns=(), missing_policy='raise')
+    IntegerCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Float32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -411,7 +406,7 @@ class NumericCastTransformer(CastTransformer):
     >>> from grizz.transformer import NumericCast
     >>> transformer = NumericCast(columns=["col1", "col2"], dtype=pl.Float32)
     >>> transformer
-    NumericCastTransformer(columns=('col1', 'col2'), dtype=Float32, exclude_columns=(), missing_policy='raise')
+    NumericCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Float32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
