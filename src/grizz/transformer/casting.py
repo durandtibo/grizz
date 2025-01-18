@@ -112,10 +112,6 @@ class CastTransformer(BaseInNTransformer):
         self._dtype = dtype
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
-
     def get_args(self) -> dict:
         return {
             "columns": self._columns,

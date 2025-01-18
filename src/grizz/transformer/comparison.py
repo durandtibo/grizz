@@ -183,9 +183,9 @@ class EqualTransformer(BaseComparatorTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import Equal
-    >>> transformer = Equal(columns=["col1", "col3"], target=3, prefix="", suffix="_ind")
+    >>> transformer = Equal(columns=["col1", "col3"], target=3, prefix="", suffix="_out")
     >>> transformer
-    EqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    EqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -211,7 +211,7 @@ class EqualTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -268,9 +268,9 @@ class EqualMissingTransformer(BaseComparatorTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import EqualMissing
-    >>> transformer = EqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_ind")
+    >>> transformer = EqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_out")
     >>> transformer
-    EqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    EqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -296,7 +296,7 @@ class EqualMissingTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -354,10 +354,10 @@ class GreaterEqualTransformer(BaseComparatorTransformer):
     >>> import polars as pl
     >>> from grizz.transformer import GreaterEqual
     >>> transformer = GreaterEqual(
-    ...     columns=["col1", "col3"], target=4.2, prefix="", suffix="_ind"
+    ...     columns=["col1", "col3"], target=4.2, prefix="", suffix="_out"
     ... )
     >>> transformer
-    GreaterEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    GreaterEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -383,7 +383,7 @@ class GreaterEqualTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -440,9 +440,9 @@ class GreaterTransformer(BaseComparatorTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import Greater
-    >>> transformer = Greater(columns=["col1", "col3"], target=4.2, prefix="", suffix="_ind")
+    >>> transformer = Greater(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")
     >>> transformer
-    GreaterTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    GreaterTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -468,7 +468,7 @@ class GreaterTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -525,9 +525,9 @@ class LowerEqualTransformer(BaseComparatorTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import LowerEqual
-    >>> transformer = LowerEqual(columns=["col1", "col3"], target=4.2, prefix="", suffix="_ind")
+    >>> transformer = LowerEqual(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")
     >>> transformer
-    LowerEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    LowerEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -553,7 +553,7 @@ class LowerEqualTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -609,9 +609,9 @@ class LowerTransformer(BaseComparatorTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import Lower
-    >>> transformer = Lower(columns=["col1", "col3"], target=4.2, prefix="", suffix="_ind")
+    >>> transformer = Lower(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")
     >>> transformer
-    LowerTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    LowerTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -637,7 +637,7 @@ class LowerTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -693,9 +693,9 @@ class NotEqualTransformer(BaseComparatorTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import NotEqual
-    >>> transformer = NotEqual(columns=["col1", "col3"], target=3, prefix="", suffix="_ind")
+    >>> transformer = NotEqual(columns=["col1", "col3"], target=3, prefix="", suffix="_out")
     >>> transformer
-    NotEqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    NotEqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -721,7 +721,7 @@ class NotEqualTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -779,10 +779,10 @@ class NotEqualMissingTransformer(BaseComparatorTransformer):
     >>> import polars as pl
     >>> from grizz.transformer import NotEqualMissing
     >>> transformer = NotEqualMissing(
-    ...     columns=["col1", "col3"], target=3, prefix="", suffix="_ind"
+    ...     columns=["col1", "col3"], target=3, prefix="", suffix="_out"
     ... )
     >>> transformer
-    NotEqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_ind', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    NotEqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -808,7 +808,7 @@ class NotEqualMissingTransformer(BaseComparatorTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_ind ┆ col3_ind │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ bool     ┆ bool     │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
