@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from coola.utils import is_numpy_available
 from feu import compare_version
 from polars.testing import assert_frame_equal
@@ -46,23 +47,112 @@ def dataframe() -> pl.DataFrame:
 
 @sklearn_available
 def test_ordinal_encoder_transformer_repr() -> None:
-    assert repr(OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")) == (
-        "OrdinalEncoderTransformer(columns=('col1', 'col2', 'col3'), prefix='', suffix='_ord', "
-        "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
+    assert repr(OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")) == (
+        "OrdinalEncoderTransformer(columns=('col1', 'col2', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
+        "suffix='_out')"
     )
 
 
 @sklearn_available
 def test_ordinal_encoder_transformer_str() -> None:
-    assert str(OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")) == (
-        "OrdinalEncoderTransformer(columns=('col1', 'col2', 'col3'), prefix='', suffix='_ord', "
-        "exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')"
+    assert str(OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")) == (
+        "OrdinalEncoderTransformer(columns=('col1', 'col2', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
+        "suffix='_out')"
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_true() -> None:
+    assert OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out")
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_columns() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_prefix() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="bin_", suffix="_out")
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_suffix() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="")
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_exclude_columns() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out", exclude_columns=["col4"])
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_exist_policy() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out", exist_policy="warn")
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_missing_policy() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out", missing_policy="warn")
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_propagate_nulls() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out", propagate_nulls=False)
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_kwargs() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out", max_categories=10)
+    )
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_equal_false_different_type() -> None:
+    assert not OrdinalEncoder(columns=["col1", "col3"], prefix="", suffix="_out").equal(42)
+
+
+@sklearn_available
+def test_ordinal_encoder_transformer_get_args() -> None:
+    assert objects_are_equal(
+        OrdinalEncoder(
+            columns=["col1", "col3"], prefix="", suffix="_out", max_categories=10
+        ).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "prefix": "",
+            "suffix": "_out",
+            "propagate_nulls": True,
+            "max_categories": 10,
+        },
     )
 
 
 @sklearn_available
 def test_ordinal_encoder_transformer_fit(dataframe: pl.DataFrame) -> None:
-    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")
+    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     transformer.fit(dataframe)
     assert transformer._encoder.n_features_in_ == 3
 
@@ -74,7 +164,7 @@ def test_ordinal_encoder_transformer_fit_missing_policy_ignore(
     transformer = OrdinalEncoder(
         columns=["col1", "col2", "col3", "col5"],
         prefix="",
-        suffix="_ord",
+        suffix="_out",
         missing_policy="ignore",
     )
     with warnings.catch_warnings():
@@ -87,7 +177,7 @@ def test_ordinal_encoder_transformer_fit_missing_policy_ignore(
 def test_ordinal_encoder_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = OrdinalEncoder(columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_ord")
+    transformer = OrdinalEncoder(columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_out")
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
@@ -97,7 +187,7 @@ def test_ordinal_encoder_transformer_fit_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = OrdinalEncoder(
-        columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_ord", missing_policy="warn"
+        columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
     with pytest.warns(
         ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
@@ -108,7 +198,7 @@ def test_ordinal_encoder_transformer_fit_missing_policy_warn(
 
 @sklearn_available
 def test_ordinal_encoder_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
-    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")
+    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     out = transformer.fit_transform(dataframe)
     assert transformer._encoder.n_features_in_ == 3
     assert_frame_equal(
@@ -119,18 +209,18 @@ def test_ordinal_encoder_transformer_fit_transform(dataframe: pl.DataFrame) -> N
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": ["c", "a", "d", "b", "e"],
                 "col4": [10, 20, 30, 40, 50],
-                "col1_ord": [3.0, 4.0, 0.0, 1.0, 2.0],
-                "col2_ord": [4.0, 3.0, 2.0, 1.0, 0.0],
-                "col3_ord": [2.0, 0.0, 3.0, 1.0, 4.0],
+                "col1_out": [3.0, 4.0, 0.0, 1.0, 2.0],
+                "col2_out": [4.0, 3.0, 2.0, 1.0, 0.0],
+                "col3_out": [2.0, 0.0, 3.0, 1.0, 4.0],
             },
             schema={
                 "col1": pl.Int64,
                 "col2": pl.Float32,
                 "col3": pl.String,
                 "col4": pl.Int64,
-                "col1_ord": pl.Float64,
-                "col2_ord": pl.Float64,
-                "col3_ord": pl.Float64,
+                "col1_out": pl.Float64,
+                "col2_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -138,7 +228,7 @@ def test_ordinal_encoder_transformer_fit_transform(dataframe: pl.DataFrame) -> N
 
 @sklearn_available
 def test_ordinal_encoder_transformer_transform(dataframe: pl.DataFrame) -> None:
-    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")
+    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     transformer._encoder.fit(
         [[4, -1.0, "c"], [5, -2.0, "a"], [1, -3.0, "d"], [2, -4.0, "b"], [3, -5.0, "e"]]
     )
@@ -151,18 +241,18 @@ def test_ordinal_encoder_transformer_transform(dataframe: pl.DataFrame) -> None:
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": ["c", "a", "d", "b", "e"],
                 "col4": [10, 20, 30, 40, 50],
-                "col1_ord": [3.0, 4.0, 0.0, 1.0, 2.0],
-                "col2_ord": [4.0, 3.0, 2.0, 1.0, 0.0],
-                "col3_ord": [2.0, 0.0, 3.0, 1.0, 4.0],
+                "col1_out": [3.0, 4.0, 0.0, 1.0, 2.0],
+                "col2_out": [4.0, 3.0, 2.0, 1.0, 0.0],
+                "col3_out": [2.0, 0.0, 3.0, 1.0, 4.0],
             },
             schema={
                 "col1": pl.Int64,
                 "col2": pl.Float32,
                 "col3": pl.String,
                 "col4": pl.Int64,
-                "col1_ord": pl.Float64,
-                "col2_ord": pl.Float64,
-                "col3_ord": pl.Float64,
+                "col1_out": pl.Float64,
+                "col2_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -190,7 +280,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_true() -> None:
         },
         schema={"col1": pl.Float32, "col2": pl.Float64, "col3": pl.String},
     )
-    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")
+    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     transformer._encoder.fit(
         [
             [4, -1.0, "c"],
@@ -221,7 +311,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_true() -> None:
                     float("nan"),
                 ],
                 "col3": ["a", "b", "c", "d", "e", None, None, None, None, None, None],
-                "col1_ord": [
+                "col1_out": [
                     0.0,
                     1.0,
                     2.0,
@@ -234,7 +324,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_true() -> None:
                     0.0,
                     float("nan"),
                 ],
-                "col2_ord": [
+                "col2_out": [
                     4.0,
                     3.0,
                     2.0,
@@ -247,7 +337,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_true() -> None:
                     float("nan"),
                     float("nan"),
                 ],
-                "col3_ord": [
+                "col3_out": [
                     0.0,
                     1.0,
                     2.0,
@@ -265,9 +355,9 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_true() -> None:
                 "col1": pl.Float32,
                 "col2": pl.Float64,
                 "col3": pl.String,
-                "col1_ord": pl.Float64,
-                "col2_ord": pl.Float64,
-                "col3_ord": pl.Float64,
+                "col1_out": pl.Float64,
+                "col2_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -296,7 +386,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_false() -> None:
         schema={"col1": pl.Float32, "col2": pl.Float64, "col3": pl.String},
     )
     transformer = OrdinalEncoder(
-        columns=["col1", "col2", "col3"], prefix="", suffix="_ord", propagate_nulls=False
+        columns=["col1", "col2", "col3"], prefix="", suffix="_out", propagate_nulls=False
     )
     transformer._encoder.fit(
         [
@@ -328,7 +418,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_false() -> None:
                     float("nan"),
                 ],
                 "col3": ["a", "b", "c", "d", "e", None, None, None, None, None, None],
-                "col1_ord": [
+                "col1_out": [
                     0.0,
                     1.0,
                     2.0,
@@ -341,7 +431,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_false() -> None:
                     0.0,
                     float("nan"),
                 ],
-                "col2_ord": [
+                "col2_out": [
                     4.0,
                     3.0,
                     2.0,
@@ -354,7 +444,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_false() -> None:
                     float("nan"),
                     float("nan"),
                 ],
-                "col3_ord": [
+                "col3_out": [
                     0.0,
                     1.0,
                     2.0,
@@ -372,9 +462,9 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_false() -> None:
                 "col1": pl.Float32,
                 "col2": pl.Float64,
                 "col3": pl.String,
-                "col1_ord": pl.Float64,
-                "col2_ord": pl.Float64,
-                "col3_ord": pl.Float64,
+                "col1_out": pl.Float64,
+                "col2_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -382,7 +472,7 @@ def test_ordinal_encoder_transformer_transform_propagate_nulls_false() -> None:
 
 @sklearn_available
 def test_ordinal_encoder_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> None:
-    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")
+    transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     # Use a if-else structure because the exception depends on the sklearn version
     if compare_version("scikit-learn", operator.ge, "1.4.0"):
         exception = pytest.raises(
@@ -469,7 +559,7 @@ def test_ordinal_encoder_transformer_transform_missing_policy_ignore(
     transformer = OrdinalEncoder(
         columns=["col1", "col2", "col3", "col5"],
         prefix="",
-        suffix="_ord",
+        suffix="_out",
         missing_policy="ignore",
     )
     transformer._encoder.fit(
@@ -486,18 +576,18 @@ def test_ordinal_encoder_transformer_transform_missing_policy_ignore(
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": ["c", "a", "d", "b", "e"],
                 "col4": [10, 20, 30, 40, 50],
-                "col1_ord": [3.0, 4.0, 0.0, 1.0, 2.0],
-                "col2_ord": [4.0, 3.0, 2.0, 1.0, 0.0],
-                "col3_ord": [2.0, 0.0, 3.0, 1.0, 4.0],
+                "col1_out": [3.0, 4.0, 0.0, 1.0, 2.0],
+                "col2_out": [4.0, 3.0, 2.0, 1.0, 0.0],
+                "col3_out": [2.0, 0.0, 3.0, 1.0, 4.0],
             },
             schema={
                 "col1": pl.Int64,
                 "col2": pl.Float32,
                 "col3": pl.String,
                 "col4": pl.Int64,
-                "col1_ord": pl.Float64,
-                "col2_ord": pl.Float64,
-                "col3_ord": pl.Float64,
+                "col1_out": pl.Float64,
+                "col2_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -507,7 +597,7 @@ def test_ordinal_encoder_transformer_transform_missing_policy_ignore(
 def test_ordinal_encoder_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = OrdinalEncoder(columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_ord")
+    transformer = OrdinalEncoder(columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_out")
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
@@ -517,7 +607,7 @@ def test_ordinal_encoder_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = OrdinalEncoder(
-        columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_ord", missing_policy="warn"
+        columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
     transformer._encoder.fit(
         [[4, -1.0, "c"], [5, -2.0, "a"], [1, -3.0, "d"], [2, -4.0, "b"], [3, -5.0, "e"]]
@@ -534,18 +624,18 @@ def test_ordinal_encoder_transformer_transform_missing_policy_warn(
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": ["c", "a", "d", "b", "e"],
                 "col4": [10, 20, 30, 40, 50],
-                "col1_ord": [3.0, 4.0, 0.0, 1.0, 2.0],
-                "col2_ord": [4.0, 3.0, 2.0, 1.0, 0.0],
-                "col3_ord": [2.0, 0.0, 3.0, 1.0, 4.0],
+                "col1_out": [3.0, 4.0, 0.0, 1.0, 2.0],
+                "col2_out": [4.0, 3.0, 2.0, 1.0, 0.0],
+                "col3_out": [2.0, 0.0, 3.0, 1.0, 4.0],
             },
             schema={
                 "col1": pl.Int64,
                 "col2": pl.Float32,
                 "col3": pl.String,
                 "col4": pl.Int64,
-                "col1_ord": pl.Float64,
-                "col2_ord": pl.Float64,
-                "col3_ord": pl.Float64,
+                "col1_out": pl.Float64,
+                "col2_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -556,4 +646,4 @@ def test_ordinal_encoder_transformer_no_sklearn() -> None:
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
         pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
     ):
-        OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_ord")
+        OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
