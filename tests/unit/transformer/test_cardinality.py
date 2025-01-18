@@ -32,16 +32,16 @@ def dataframe() -> pl.DataFrame:
 def test_filter_cardinality_transformer_repr() -> None:
     assert (
         repr(FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5))
-        == "FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, "
-        "exclude_columns=(), missing_policy='raise')"
+        == "FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), "
+        "exclude_columns=(), missing_policy='raise', n_min=2, n_max=5)"
     )
 
 
 def test_filter_cardinality_transformer_str() -> None:
     assert (
         str(FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5))
-        == "FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, "
-        "exclude_columns=(), missing_policy='raise')"
+        == "FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), "
+        "exclude_columns=(), missing_policy='raise', n_min=2, n_max=5)"
     )
 
 
