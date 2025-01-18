@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -40,6 +41,45 @@ def test_column_selection_transformer_str() -> None:
         str(ColumnSelection(columns=["col1", "col2"]))
         == "ColumnSelectionTransformer(columns=('col1', 'col2'), exclude_columns=(), "
         "missing_policy='raise')"
+    )
+
+
+def test_column_selection_transformer_equal_true() -> None:
+    assert ColumnSelection(columns=["col1", "col3"]).equal(
+        ColumnSelection(columns=["col1", "col3"])
+    )
+
+
+def test_column_selection_transformer_equal_false_different_columns() -> None:
+    assert not ColumnSelection(columns=["col1", "col3"]).equal(
+        ColumnSelection(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_column_selection_transformer_equal_false_different_exclude_columns() -> None:
+    assert not ColumnSelection(columns=["col1", "col3"]).equal(
+        ColumnSelection(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_column_selection_transformer_equal_false_different_missing_policy() -> None:
+    assert not ColumnSelection(columns=["col1", "col3"]).equal(
+        ColumnSelection(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_column_selection_transformer_equal_false_different_type() -> None:
+    assert not ColumnSelection(columns=["col1", "col3"]).equal(42)
+
+
+def test_column_selection_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ColumnSelection(columns=["col1", "col3"]).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+        },
     )
 
 
