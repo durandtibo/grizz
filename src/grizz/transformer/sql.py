@@ -6,8 +6,9 @@ from __future__ import annotations
 __all__ = ["SqlTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from coola import objects_are_equal
 from coola.utils import repr_indent, repr_mapping
 
 from grizz.transformer.base import BaseTransformer
@@ -67,6 +68,11 @@ class SqlTransformer(BaseTransformer):
     def __repr__(self) -> str:
         args = repr_indent(repr_mapping({"query": self._query}))
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self._query, other._query, equal_nan=equal_nan)
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
