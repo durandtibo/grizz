@@ -8,10 +8,8 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNOut1Transformer
-from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -117,17 +115,8 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
         )
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "out_col": self._out_col,
-                "exclude_columns": self._exclude_columns,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+    def get_args(self) -> dict:
+        return super().get_args() | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
