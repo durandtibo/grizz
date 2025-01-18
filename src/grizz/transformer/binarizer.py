@@ -65,7 +65,7 @@ class BinarizerTransformer(BaseInNTransformer):
     ...     columns=["col1", "col3"], prefix="", suffix="_out", threshold=1.5
     ... )
     >>> transformer
-    BinarizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise', threshold=1.5)
+    BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', prefix='', suffix='_out', threshold=1.5)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -134,14 +134,15 @@ class BinarizerTransformer(BaseInNTransformer):
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
-        return {
-            "columns": self._columns,
-            "prefix": self._prefix,
-            "suffix": self._suffix,
-            "exclude_columns": self._exclude_columns,
-            "exist_policy": self._exist_policy,
-            "missing_policy": self._missing_policy,
-        } | self._kwargs
+        return (
+            super().get_args()
+            | {
+                "exist_policy": self._exist_policy,
+                "prefix": self._prefix,
+                "suffix": self._suffix,
+            }
+            | self._kwargs
+        )
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

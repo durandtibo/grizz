@@ -50,7 +50,7 @@ class FilterCardinalityTransformer(BaseInNTransformer):
     >>> from grizz.transformer import FilterCardinality
     >>> transformer = FilterCardinality(columns=["col1", "col2", "col3"], n_min=2, n_max=5)
     >>> transformer
-    FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), n_min=2, n_max=5, exclude_columns=(), missing_policy='raise')
+    FilterCardinalityTransformer(columns=('col1', 'col2', 'col3'), exclude_columns=(), missing_policy='raise', n_min=2, n_max=5)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -107,12 +107,9 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         self._n_max = n_max
 
     def get_args(self) -> dict:
-        return {
-            "columns": self._columns,
+        return super().get_args() | {
             "n_min": self._n_min,
             "n_max": self._n_max,
-            "exclude_columns": self._exclude_columns,
-            "missing_policy": self._missing_policy,
         }
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002

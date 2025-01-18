@@ -40,16 +40,16 @@ def dataframe() -> pl.DataFrame:
 @sklearn_available
 def test_binarizer_transformer_repr() -> None:
     assert repr(Binarizer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
-        "BinarizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')"
     )
 
 
 @sklearn_available
 def test_binarizer_transformer_str() -> None:
     assert str(Binarizer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
-        "BinarizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')"
     )
 
 
