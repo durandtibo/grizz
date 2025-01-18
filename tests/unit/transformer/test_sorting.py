@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -54,6 +55,48 @@ def test_sort_transformer_str_kwargs() -> None:
         str(Sort(columns=["col3", "col1"], descending=True))
         == "SortTransformer(columns=('col3', 'col1'), exclude_columns=(), "
         "missing_policy='raise', descending=True)"
+    )
+
+
+def test_sort_transformer_equal_true() -> None:
+    assert Sort(columns=["col1", "col3"]).equal(Sort(columns=["col1", "col3"]))
+
+
+def test_sort_transformer_equal_false_different_columns() -> None:
+    assert not Sort(columns=["col1", "col3"]).equal(Sort(columns=["col1", "col2", "col3"]))
+
+
+def test_sort_transformer_equal_false_different_exclude_columns() -> None:
+    assert not Sort(columns=["col1", "col3"]).equal(
+        Sort(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_sort_transformer_equal_false_different_missing_policy() -> None:
+    assert not Sort(columns=["col1", "col3"]).equal(
+        Sort(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_sort_transformer_equal_false_different_kwargs() -> None:
+    assert not Sort(columns=["col1", "col3"]).equal(
+        Sort(columns=["col1", "col3"], descending=False)
+    )
+
+
+def test_sort_transformer_equal_false_different_type() -> None:
+    assert not Sort(columns=["col1", "col3"]).equal(42)
+
+
+def test_sort_transformer_get_args() -> None:
+    assert objects_are_equal(
+        Sort(columns=["col1", "col3"], descending=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "descending": False,
+        },
     )
 
 
@@ -233,6 +276,18 @@ def test_sort_columns_transformer_repr() -> None:
 
 def test_sort_columns_transformer_str() -> None:
     assert str(SortColumns()).startswith("SortColumnsTransformer(")
+
+
+def test_sort_columns_transformer_equal_true() -> None:
+    assert SortColumns().equal(SortColumns())
+
+
+def test_sort_columns_transformer_equal_false_different_reverse() -> None:
+    assert not SortColumns().equal(SortColumns(reverse=True))
+
+
+def test_sort_columns_transformer_equal_false_different_type() -> None:
+    assert not SortColumns().equal(42)
 
 
 def test_sort_columns_transformer_fit(caplog: pytest.LogCaptureFixture) -> None:
