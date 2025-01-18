@@ -88,6 +88,12 @@ def test_mean_horizontal_transformer_equal_false_different_missing_policy() -> N
     )
 
 
+def test_mean_horizontal_transformer_equal_false_different_kwargs() -> None:
+    assert not MeanHorizontal(columns=["col1", "col3"], out_col="out").equal(
+        MeanHorizontal(columns=["col1", "col3"], out_col="out", ignore_nulls=False)
+    )
+
+
 def test_mean_horizontal_transformer_equal_false_different_type() -> None:
     assert not MeanHorizontal(columns=["col1", "col3"], out_col="out").equal(42)
 
