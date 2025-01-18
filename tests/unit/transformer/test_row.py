@@ -35,6 +35,18 @@ def test_first_row_transformer_str() -> None:
     assert str(FirstRow(n=3)) == "FirstRowTransformer(n=3)"
 
 
+def test_first_row_transformer_equal_true() -> None:
+    assert FirstRow(n=5).equal(FirstRow(n=5))
+
+
+def test_first_row_transformer_equal_false_different_query() -> None:
+    assert not FirstRow(n=5).equal(FirstRow(n=3))
+
+
+def test_first_row_transformer_equal_false_different_type() -> None:
+    assert not FirstRow(n=5).equal(42)
+
+
 def test_first_row_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
