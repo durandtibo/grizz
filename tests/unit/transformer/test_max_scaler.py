@@ -123,6 +123,22 @@ def test_max_abs_scaler_transformer_equal_false_different_type() -> None:
 
 
 @sklearn_available
+def test_max_abs_scaler_transformer_transformer_get_args() -> None:
+    assert objects_are_equal(
+        MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_out").get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "prefix": "",
+            "suffix": "_out",
+            "propagate_nulls": True,
+        },
+    )
+
+
+@sklearn_available
 def test_max_abs_scaler_transformer_fit(dataframe: pl.DataFrame) -> None:
     transformer = MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_out")
     transformer.fit(dataframe)
