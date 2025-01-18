@@ -8,7 +8,6 @@ __all__ = ["ColumnCloseTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-
 from grizz.transformer.columns import BaseIn2Out1Transformer
 from grizz.utils.format import str_boolean_series_stats
 
