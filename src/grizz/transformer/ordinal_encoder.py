@@ -9,11 +9,9 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
-from grizz.utils.format import str_kwargs
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -65,9 +63,9 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import OrdinalEncoder
-    >>> transformer = OrdinalEncoder(columns=["col1", "col2"], prefix="", suffix="_ord")
+    >>> transformer = OrdinalEncoder(columns=["col1", "col2"], prefix="", suffix="_out")
     >>> transformer
-    OrdinalEncoderTransformer(columns=('col1', 'col2'), prefix='', suffix='_ord', exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')
+    OrdinalEncoderTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', suffix='_out')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -94,7 +92,7 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
     >>> out
     shape: (6, 5)
     ┌──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col1_ord ┆ col2_ord │
+    │ col1 ┆ col2 ┆ col3 ┆ col1_out ┆ col2_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ f64      ┆ f64      │
     ╞══════╪══════╪══════╪══════════╪══════════╡
@@ -136,19 +134,17 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
         self._encoder = sklearn.preprocessing.OrdinalEncoder(**kwargs)
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
+    def get_args(self) -> dict:
+        return (
+            super().get_args()
+            | {
+                "exist_policy": self._exist_policy,
+                "propagate_nulls": self._propagate_nulls,
                 "prefix": self._prefix,
                 "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "propagate_nulls": self._propagate_nulls,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
             }
+            | self._kwargs
         )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(f"Fitting the ordinal encoder on {len(self.find_columns(frame)):,} columns...")
