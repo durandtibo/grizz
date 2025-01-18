@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -30,29 +31,80 @@ def dataframe() -> pl.DataFrame:
 
 def test_drop_nan_column_transformer_repr() -> None:
     assert repr(DropNanColumn(columns=["col1", "col3"])) == (
-        "DropNanColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise')"
+        "DropNanColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0)"
     )
 
 
 def test_drop_nan_column_transformer_repr_with_kwargs() -> None:
     assert repr(DropNanColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNanColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "DropNanColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0, strict=False)"
     )
 
 
 def test_drop_nan_column_transformer_str() -> None:
     assert str(DropNanColumn(columns=["col1", "col3"])) == (
-        "DropNanColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise')"
+        "DropNanColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0)"
     )
 
 
 def test_drop_nan_column_transformer_str_with_kwargs() -> None:
     assert str(DropNanColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNanColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "DropNanColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0, strict=False)"
+    )
+
+
+def test_drop_nan_column_transformer_equal_true() -> None:
+    assert DropNanColumn(columns=["col1", "col3"]).equal(DropNanColumn(columns=["col1", "col3"]))
+
+
+def test_drop_nan_column_transformer_equal_false_different_threshold() -> None:
+    assert not DropNanColumn(columns=["col1", "col3"]).equal(
+        DropNanColumn(columns=["col1", "col3"], threshold=0.5)
+    )
+
+
+def test_drop_nan_column_transformer_equal_false_different_columns() -> None:
+    assert not DropNanColumn(columns=["col1", "col3"]).equal(
+        DropNanColumn(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_drop_nan_column_transformer_equal_false_different_exclude_columns() -> None:
+    assert not DropNanColumn(columns=["col1", "col3"]).equal(
+        DropNanColumn(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_drop_nan_column_transformer_equal_false_different_missing_policy() -> None:
+    assert not DropNanColumn(columns=["col1", "col3"]).equal(
+        DropNanColumn(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_drop_nan_column_transformer_equal_false_different_kwargs() -> None:
+    assert not DropNanColumn(columns=["col1", "col3"]).equal(
+        DropNanColumn(columns=["col1", "col3"], characters=None)
+    )
+
+
+def test_drop_nan_column_transformer_equal_false_different_type() -> None:
+    assert not DropNanColumn(columns=["col1", "col3"]).equal(42)
+
+
+def test_drop_nan_column_transformer_get_args() -> None:
+    assert objects_are_equal(
+        DropNanColumn(columns=["col1", "col3"], strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "threshold": 1.0,
+            "strict": False,
+        },
     )
 
 
@@ -277,6 +329,32 @@ def test_drop_nan_row_transformer_str() -> None:
         "DropNanRowTransformer(columns=('col1', 'col3'), exclude_columns=(), "
         "missing_policy='raise')"
     )
+
+
+def test_drop_nan_row_transformer_equal_true() -> None:
+    assert DropNanRow(columns=["col1", "col3"]).equal(DropNanRow(columns=["col1", "col3"]))
+
+
+def test_drop_nan_row_transformer_equal_false_different_columns() -> None:
+    assert not DropNanRow(columns=["col1", "col3"]).equal(
+        DropNanRow(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_drop_nan_row_transformer_equal_false_different_exclude_columns() -> None:
+    assert not DropNanRow(columns=["col1", "col3"]).equal(
+        DropNanRow(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_drop_nan_row_transformer_equal_false_different_missing_policy() -> None:
+    assert not DropNanRow(columns=["col1", "col3"]).equal(
+        DropNanRow(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_drop_nan_row_transformer_equal_false_different_type() -> None:
+    assert not DropNanRow(columns=["col1", "col3"]).equal(42)
 
 
 def test_drop_nan_row_transformer_fit(

@@ -10,10 +10,9 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 import polars.selectors as cs
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_kwargs, str_shape_diff
+from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -44,7 +43,7 @@ class DropNanColumnTransformer(BaseInNTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
-        **kwargs: The keyword arguments for ``cast``.
+        **kwargs: The keyword arguments for ``drop``.
 
     Example usage:
 
@@ -54,7 +53,7 @@ class DropNanColumnTransformer(BaseInNTransformer):
     >>> from grizz.transformer import DropNanColumn
     >>> transformer = DropNanColumn()
     >>> transformer
-    DropNanColumnTransformer(columns=None, threshold=1.0, exclude_columns=(), missing_policy='raise')
+    DropNanColumnTransformer(columns=None, exclude_columns=(), missing_policy='raise', threshold=1.0)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1.0, 2.0, 3.0, 4.0, float("nan")],
@@ -107,16 +106,8 @@ class DropNanColumnTransformer(BaseInNTransformer):
         self._threshold = threshold
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "threshold": self._threshold,
-                "exclude_columns": self._exclude_columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+    def get_args(self) -> dict:
+        return super().get_args() | {"threshold": self._threshold} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -139,7 +130,7 @@ class DropNanColumnTransformer(BaseInNTransformer):
             f"many NaN values (threshold={self._threshold})..."
         )
         logger.info(f"dropped columns: {cols}")
-        out = frame.drop(cols)
+        out = frame.drop(cols, **self._kwargs)
         logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out
 
