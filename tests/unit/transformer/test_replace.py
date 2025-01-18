@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -39,6 +40,53 @@ def test_replace_transformer_fit(caplog: pytest.LogCaptureFixture) -> None:
         transformer.fit(frame)
     assert caplog.messages[0].startswith(
         "Skipping 'ReplaceTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_replace_transformer_equal_true() -> None:
+    assert Replace(in_col="col1", out_col="out").equal(Replace(in_col="col1", out_col="out"))
+
+
+def test_replace_transformer_equal_false_different_in_col() -> None:
+    assert not Replace(in_col="col1", out_col="out").equal(Replace(in_col="col", out_col="out"))
+
+
+def test_replace_transformer_equal_false_different_out_col() -> None:
+    assert not Replace(in_col="col1", out_col="out").equal(Replace(in_col="col1", out_col="col"))
+
+
+def test_replace_transformer_equal_false_different_exist_policy() -> None:
+    assert not Replace(in_col="col1", out_col="out").equal(
+        Replace(in_col="col1", out_col="out", exist_policy="warn")
+    )
+
+
+def test_replace_transformer_equal_false_different_missing_policy() -> None:
+    assert not Replace(in_col="col1", out_col="out").equal(
+        Replace(in_col="col1", out_col="out", missing_policy="warn")
+    )
+
+
+def test_replace_transformer_equal_false_different_old() -> None:
+    assert not Replace(in_col="col1", out_col="out").equal(
+        Replace(in_col="col1", out_col="out", old={"a": 1, "b": 2, "c": 3})
+    )
+
+
+def test_replace_transformer_equal_false_different_type() -> None:
+    assert not Replace(in_col="col1", out_col="out").equal(42)
+
+
+def test_replace_transformer_get_args() -> None:
+    assert objects_are_equal(
+        Replace(in_col="col1", out_col="out", old={"a": 1, "b": 2, "c": 3}).get_args(),
+        {
+            "in_col": "col1",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "old": {"a": 1, "b": 2, "c": 3},
+        },
     )
 
 
@@ -262,6 +310,59 @@ def test_replace_strict_transformer_repr() -> None:
 def test_replace_strict_transformer_str() -> None:
     assert str(ReplaceStrict(in_col="old", out_col="new", old={"a": 1, "b": 2, "c": 3})).startswith(
         "ReplaceStrictTransformer("
+    )
+
+
+def test_replace_strict_transformer_equal_true() -> None:
+    assert ReplaceStrict(in_col="col1", out_col="out").equal(
+        ReplaceStrict(in_col="col1", out_col="out")
+    )
+
+
+def test_replace_strict_transformer_equal_false_different_in_col() -> None:
+    assert not ReplaceStrict(in_col="col1", out_col="out").equal(
+        ReplaceStrict(in_col="col", out_col="out")
+    )
+
+
+def test_replace_strict_transformer_equal_false_different_out_col() -> None:
+    assert not ReplaceStrict(in_col="col1", out_col="out").equal(
+        ReplaceStrict(in_col="col1", out_col="col")
+    )
+
+
+def test_replace_strict_transformer_equal_false_different_exist_policy() -> None:
+    assert not ReplaceStrict(in_col="col1", out_col="out").equal(
+        ReplaceStrict(in_col="col1", out_col="out", exist_policy="warn")
+    )
+
+
+def test_replace_strict_transformer_equal_false_different_missing_policy() -> None:
+    assert not ReplaceStrict(in_col="col1", out_col="out").equal(
+        ReplaceStrict(in_col="col1", out_col="out", missing_policy="warn")
+    )
+
+
+def test_replace_strict_transformer_equal_false_different_old() -> None:
+    assert not ReplaceStrict(in_col="col1", out_col="out").equal(
+        ReplaceStrict(in_col="col1", out_col="out", old={"a": 1, "b": 2, "c": 3})
+    )
+
+
+def test_replace_strict_transformer_equal_false_different_type() -> None:
+    assert not ReplaceStrict(in_col="col1", out_col="out").equal(42)
+
+
+def test_replace_strict_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ReplaceStrict(in_col="col1", out_col="out", old={"a": 1, "b": 2, "c": 3}).get_args(),
+        {
+            "in_col": "col1",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+            "old": {"a": 1, "b": 2, "c": 3},
+        },
     )
 
 
