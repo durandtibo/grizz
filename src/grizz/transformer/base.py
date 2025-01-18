@@ -77,7 +77,7 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
     ```
     """
 
-    # @abstractmethod
+    @abstractmethod
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         r"""Indicate if two objects are equal or not.
 
@@ -105,7 +105,6 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
 
         ```
         """
-        raise NotImplementedError
 
     @abstractmethod
     def fit(self, frame: pl.DataFrame) -> None:
