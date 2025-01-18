@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -28,29 +29,80 @@ def frame_col() -> pl.DataFrame:
 
 def test_drop_null_column_transformer_repr() -> None:
     assert repr(DropNullColumn(columns=["col1", "col3"])) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise')"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0)"
     )
 
 
 def test_drop_null_column_transformer_repr_with_kwargs() -> None:
     assert repr(DropNullColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0, strict=False)"
     )
 
 
 def test_drop_null_column_transformer_str() -> None:
     assert str(DropNullColumn(columns=["col1", "col3"])) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise')"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0)"
     )
 
 
 def test_drop_null_column_transformer_str_with_kwargs() -> None:
     assert str(DropNullColumn(columns=["col1", "col3"], strict=False)) == (
-        "DropNullColumnTransformer(columns=('col1', 'col3'), threshold=1.0, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "DropNullColumnTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', threshold=1.0, strict=False)"
+    )
+
+
+def test_drop_null_column_transformer_equal_true() -> None:
+    assert DropNullColumn(columns=["col1", "col3"]).equal(DropNullColumn(columns=["col1", "col3"]))
+
+
+def test_drop_null_column_transformer_equal_false_different_threshold() -> None:
+    assert not DropNullColumn(columns=["col1", "col3"]).equal(
+        DropNullColumn(columns=["col1", "col3"], threshold=0.5)
+    )
+
+
+def test_drop_null_column_transformer_equal_false_different_columns() -> None:
+    assert not DropNullColumn(columns=["col1", "col3"]).equal(
+        DropNullColumn(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_drop_null_column_transformer_equal_false_different_exclude_columns() -> None:
+    assert not DropNullColumn(columns=["col1", "col3"]).equal(
+        DropNullColumn(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_drop_null_column_transformer_equal_false_different_missing_policy() -> None:
+    assert not DropNullColumn(columns=["col1", "col3"]).equal(
+        DropNullColumn(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_drop_null_column_transformer_equal_false_different_kwargs() -> None:
+    assert not DropNullColumn(columns=["col1", "col3"]).equal(
+        DropNullColumn(columns=["col1", "col3"], characters=None)
+    )
+
+
+def test_drop_null_column_transformer_equal_false_different_type() -> None:
+    assert not DropNullColumn(columns=["col1", "col3"]).equal(42)
+
+
+def test_drop_null_column_transformer_get_args() -> None:
+    assert objects_are_equal(
+        DropNullColumn(columns=["col1", "col3"], strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "threshold": 1.0,
+            "strict": False,
+        },
     )
 
 
@@ -256,6 +308,32 @@ def test_drop_null_row_transformer_str() -> None:
         "DropNullRowTransformer(columns=('col1', 'col3'), exclude_columns=(), "
         "missing_policy='raise')"
     )
+
+
+def test_drop_null_row_transformer_equal_true() -> None:
+    assert DropNullRow(columns=["col1", "col3"]).equal(DropNullRow(columns=["col1", "col3"]))
+
+
+def test_drop_null_row_transformer_equal_false_different_columns() -> None:
+    assert not DropNullRow(columns=["col1", "col3"]).equal(
+        DropNullRow(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_drop_null_row_transformer_equal_false_different_exclude_columns() -> None:
+    assert not DropNullRow(columns=["col1", "col3"]).equal(
+        DropNullRow(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_drop_null_row_transformer_equal_false_different_missing_policy() -> None:
+    assert not DropNullRow(columns=["col1", "col3"]).equal(
+        DropNullRow(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_drop_null_row_transformer_equal_false_different_type() -> None:
+    assert not DropNullRow(columns=["col1", "col3"]).equal(42)
 
 
 def test_drop_null_row_transformer_fit(
