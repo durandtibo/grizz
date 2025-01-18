@@ -9,7 +9,6 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
@@ -63,10 +62,10 @@ class BinarizerTransformer(BaseInNTransformer):
     >>> import polars as pl
     >>> from grizz.transformer import Binarizer
     >>> transformer = Binarizer(
-    ...     columns=["col1", "col3"], prefix="", suffix="_bin", threshold=1.5
+    ...     columns=["col1", "col3"], prefix="", suffix="_out", threshold=1.5
     ... )
     >>> transformer
-    BinarizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_bin', exclude_columns=(), exist_policy='raise', missing_policy='raise', threshold=1.5)
+    BinarizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise', threshold=1.5)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -94,7 +93,7 @@ class BinarizerTransformer(BaseInNTransformer):
     >>> out
     shape: (6, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_bin ┆ col3_bin │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ i64  ┆ str  ┆ i64      ┆ i64      │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -134,10 +133,6 @@ class BinarizerTransformer(BaseInNTransformer):
         self._scaler = sklearn.preprocessing.Binarizer(**kwargs)
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
-
     def get_args(self) -> dict:
         return {
             "columns": self._columns,
@@ -164,9 +159,9 @@ class BinarizerTransformer(BaseInNTransformer):
         data = frame.select(columns).fill_nan(None)
 
         x = self._scaler.transform(data.fill_null(0).to_numpy())
-        data_bin = pl.from_numpy(x, schema=data.columns)
-        data_bin = propagate_nulls(data_bin, data)
-        return frame.with_columns(data_bin.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
+        out = pl.from_numpy(x, schema=data.columns)
+        out = propagate_nulls(out, data)
+        return frame.with_columns(out.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
 
     def _check_output_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if the output columns already exist.

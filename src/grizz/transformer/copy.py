@@ -136,9 +136,9 @@ class CopyColumnsTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import CopyColumns
-    >>> transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="_raw")
+    >>> transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="_out")
     >>> transformer
-    CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', prefix='', suffix='_raw')
+    CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -164,7 +164,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
     >>> out
     shape: (5, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_raw ┆ col3_raw │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ str  ┆ str  ┆ i64      ┆ str      │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡

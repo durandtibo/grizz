@@ -48,9 +48,9 @@ class ConcatColumnsTransformer(BaseInNOut1Transformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import ConcatColumns
-    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="col")
+    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="out")
     >>> transformer
-    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [11, 12, 13, 14, 15],
@@ -76,7 +76,7 @@ class ConcatColumnsTransformer(BaseInNOut1Transformer):
     >>> out
     shape: (5, 5)
     ┌──────┬──────┬──────┬──────┬──────────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col          │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ out          │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---          │
     │ i64  ┆ i64  ┆ i64  ┆ str  ┆ list[i64]    │
     ╞══════╪══════╪══════╪══════╪══════════════╡
