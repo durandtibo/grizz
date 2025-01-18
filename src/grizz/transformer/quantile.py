@@ -9,11 +9,9 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
-from grizz.utils.format import str_kwargs
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -65,9 +63,9 @@ class QuantileTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import QuantileTransformer
-    >>> transformer = QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_scaled")
+    >>> transformer = QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out")
     >>> transformer
-    QuantileTransformer(columns=('col1', 'col3'), prefix='', suffix='_scaled', exclude_columns=(), propagate_nulls=True, exist_policy='raise', missing_policy='raise')
+    QuantileTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', suffix='_out')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -94,18 +92,18 @@ class QuantileTransformer(BaseInNTransformer):
     >>> out = transformer.fit_transform(frame)
     >>> out
     shape: (6, 6)
-    ┌──────┬──────┬──────┬──────┬─────────────┬─────────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_scaled ┆ col3_scaled │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---         ┆ ---         │
-    │ i64  ┆ str  ┆ i64  ┆ str  ┆ f64         ┆ f64         │
-    ╞══════╪══════╪══════╪══════╪═════════════╪═════════════╡
-    │ 0    ┆ 0    ┆ 0    ┆ a    ┆ 0.0         ┆ 0.0         │
-    │ 1    ┆ 1    ┆ 10   ┆ b    ┆ 0.2         ┆ 0.2         │
-    │ 2    ┆ 2    ┆ 20   ┆ c    ┆ 0.4         ┆ 0.4         │
-    │ 3    ┆ 3    ┆ 30   ┆ d    ┆ 0.6         ┆ 0.6         │
-    │ 4    ┆ 4    ┆ 40   ┆ e    ┆ 0.8         ┆ 0.8         │
-    │ 5    ┆ 5    ┆ 50   ┆ f    ┆ 1.0         ┆ 1.0         │
-    └──────┴──────┴──────┴──────┴─────────────┴─────────────┘
+    ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
+    │ i64  ┆ str  ┆ i64  ┆ str  ┆ f64      ┆ f64      │
+    ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
+    │ 0    ┆ 0    ┆ 0    ┆ a    ┆ 0.0      ┆ 0.0      │
+    │ 1    ┆ 1    ┆ 10   ┆ b    ┆ 0.2      ┆ 0.2      │
+    │ 2    ┆ 2    ┆ 20   ┆ c    ┆ 0.4      ┆ 0.4      │
+    │ 3    ┆ 3    ┆ 30   ┆ d    ┆ 0.6      ┆ 0.6      │
+    │ 4    ┆ 4    ┆ 40   ┆ e    ┆ 0.8      ┆ 0.8      │
+    │ 5    ┆ 5    ┆ 50   ┆ f    ┆ 1.0      ┆ 1.0      │
+    └──────┴──────┴──────┴──────┴──────────┴──────────┘
 
     ```
     """
@@ -137,19 +135,17 @@ class QuantileTransformer(BaseInNTransformer):
         self._transformer = sklearn.preprocessing.QuantileTransformer(**kwargs)
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
+    def get_args(self) -> dict:
+        return (
+            super().get_args()
+            | {
+                "exist_policy": self._exist_policy,
+                "propagate_nulls": self._propagate_nulls,
                 "prefix": self._prefix,
                 "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "propagate_nulls": self._propagate_nulls,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
             }
+            | self._kwargs
         )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
@@ -169,12 +165,10 @@ class QuantileTransformer(BaseInNTransformer):
         data = frame.select(columns)
 
         x = self._transformer.transform(data.to_numpy())
-        data_scaled = pl.from_numpy(x, schema=data.columns)
+        data_out = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
-            data_scaled = propagate_nulls(data_scaled, data)
-        return frame.with_columns(
-            data_scaled.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
-        )
+            data_out = propagate_nulls(data_out, data)
+        return frame.with_columns(data_out.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
 
     def _check_output_columns(self, frame: pl.DataFrame) -> None:
         r"""Check if the output columns already exist.
