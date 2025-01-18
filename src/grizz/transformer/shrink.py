@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["ShrinkMemoryTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from grizz.transformer.base import BaseTransformer
 from grizz.utils.format import str_size_diff
@@ -69,6 +69,9 @@ class ShrinkMemoryTransformer(BaseTransformer):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}()"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:  # noqa: ARG002
+        return isinstance(other, self.__class__)
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
