@@ -5,6 +5,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import ColumnNotFoundError, ColumnNotFoundWarning
@@ -53,6 +54,50 @@ def test_strip_chars_transformer_str_with_kwargs() -> None:
     assert str(StripChars(columns=["col1", "col3"], characters=None)) == (
         "StripCharsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
         "missing_policy='raise', characters=None)"
+    )
+
+
+def test_strip_chars_transformer_equal_true() -> None:
+    assert StripChars(columns=["col1", "col3"]).equal(StripChars(columns=["col1", "col3"]))
+
+
+def test_strip_chars_transformer_equal_false_different_columns() -> None:
+    assert not StripChars(columns=["col1", "col3"]).equal(
+        StripChars(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_strip_chars_transformer_equal_false_different_exclude_columns() -> None:
+    assert not StripChars(columns=["col1", "col3"]).equal(
+        StripChars(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_strip_chars_transformer_equal_false_different_missing_policy() -> None:
+    assert not StripChars(columns=["col1", "col3"]).equal(
+        StripChars(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_strip_chars_transformer_equal_false_different_kwargs() -> None:
+    assert not StripChars(columns=["col1", "col3"]).equal(
+        StripChars(columns=["col1", "col3"], characters=None)
+    )
+
+
+def test_strip_chars_transformer_equal_false_different_type() -> None:
+    assert not StripChars(columns=["col1", "col3"]).equal(42)
+
+
+def test_strip_chars_transformer_get_args() -> None:
+    assert objects_are_equal(
+        StripChars(columns=["col1", "col3"], strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "strict": False,
+        },
     )
 
 
