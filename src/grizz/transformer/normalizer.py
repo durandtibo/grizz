@@ -9,11 +9,9 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseInNTransformer
 from grizz.utils.column import check_column_exist_policy, check_existing_columns
-from grizz.utils.format import str_kwargs
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -65,7 +63,7 @@ class NormalizerTransformer(BaseInNTransformer):
     >>> from grizz.transformer import Normalizer
     >>> transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="_norm")
     >>> transformer
-    NormalizerTransformer(columns=('col1', 'col3'), prefix='', suffix='_norm', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    NormalizerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', prefix='', suffix='_norm')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -133,18 +131,16 @@ class NormalizerTransformer(BaseInNTransformer):
         self._scaler = sklearn.preprocessing.Normalizer(**kwargs)
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
+    def get_args(self) -> dict:
+        return (
+            super().get_args()
+            | {
+                "exist_policy": self._exist_policy,
                 "prefix": self._prefix,
                 "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
             }
+            | self._kwargs
         )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
