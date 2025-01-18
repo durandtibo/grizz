@@ -13,11 +13,15 @@ import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
+from coola.equality.comparators import BaseEqualityComparator
+from coola.equality.handlers import EqualNanHandler, SameObjectHandler, SameTypeHandler
+from coola.equality.testers import EqualityTester
 from objectory import AbstractFactory
 from objectory.utils import is_object_config
 
 if TYPE_CHECKING:
     import polars as pl
+    from coola.equality import EqualityConfig
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +77,7 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
     ```
     """
 
-    @abstractmethod
+    # @abstractmethod
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         r"""Indicate if two objects are equal or not.
 
@@ -101,6 +105,7 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
 
         ```
         """
+        raise NotImplementedError
 
     @abstractmethod
     def fit(self, frame: pl.DataFrame) -> None:
@@ -344,3 +349,25 @@ def setup_transformer(
     if not isinstance(transformer, BaseTransformer):
         logger.warning(f"transformer is not a `BaseTransformer` (received: {type(transformer)})")
     return transformer
+
+
+class TransformerEqualityComparator(BaseEqualityComparator[BaseTransformer]):
+    r"""Implement an equality comparator for ``BaseTransformer``
+    objects."""
+
+    def __init__(self) -> None:
+        self._handler = SameObjectHandler()
+        self._handler.chain(SameTypeHandler()).chain(EqualNanHandler())
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, self.__class__)
+
+    def clone(self) -> TransformerEqualityComparator:
+        return self.__class__()
+
+    def equal(self, actual: BaseTransformer, expected: Any, config: EqualityConfig) -> bool:
+        return self._handler.handle(actual, expected, config=config)
+
+
+if not EqualityTester.has_comparator(BaseTransformer):  # pragma: no cover
+    EqualityTester.add_comparator(BaseTransformer, TransformerEqualityComparator())
