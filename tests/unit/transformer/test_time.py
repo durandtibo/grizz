@@ -6,6 +6,7 @@ import warnings
 
 import polars as pl
 import pytest
+from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import (
@@ -46,6 +47,52 @@ def test_time_to_second_transformer_repr() -> None:
 
 def test_time_to_second_transformer_str() -> None:
     assert str(TimeToSecond(in_col="time", out_col="second")).startswith("TimeToSecondTransformer(")
+
+
+def test_time_to_second_transformer_equal_true() -> None:
+    assert TimeToSecond(in_col="col1", out_col="out").equal(
+        TimeToSecond(in_col="col1", out_col="out")
+    )
+
+
+def test_time_to_second_transformer_equal_false_different_in_col() -> None:
+    assert not TimeToSecond(in_col="col1", out_col="out").equal(
+        TimeToSecond(in_col="col3", out_col="out")
+    )
+
+
+def test_time_to_second_transformer_equal_false_different_out_col() -> None:
+    assert not TimeToSecond(in_col="col1", out_col="out").equal(
+        TimeToSecond(in_col="col1", out_col="out2")
+    )
+
+
+def test_time_to_second_transformer_equal_false_different_exist_policy() -> None:
+    assert not TimeToSecond(in_col="col1", out_col="out").equal(
+        TimeToSecond(in_col="col1", out_col="out", exist_policy="warn")
+    )
+
+
+def test_time_to_second_transformer_equal_false_different_missing_policy() -> None:
+    assert not TimeToSecond(in_col="col1", out_col="out").equal(
+        TimeToSecond(in_col="col1", out_col="out", missing_policy="warn")
+    )
+
+
+def test_time_to_second_transformer_equal_false_different_type() -> None:
+    assert not TimeToSecond(in_col="col1", out_col="out").equal(42)
+
+
+def test_time_to_second_transformer_get_args() -> None:
+    assert objects_are_equal(
+        TimeToSecond(in_col="col1", out_col="out").get_args(),
+        {
+            "in_col": "col1",
+            "out_col": "out",
+            "exist_policy": "raise",
+            "missing_policy": "raise",
+        },
+    )
 
 
 def test_time_to_second_transformer_fit(
@@ -259,29 +306,76 @@ def frame_time() -> pl.DataFrame:
 
 def test_to_time_transformer_repr() -> None:
     assert repr(ToTime(columns=["col1", "col3"])) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise')"
+        "ToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None)"
     )
 
 
 def test_to_time_transformer_repr_with_kwargs() -> None:
     assert repr(ToTime(columns=["col1", "col3"], strict=False)) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "ToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None, strict=False)"
     )
 
 
 def test_to_time_transformer_str() -> None:
     assert str(ToTime(columns=["col1", "col3"])) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise')"
+        "ToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None)"
     )
 
 
 def test_to_time_transformer_str_with_kwargs() -> None:
     assert str(ToTime(columns=["col1", "col3"], strict=False)) == (
-        "ToTimeTransformer(columns=('col1', 'col3'), format=None, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "ToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format=None, strict=False)"
+    )
+
+
+def test_to_time_transformer_equal_true() -> None:
+    assert ToTime(columns=["col1", "col3"]).equal(ToTime(columns=["col1", "col3"]))
+
+
+def test_to_time_transformer_equal_false_different_columns() -> None:
+    assert not ToTime(columns=["col1", "col3"]).equal(ToTime(columns=["col1", "col2", "col3"]))
+
+
+def test_to_time_transformer_equal_false_different_exclude_columns() -> None:
+    assert not ToTime(columns=["col1", "col3"]).equal(
+        ToTime(columns=["col1", "col3"], exclude_columns=["col2"])
+    )
+
+
+def test_to_time_transformer_equal_false_different_missing_policy() -> None:
+    assert not ToTime(columns=["col1", "col3"]).equal(
+        ToTime(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_to_time_transformer_equal_false_different_format() -> None:
+    assert not ToTime(columns=["col1", "col3"]).equal(
+        ToTime(columns=["col1", "col3"], format="%H:%M:%S")
+    )
+
+
+def test_to_time_transformer_equal_false_different_kwargs() -> None:
+    assert not ToTime(columns=["col1", "col3"]).equal(ToTime(columns=["col1", "col3"], strict=True))
+
+
+def test_to_time_transformer_equal_false_different_type() -> None:
+    assert not ToTime(columns=["col1", "col3"]).equal(42)
+
+
+def test_to_time_transformer_get_args() -> None:
+    assert objects_are_equal(
+        ToTime(columns=["col1", "col2", "col3"], strict=True).get_args(),
+        {
+            "columns": ("col1", "col2", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "format": None,
+            "strict": True,
+        },
     )
 
 

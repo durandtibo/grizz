@@ -11,10 +11,8 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 import polars.selectors as cs
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
-from grizz.utils.format import str_kwargs
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -153,7 +151,7 @@ class ToTimeTransformer(BaseInNTransformer):
     >>> from grizz.transformer import ToTime
     >>> transformer = ToTime(columns=["col1"], format="%H:%M:%S")
     >>> transformer
-    ToTimeTransformer(columns=('col1',), format='%H:%M:%S', exclude_columns=(), missing_policy='raise')
+    ToTimeTransformer(columns=('col1',), exclude_columns=(), missing_policy='raise', format='%H:%M:%S')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
@@ -206,16 +204,8 @@ class ToTimeTransformer(BaseInNTransformer):
         self._format = format
         self._kwargs = kwargs
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "format": self._format,
-                "exclude_columns": self._exclude_columns,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args}{str_kwargs(self._kwargs)})"
+    def get_args(self) -> dict:
+        return super().get_args() | {"format": self._format} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
