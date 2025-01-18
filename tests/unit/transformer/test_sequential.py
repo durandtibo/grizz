@@ -55,6 +55,47 @@ def test_sequential_transformer_str_empty() -> None:
     assert str(Sequential([])) == "SequentialTransformer()"
 
 
+def test_sequential_transformer_equal_true() -> None:
+    assert Sequential(
+        [
+            Cast(columns=["col1"], dtype=pl.Float32),
+            Cast(columns=["col2"], dtype=pl.Int64),
+        ]
+    ).equal(
+        Sequential(
+            [
+                Cast(columns=["col1"], dtype=pl.Float32),
+                Cast(columns=["col2"], dtype=pl.Int64),
+            ]
+        )
+    )
+
+
+def test_sequential_transformer_equal_false_different_transformers() -> None:
+    assert not Sequential(
+        [
+            Cast(columns=["col1"], dtype=pl.Float32),
+            Cast(columns=["col2"], dtype=pl.Int64),
+        ]
+    ).equal(
+        Sequential(
+            [
+                Cast(columns=["col1"], dtype=pl.Float32),
+                Cast(columns=["col2", "col3"], dtype=pl.Int64),
+            ]
+        )
+    )
+
+
+def test_sequential_transformer_equal_false_different_type() -> None:
+    assert not Sequential(
+        [
+            Cast(columns=["col1"], dtype=pl.Float32),
+            Cast(columns=["col2"], dtype=pl.Int64),
+        ]
+    ).equal(42)
+
+
 def test_sequential_transformer_fit_1(
     caplog: pytest.LogCaptureFixture, dataframe: pl.DataFrame
 ) -> None:

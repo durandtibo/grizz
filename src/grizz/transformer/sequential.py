@@ -5,8 +5,9 @@ from __future__ import annotations
 
 __all__ = ["SequentialTransformer"]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from coola import objects_are_equal
 from coola.utils import repr_indent, repr_sequence, str_indent, str_sequence
 
 from grizz.transformer.base import BaseTransformer, setup_transformer
@@ -97,6 +98,11 @@ class SequentialTransformer(BaseTransformer):
         if self._transformers:
             args = f"\n  {str_indent(str_sequence(self._transformers))}\n"
         return f"{self.__class__.__qualname__}({args})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self._transformers, other._transformers, equal_nan=equal_nan)
 
     def fit(self, frame: pl.DataFrame) -> None:
         for transformer in self._transformers:
