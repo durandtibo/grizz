@@ -5,9 +5,10 @@ from __future__ import annotations
 __all__ = ["DiffTransformer", "TimeDiffTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
+from coola import objects_are_equal
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.base import BaseTransformer
@@ -181,15 +182,21 @@ class TimeDiffTransformer(BaseTransformer):
         self._shift = shift
 
     def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "group_cols": self._group_cols,
-                "time_col": self._time_col,
-                "time_diff_col": self._time_diff_col,
-                "shift": self._shift,
-            }
-        )
+        args = repr_mapping_line(self.get_args())
         return f"{self.__class__.__qualname__}({args})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+
+    def get_args(self) -> dict:
+        return {
+            "group_cols": self._group_cols,
+            "time_col": self._time_col,
+            "time_diff_col": self._time_diff_col,
+            "shift": self._shift,
+        }
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

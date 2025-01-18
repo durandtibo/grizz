@@ -300,6 +300,52 @@ def test_time_diff_transformer_str() -> None:
     )
 
 
+def test_time_diff_transformer_equal_true() -> None:
+    assert TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff").equal(
+        TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff")
+    )
+
+
+def test_time_diff_transformer_equal_false_different_group_cols() -> None:
+    assert not TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff").equal(
+        TimeDiff(group_cols=["col1", "col2"], time_col="time", time_diff_col="diff")
+    )
+
+
+def test_time_diff_transformer_equal_false_different_time_col() -> None:
+    assert not TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff").equal(
+        TimeDiff(group_cols=["col"], time_col="date", time_diff_col="diff")
+    )
+
+
+def test_time_diff_transformer_equal_false_different_time_diff_col() -> None:
+    assert not TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff").equal(
+        TimeDiff(group_cols=["col"], time_col="time", time_diff_col="out")
+    )
+
+
+def test_time_diff_transformer_equal_false_different_shift() -> None:
+    assert not TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff").equal(
+        TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff", shift=2)
+    )
+
+
+def test_time_diff_transformer_equal_false_different_type() -> None:
+    assert not TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff").equal(42)
+
+
+def test_time_diff_transformer_get_args() -> None:
+    assert objects_are_equal(
+        TimeDiff(group_cols=["col"], time_col="time", time_diff_col="diff").get_args(),
+        {
+            "group_cols": ["col"],
+            "time_col": "time",
+            "time_diff_col": "diff",
+            "shift": 1,
+        },
+    )
+
+
 def test_time_diff_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
