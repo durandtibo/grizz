@@ -1,8 +1,8 @@
-r"""Contain transformers to drop columns or rows with null values."""
+r"""Contain transformers to drop columns or rows with NaN values."""
 
 from __future__ import annotations
 
-__all__ = ["DropNullColumnTransformer", "DropNullRowTransformer"]
+__all__ = ["DropNanColumnTransformer", "DropNanRowTransformer"]
 
 import logging
 from itertools import compress
@@ -18,22 +18,21 @@ from grizz.utils.format import str_kwargs, str_shape_diff
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-
 logger = logging.getLogger(__name__)
 
 
-class DropNullColumnTransformer(BaseInNTransformer):
+class DropNanColumnTransformer(BaseInNTransformer):
     r"""Implement a transformer to remove the columns that have too many
-    null values.
+    NaN values.
 
     Args:
         columns: The columns to convert. ``None`` means all the
             columns.
-        threshold: The maximum percentage of null values to keep
-            columns. If the proportion of null vallues is greater
+        threshold: The maximum percentage of NaN values to keep
+            columns. If the proportion of NaN vallues is greater
             or equal to this threshold value, the column is removed.
             If set to ``1.0``, it removes all the columns that have
-            only null values.
+            only NaN values.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
@@ -52,44 +51,44 @@ class DropNullColumnTransformer(BaseInNTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import DropNullColumn
-    >>> transformer = DropNullColumn()
+    >>> from grizz.transformer import DropNanColumn
+    >>> transformer = DropNanColumn()
     >>> transformer
-    DropNullColumnTransformer(columns=None, threshold=1.0, exclude_columns=(), missing_policy='raise')
+    DropNanColumnTransformer(columns=None, threshold=1.0, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
-    ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
-    ...         "col2": [1, None, 3, None, 5],
-    ...         "col3": [None, None, None, None, None],
+    ...         "col1": [1.0, 2.0, 3.0, 4.0, float("nan")],
+    ...         "col2": [1.0, float("nan"), 3.0, float("nan"), 5.0],
+    ...         "col3": [float("nan"), float("nan"), float("nan"), float("nan"), float("nan")],
     ...     }
     ... )
     >>> frame
     shape: (5, 3)
-    ┌────────────┬──────┬──────┐
-    │ col1       ┆ col2 ┆ col3 │
-    │ ---        ┆ ---  ┆ ---  │
-    │ str        ┆ i64  ┆ null │
-    ╞════════════╪══════╪══════╡
-    │ 2020-1-1   ┆ 1    ┆ null │
-    │ 2020-1-2   ┆ null ┆ null │
-    │ 2020-1-31  ┆ 3    ┆ null │
-    │ 2020-12-31 ┆ null ┆ null │
-    │ null       ┆ 5    ┆ null │
-    └────────────┴──────┴──────┘
+    ┌──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 │
+    │ ---  ┆ ---  ┆ ---  │
+    │ f64  ┆ f64  ┆ f64  │
+    ╞══════╪══════╪══════╡
+    │ 1.0  ┆ 1.0  ┆ NaN  │
+    │ 2.0  ┆ NaN  ┆ NaN  │
+    │ 3.0  ┆ 3.0  ┆ NaN  │
+    │ 4.0  ┆ NaN  ┆ NaN  │
+    │ NaN  ┆ 5.0  ┆ NaN  │
+    └──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
     shape: (5, 2)
-    ┌────────────┬──────┐
-    │ col1       ┆ col2 │
-    │ ---        ┆ ---  │
-    │ str        ┆ i64  │
-    ╞════════════╪══════╡
-    │ 2020-1-1   ┆ 1    │
-    │ 2020-1-2   ┆ null │
-    │ 2020-1-31  ┆ 3    │
-    │ 2020-12-31 ┆ null │
-    │ null       ┆ 5    │
-    └────────────┴──────┘
+    ┌──────┬──────┐
+    │ col1 ┆ col2 │
+    │ ---  ┆ ---  │
+    │ f64  ┆ f64  │
+    ╞══════╪══════╡
+    │ 1.0  ┆ 1.0  │
+    │ 2.0  ┆ NaN  │
+    │ 3.0  ┆ 3.0  │
+    │ 4.0  ┆ NaN  │
+    │ NaN  ┆ 5.0  │
+    └──────┴──────┘
 
     ```
     """
@@ -128,16 +127,16 @@ class DropNullColumnTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Checking columns and dropping the columns that have too "
-            f"many null values (threshold={self._threshold})..."
+            f"many NaN values (threshold={self._threshold})..."
         )
         if frame.is_empty():
             return frame
         columns = self.find_common_columns(frame)
-        pct = frame.select(columns).null_count() / frame.shape[0]
+        pct = frame.select((cs.float() & cs.by_name(columns)).is_nan()).sum() / frame.shape[0]
         cols = list(compress(pct.columns, (pct >= self._threshold).row(0)))
         logger.info(
             f"Dropping {len(cols):,} columns that have too "
-            f"many null values (threshold={self._threshold})..."
+            f"many NaN values (threshold={self._threshold})..."
         )
         logger.info(f"dropped columns: {cols}")
         out = frame.drop(cols)
@@ -145,11 +144,10 @@ class DropNullColumnTransformer(BaseInNTransformer):
         return out
 
 
-class DropNullRowTransformer(BaseInNTransformer):
-    r"""Implement a transformer to drop all rows that contain null
-    values.
+class DropNanRowTransformer(BaseInNTransformer):
+    r"""Implement a transformer to drop all rows that contain NaN values.
 
-    Note that all the values in the row need to be null to drop the
+    Note that all the values in the row need to be NaN to drop the
     row.
 
     Args:
@@ -172,43 +170,43 @@ class DropNullRowTransformer(BaseInNTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import DropNullRow
-    >>> transformer = DropNullRow()
+    >>> from grizz.transformer import DropNanRow
+    >>> transformer = DropNanRow()
     >>> transformer
-    DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
+    DropNanRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
-    ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
-    ...         "col2": [1, None, 3, None, None],
-    ...         "col3": [None, None, None, None, None],
+    ...         "col1": [1.0, 2.0, 3.0, 4.0, float("nan")],
+    ...         "col2": [1.0, float("nan"), 3.0, float("nan"), float("nan")],
+    ...         "col3": [float("nan"), float("nan"), float("nan"), float("nan"), float("nan")],
     ...     }
     ... )
     >>> frame
     shape: (5, 3)
-    ┌────────────┬──────┬──────┐
-    │ col1       ┆ col2 ┆ col3 │
-    │ ---        ┆ ---  ┆ ---  │
-    │ str        ┆ i64  ┆ null │
-    ╞════════════╪══════╪══════╡
-    │ 2020-1-1   ┆ 1    ┆ null │
-    │ 2020-1-2   ┆ null ┆ null │
-    │ 2020-1-31  ┆ 3    ┆ null │
-    │ 2020-12-31 ┆ null ┆ null │
-    │ null       ┆ null ┆ null │
-    └────────────┴──────┴──────┘
+    ┌──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 │
+    │ ---  ┆ ---  ┆ ---  │
+    │ f64  ┆ f64  ┆ f64  │
+    ╞══════╪══════╪══════╡
+    │ 1.0  ┆ 1.0  ┆ NaN  │
+    │ 2.0  ┆ NaN  ┆ NaN  │
+    │ 3.0  ┆ 3.0  ┆ NaN  │
+    │ 4.0  ┆ NaN  ┆ NaN  │
+    │ NaN  ┆ NaN  ┆ NaN  │
+    └──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
     shape: (4, 3)
-    ┌────────────┬──────┬──────┐
-    │ col1       ┆ col2 ┆ col3 │
-    │ ---        ┆ ---  ┆ ---  │
-    │ str        ┆ i64  ┆ null │
-    ╞════════════╪══════╪══════╡
-    │ 2020-1-1   ┆ 1    ┆ null │
-    │ 2020-1-2   ┆ null ┆ null │
-    │ 2020-1-31  ┆ 3    ┆ null │
-    │ 2020-12-31 ┆ null ┆ null │
-    └────────────┴──────┴──────┘
+    ┌──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 │
+    │ ---  ┆ ---  ┆ ---  │
+    │ f64  ┆ f64  ┆ f64  │
+    ╞══════╪══════╪══════╡
+    │ 1.0  ┆ 1.0  ┆ NaN  │
+    │ 2.0  ┆ NaN  ┆ NaN  │
+    │ 3.0  ┆ 3.0  ┆ NaN  │
+    │ 4.0  ┆ NaN  ┆ NaN  │
+    └──────┴──────┴──────┘
 
     ```
     """
@@ -221,10 +219,10 @@ class DropNullRowTransformer(BaseInNTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
-            f"Dropping all rows that contain only null values in "
+            f"Dropping all rows that contain only NaN values in "
             f"{len(self.find_columns(frame)):,} columns...."
         )
         columns = self.find_common_columns(frame)
-        out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))
+        out = frame.filter(~pl.all_horizontal((cs.float() & cs.by_name(columns)).is_nan()))
         logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
         return out

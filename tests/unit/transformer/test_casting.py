@@ -14,7 +14,14 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer import Cast, CategoricalCast, DecimalCast, FloatCast, IntegerCast
+from grizz.transformer import (
+    Cast,
+    CategoricalCast,
+    DecimalCast,
+    FloatCast,
+    IntegerCast,
+    NumericCast,
+)
 
 
 @pytest.fixture
@@ -1294,6 +1301,314 @@ def test_integer_cast_transformer_transform_missing_policy_warn(
                 "col1": pl.Float32,
                 "col2": pl.Float64,
                 "col3": pl.Int64,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+############################################
+#     Tests for NumericCastTransformer     #
+############################################
+
+
+@pytest.fixture
+def frame_numeric() -> pl.DataFrame:
+    return pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5],
+            "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.Float32, "col3": pl.Float64, "col4": pl.String},
+    )
+
+
+def test_numeric_cast_transformer_repr() -> None:
+    assert repr(NumericCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
+        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_numeric_cast_transformer_repr_with_kwargs() -> None:
+    assert repr(NumericCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
+        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
+    )
+
+
+def test_numeric_cast_transformer_str() -> None:
+    assert str(NumericCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
+        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_numeric_cast_transformer_str_with_kwargs() -> None:
+    assert str(NumericCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
+        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
+        "missing_policy='raise', strict=False)"
+    )
+
+
+def test_numeric_cast_transformer_equal_true() -> None:
+    assert NumericCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        NumericCast(columns=["col1", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_numeric_cast_transformer_equal_false_different_columns() -> None:
+    assert not NumericCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        NumericCast(columns=["col1", "col2", "col3"], dtype=pl.Int32)
+    )
+
+
+def test_numeric_cast_transformer_equal_false_different_dtype() -> None:
+    assert not NumericCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        NumericCast(columns=["col1", "col3"], dtype=pl.Float32)
+    )
+
+
+def test_numeric_cast_transformer_equal_false_different_exclude_columns() -> None:
+    assert not NumericCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        NumericCast(columns=["col1", "col3"], dtype=pl.Int32, exclude_columns=["col2"])
+    )
+
+
+def test_numeric_cast_transformer_equal_false_different_missing_policy() -> None:
+    assert not NumericCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        NumericCast(columns=["col1", "col3"], dtype=pl.Int32, missing_policy="warn")
+    )
+
+
+def test_numeric_cast_transformer_equal_false_different_kwargs() -> None:
+    assert not NumericCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        NumericCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)
+    )
+
+
+def test_numeric_cast_transformer_equal_false_different_type() -> None:
+    assert not NumericCast(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
+
+
+def test_numeric_cast_transformer_get_args() -> None:
+    assert objects_are_equal(
+        NumericCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "dtype": pl.Int32,
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "strict": False,
+        },
+    )
+
+
+def test_numeric_cast_transformer_fit(
+    frame_numeric: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = NumericCast(columns=["col1", "col2"], dtype=pl.Int32)
+    with caplog.at_level(logging.INFO):
+        transformer.fit(frame_numeric)
+    assert caplog.messages[0].startswith(
+        "Skipping 'NumericCastTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_numeric_cast_transformer_fit_missing_policy_ignore(
+    frame_numeric: pl.DataFrame,
+) -> None:
+    transformer = NumericCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_numeric)
+
+
+def test_numeric_cast_transformer_fit_missing_policy_raise(
+    frame_numeric: pl.DataFrame,
+) -> None:
+    transformer = NumericCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_numeric)
+
+
+def test_numeric_cast_transformer_fit_missing_policy_warn(
+    frame_numeric: pl.DataFrame,
+) -> None:
+    transformer = NumericCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="warn"
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_numeric)
+
+
+def test_numeric_cast_transformer_fit_transform_int32(frame_numeric: pl.DataFrame) -> None:
+    transformer = NumericCast(columns=["col1", "col2"], dtype=pl.Int32)
+    out = transformer.fit_transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1, 2, 3, 4, 5],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int32, "col2": pl.Int32, "col3": pl.Float64, "col4": pl.String},
+        ),
+    )
+
+
+def test_numeric_cast_transformer_transform_int32(frame_numeric: pl.DataFrame) -> None:
+    transformer = NumericCast(columns=["col1", "col2"], dtype=pl.Int32)
+    out = transformer.transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1, 2, 3, 4, 5],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Int32, "col2": pl.Int32, "col3": pl.Float64, "col4": pl.String},
+        ),
+    )
+
+
+def test_numeric_cast_transformer_transform_float32(frame_numeric: pl.DataFrame) -> None:
+    transformer = NumericCast(columns=["col1", "col2"], dtype=pl.Float32)
+    out = transformer.transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Float64, "col4": pl.String},
+        ),
+    )
+
+
+def test_numeric_cast_transformer_transform_none(frame_numeric: pl.DataFrame) -> None:
+    transformer = NumericCast(columns=None, dtype=pl.Float32)
+    out = transformer.transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.String},
+        ),
+    )
+
+
+def test_numeric_cast_transformer_transform_exclude_columns(frame_numeric: pl.DataFrame) -> None:
+    transformer = NumericCast(columns=None, dtype=pl.Float32, exclude_columns=["col2", "col5"])
+    out = transformer.transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.String},
+        ),
+    )
+
+
+def test_numeric_cast_transformer_transform_strict_false(frame_numeric: pl.DataFrame) -> None:
+    transformer = NumericCast(columns=None, dtype=pl.Float32, strict=False)
+    out = transformer.transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={"col1": pl.Float32, "col2": pl.Float32, "col3": pl.Float32, "col4": pl.String},
+        ),
+    )
+
+
+def test_numeric_cast_transformer_transform_missing_policy_ignore(
+    frame_numeric: pl.DataFrame,
+) -> None:
+    transformer = NumericCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="ignore"
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.Float32,
+                "col3": pl.Float64,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_numeric_cast_transformer_transform_missing_policy_raise(
+    frame_numeric: pl.DataFrame,
+) -> None:
+    transformer = NumericCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(frame_numeric)
+
+
+def test_numeric_cast_transformer_transform_missing_policy_warn(
+    frame_numeric: pl.DataFrame,
+) -> None:
+    transformer = NumericCast(
+        columns=["col1", "col2", "col5"], dtype=pl.Float32, missing_policy="warn"
+    )
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(frame_numeric)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col2": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.Float32,
+                "col2": pl.Float32,
+                "col3": pl.Float64,
                 "col4": pl.String,
             },
         ),
