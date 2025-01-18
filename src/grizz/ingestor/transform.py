@@ -49,7 +49,7 @@ class TransformIngestor(BaseIngestor):
     >>> ingestor
     TransformIngestor(
       (ingestor): Ingestor(shape=(5, 3))
-      (transformer): CastTransformer(columns=('col1', 'col3'), dtype=Float32, exclude_columns=(), missing_policy='raise')
+      (transformer): CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Float32)
     )
     >>> frame = ingestor.ingest()
     >>> frame

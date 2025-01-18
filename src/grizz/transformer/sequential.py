@@ -42,8 +42,8 @@ class SequentialTransformer(BaseTransformer):
     ... )
     >>> transformer
     SequentialTransformer(
-      (0): CastTransformer(columns=('col1',), dtype=Float32, exclude_columns=(), missing_policy='raise')
-      (1): CastTransformer(columns=('col2',), dtype=Int64, exclude_columns=(), missing_policy='raise')
+      (0): CastTransformer(columns=('col1',), exclude_columns=(), missing_policy='raise', dtype=Float32)
+      (1): CastTransformer(columns=('col2',), exclude_columns=(), missing_policy='raise', dtype=Int64)
     )
     >>> frame = pl.DataFrame(
     ...     {

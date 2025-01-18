@@ -48,7 +48,7 @@ class TransformExporter(BaseExporter):
     ... )
     >>> exporter
     TransformExporter(
-      (transformer): CastTransformer(columns=('col1', 'col3'), dtype=Float32, exclude_columns=(), missing_policy='raise')
+      (transformer): CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Float32)
       (exporter): ParquetExporter(path=/path/to/frame.parquet)
     )
     >>> exporter.export(frame)  # doctest: +SKIP
