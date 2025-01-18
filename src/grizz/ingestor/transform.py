@@ -82,7 +82,9 @@ class TransformIngestor(BaseIngestor):
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         if not isinstance(other, self.__class__):
             return False
-        return self._ingestor.equal(other._ingestor, equal_nan=equal_nan)
+        return self._ingestor.equal(
+            other._ingestor, equal_nan=equal_nan
+        ) and self._transformer.equal(other._transformer, equal_nan=equal_nan)
 
     def ingest(self) -> pl.DataFrame:
         frame = self._ingestor.ingest()
