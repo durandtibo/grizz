@@ -74,7 +74,9 @@ class TransformExporter(BaseExporter):
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         if not isinstance(other, self.__class__):
             return False
-        return self._exporter.equal(other._exporter, equal_nan=equal_nan)
+        return self._exporter.equal(
+            other._exporter, equal_nan=equal_nan
+        ) and self._transformer.equal(other._transformer, equal_nan=equal_nan)
 
     def export(self, frame: pl.DataFrame) -> None:
         frame = self._transformer.transform(frame)
