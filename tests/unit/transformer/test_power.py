@@ -47,8 +47,8 @@ def dataframe() -> pl.DataFrame:
 def test_power_transformer_repr() -> None:
     assert repr(PowerTransformer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "PowerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 
@@ -56,8 +56,8 @@ def test_power_transformer_repr() -> None:
 def test_power_transformer_str() -> None:
     assert str(PowerTransformer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "PowerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 
@@ -158,6 +158,15 @@ def test_power_transformer_fit(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
+def test_power_transformer_fit_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = PowerTransformer(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
+    transformer.fit(dataframe)
+    assert transformer._transformer.n_features_in_ == 2
+
+
+@sklearn_available
 def test_power_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -236,6 +245,48 @@ def test_power_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
 @sklearn_available
 def test_power_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = PowerTransformer(columns=["col1", "col3"], prefix="", suffix="_out")
+    transformer._transformer.fit(np.array([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]))
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [10, 20, 30, 40, 50],
+                "col4": ["a", "b", "c", "d", "e"],
+                "col1_out": [
+                    -1.472976433539981,
+                    -0.669760946960049,
+                    0.05534276167035406,
+                    0.7273986123465669,
+                    1.3599960064831087,
+                ],
+                "col3_out": [
+                    -1.4970254788049582,
+                    -0.6502490609220402,
+                    0.07578296251389872,
+                    0.7317645885801348,
+                    1.3397269886329655,
+                ],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float32,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_power_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = PowerTransformer(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
     transformer._transformer.fit(np.array([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]))
     out = transformer.transform(dataframe)
     assert_frame_equal(
