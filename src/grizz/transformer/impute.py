@@ -10,8 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.column import check_column_exist_policy, check_existing_columns
+from grizz.transformer.columns import BaseInNOutNTransformer
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class SimpleImputerTransformer(BaseInNTransformer):
+class SimpleImputerTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to impute missing values with simple
     strategies.
 
@@ -64,9 +63,9 @@ class SimpleImputerTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import SimpleImputer
-    >>> transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
+    >>> transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
     >>> transformer
-    SimpleImputerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', suffix='_imp')
+    SimpleImputerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', propagate_nulls=True)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, None, 3, 4, 5],
@@ -93,7 +92,7 @@ class SimpleImputerTransformer(BaseInNTransformer):
     >>> out
     shape: (6, 6)
     ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_imp ┆ col3_imp │
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
     │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
     │ i64  ┆ str  ┆ f64  ┆ str  ┆ f64      ┆ f64      │
     ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
@@ -121,61 +120,37 @@ class SimpleImputerTransformer(BaseInNTransformer):
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
-        self._prefix = prefix
-        self._suffix = suffix
         self._propagate_nulls = propagate_nulls
 
-        check_column_exist_policy(exist_policy)
-        self._exist_policy = exist_policy
-
         check_sklearn()
-        self._imputer = SimpleImputer(**kwargs)
+        self._oututer = SimpleImputer(**kwargs)
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
-        return (
-            super().get_args()
-            | {
-                "exist_policy": self._exist_policy,
-                "propagate_nulls": self._propagate_nulls,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-            }
-            | self._kwargs
-        )
+        return super().get_args() | {"propagate_nulls": self._propagate_nulls} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(
             f"Fitting the imputation parameters of {len(self.find_columns(frame)):,} columns..."
         )
         columns = self.find_common_columns(frame)
-        self._imputer.fit(frame.select(columns).to_numpy())
+        self._oututer.fit(frame.select(columns).to_numpy())
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_output_columns(frame)
         logger.info(
             f"Imputing the missing values of {len(self.find_columns(frame)):,} columns | "
             f"prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
         data = frame.select(columns)
-        x = self._imputer.transform(data.to_numpy())
-        data_imp = pl.from_numpy(x, schema=data.columns)
+        x = self._oututer.transform(data.to_numpy())
+        out = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
-            data_imp = propagate_nulls(data_imp, data)
-        return frame.with_columns(data_imp.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
-
-    def _check_output_columns(self, frame: pl.DataFrame) -> None:
-        r"""Check if the output columns already exist.
-
-        Args:
-            frame: The input DataFrame to check.
-        """
-        check_existing_columns(
-            frame,
-            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
-            exist_policy=self._exist_policy,
-        )
+            out = propagate_nulls(out, data)
+        return out
