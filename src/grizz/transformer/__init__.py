@@ -80,6 +80,8 @@ __all__ = [
     "GreaterEqual",
     "GreaterEqualTransformer",
     "GreaterTransformer",
+    "InplaceCategoricalCast",
+    "InplaceCategoricalCastTransformer",
     "IntegerCast",
     "IntegerCastTransformer",
     "JsonDecode",
@@ -160,8 +162,6 @@ from grizz.transformer.cardinality import (
 )
 from grizz.transformer.casting import CastTransformer
 from grizz.transformer.casting import CastTransformer as Cast
-from grizz.transformer.casting import CategoricalCastTransformer
-from grizz.transformer.casting import CategoricalCastTransformer as CategoricalCast
 from grizz.transformer.casting import DecimalCastTransformer
 from grizz.transformer.casting import DecimalCastTransformer as DecimalCast
 from grizz.transformer.casting import FloatCastTransformer
@@ -170,6 +170,12 @@ from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.casting import NumericCastTransformer
 from grizz.transformer.casting import NumericCastTransformer as NumericCast
+from grizz.transformer.categorical import CategoricalCastTransformer
+from grizz.transformer.categorical import CategoricalCastTransformer as CategoricalCast
+from grizz.transformer.categorical import InplaceCategoricalCastTransformer
+from grizz.transformer.categorical import (
+    InplaceCategoricalCastTransformer as InplaceCategoricalCast,
+)
 from grizz.transformer.close import ColumnCloseTransformer
 from grizz.transformer.close import ColumnCloseTransformer as ColumnClose
 from grizz.transformer.column_comparison import ColumnEqualMissingTransformer
