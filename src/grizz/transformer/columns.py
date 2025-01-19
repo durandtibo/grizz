@@ -7,6 +7,7 @@ __all__ = [
     "BaseIn1Out1Transformer",
     "BaseIn2Out1Transformer",
     "BaseInNOut1Transformer",
+    "BaseInNOutNTransformer",
     "BaseInNTransformer",
 ]
 
@@ -22,6 +23,7 @@ from grizz.utils.column import (
     check_column_exist_policy,
     check_column_missing_policy,
     check_existing_column,
+    check_existing_columns,
     check_missing_column,
     check_missing_columns,
     find_common_columns,
@@ -682,10 +684,6 @@ class BaseInNOut1Transformer(BaseInNTransformer):
         check_column_exist_policy(exist_policy)
         self._exist_policy = exist_policy
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
-
     def fit(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         self._fit(frame)
@@ -712,21 +710,130 @@ class BaseInNOut1Transformer(BaseInNTransformer):
         """
         check_existing_column(frame, column=self._out_col, exist_policy=self._exist_policy)
 
-    @abstractmethod
-    def _fit(self, frame: pl.DataFrame) -> pl.DataFrame:
-        r"""Fit to the data in the ``polars.DataFrame``.
+
+class BaseInNOutNTransformer(BaseInNTransformer):
+    r"""Define a base class to implement ``polars.DataFrame``
+    transformers that has N input columns and N output columns.
+
+    Args:
+        columns: The columns to prepare. If ``None``, it processes all
+            the columns.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message appears.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import ConcatColumns
+    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="col")
+    >>> transformer
+    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [11, 12, 13, 14, 15],
+    ...         "col2": [21, 22, 23, 24, 25],
+    ...         "col3": [31, 32, 33, 34, 35],
+    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ i64  ┆ i64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 11   ┆ 21   ┆ 31   ┆ a    │
+    │ 12   ┆ 22   ┆ 32   ┆ b    │
+    │ 13   ┆ 23   ┆ 33   ┆ c    │
+    │ 14   ┆ 24   ┆ 34   ┆ d    │
+    │ 15   ┆ 25   ┆ 35   ┆ e    │
+    └──────┴──────┴──────┴──────┘
+    >>> out = transformer.fit_transform(frame)
+    >>> out
+    shape: (5, 5)
+    ┌──────┬──────┬──────┬──────┬──────────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col          │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---          │
+    │ i64  ┆ i64  ┆ i64  ┆ str  ┆ list[i64]    │
+    ╞══════╪══════╪══════╪══════╪══════════════╡
+    │ 11   ┆ 21   ┆ 31   ┆ a    ┆ [11, 21, 31] │
+    │ 12   ┆ 22   ┆ 32   ┆ b    ┆ [12, 22, 32] │
+    │ 13   ┆ 23   ┆ 33   ┆ c    ┆ [13, 23, 33] │
+    │ 14   ┆ 24   ┆ 34   ┆ d    ┆ [14, 24, 34] │
+    │ 15   ┆ 25   ┆ 35   ┆ e    ┆ [15, 25, 35] │
+    └──────┴──────┴──────┴──────┴──────────────┘
+
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str] | None,
+        prefix: str,
+        suffix: str,
+        exclude_columns: Sequence[str] = (),
+        exist_policy: str = "raise",
+        missing_policy: str = "raise",
+    ) -> None:
+        super().__init__(
+            columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
+        )
+        self._prefix = prefix
+        self._suffix = suffix
+
+        check_column_exist_policy(exist_policy)
+        self._exist_policy = exist_policy
+
+    def fit(self, frame: pl.DataFrame) -> None:
+        self._check_input_columns(frame)
+        self._fit(frame)
+
+    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        self._check_input_columns(frame)
+        self._check_output_column(frame)
+        return self._transform(frame)
+
+    def get_args(self) -> dict:
+        return {
+            "columns": self._columns,
+            "exclude_columns": self._exclude_columns,
+            "exist_policy": self._exist_policy,
+            "missing_policy": self._missing_policy,
+            "prefix": self._prefix,
+            "suffix": self._suffix,
+        }
+
+    def _check_output_column(self, frame: pl.DataFrame) -> None:
+        r"""Check if the output column already exists.
 
         Args:
-            frame: The ``polars.DataFrame`` to fit.
+            frame: The input DataFrame to check.
         """
-
-    @abstractmethod
-    def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        r"""Transform the data in the ``polars.DataFrame``.
-
-        Args:
-            frame: The ``polars.DataFrame`` to transform.
-
-        Returns:
-            The transformed DataFrame.
-        """
+        check_existing_columns(
+            frame,
+            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
+            exist_policy=self._exist_policy,
+        )
