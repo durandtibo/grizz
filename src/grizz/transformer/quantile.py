@@ -87,7 +87,6 @@ class QuantileTransformer(BaseInNOutNTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ e    │
     │ 5    ┆ 5    ┆ 50   ┆ f    │
     └──────┴──────┴──────┴──────┘
-
     >>> out = transformer.fit_transform(frame)
     >>> out
     shape: (6, 6)

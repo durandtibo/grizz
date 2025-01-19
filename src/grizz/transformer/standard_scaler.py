@@ -87,7 +87,6 @@ class StandardScalerTransformer(BaseInNOutNTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    │
     │ 5    ┆ 5    ┆ 50   ┆ e    │
     └──────┴──────┴──────┴──────┘
-
     >>> out = transformer.fit_transform(frame)
     >>> out
     shape: (5, 6)
@@ -102,7 +101,6 @@ class StandardScalerTransformer(BaseInNOutNTransformer):
     │ 4    ┆ 4    ┆ 40   ┆ d    ┆ 0.707107  ┆ 0.707107  │
     │ 5    ┆ 5    ┆ 50   ┆ e    ┆ 1.414214  ┆ 1.414214  │
     └──────┴──────┴──────┴──────┴───────────┴───────────┘
-
 
     ```
     """
