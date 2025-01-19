@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 import polars as pl
 import polars.selectors as cs
 
-from grizz.transformer.columns import BaseInNTransformer
+from grizz.transformer.columns import BaseInNOutNTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -19,15 +19,27 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class FillNanTransformer(BaseInNTransformer):
+class FillNanTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to fill NaN values.
 
+    This transformer ignores the columns that are not of type float.
+
     Args:
-        columns: The columns to prepare. If ``None``, it processes all
-            the columns of type string.
+        columns: The columns of type to convert. ``None`` means
+            all the columns.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message appears.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -44,9 +56,9 @@ class FillNanTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import FillNan
-    >>> transformer = FillNan(columns=["col1", "col4"], value=100)
+    >>> transformer = FillNan(columns=["col1", "col4"], prefix="", suffix="_out", value=100)
     >>> transformer
-    FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), missing_policy='raise', value=100)
+    FillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', value=100)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, None],
@@ -70,32 +82,38 @@ class FillNanTransformer(BaseInNTransformer):
     └──────┴──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬───────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4  │
-    │ ---  ┆ ---  ┆ ---  ┆ ---   │
-    │ i64  ┆ f64  ┆ str  ┆ f64   │
-    ╞══════╪══════╪══════╪═══════╡
-    │ 1    ┆ 1.2  ┆ a    ┆ 1.2   │
-    │ 2    ┆ 2.2  ┆ b    ┆ 100.0 │
-    │ 3    ┆ 3.2  ┆ c    ┆ 3.2   │
-    │ 4    ┆ 4.2  ┆ d    ┆ null  │
-    │ null ┆ NaN  ┆ null ┆ 5.2   │
-    └──────┴──────┴──────┴───────┘
+    shape: (5, 5)
+    ┌──────┬──────┬──────┬──────┬──────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col4_out │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      │
+    │ i64  ┆ f64  ┆ str  ┆ f64  ┆ f64      │
+    ╞══════╪══════╪══════╪══════╪══════════╡
+    │ 1    ┆ 1.2  ┆ a    ┆ 1.2  ┆ 1.2      │
+    │ 2    ┆ 2.2  ┆ b    ┆ NaN  ┆ 100.0    │
+    │ 3    ┆ 3.2  ┆ c    ┆ 3.2  ┆ 3.2      │
+    │ 4    ┆ 4.2  ┆ d    ┆ null ┆ null     │
+    │ null ┆ NaN  ┆ null ┆ 5.2  ┆ 5.2      │
+    └──────┴──────┴──────┴──────┴──────────┘
 
     ```
     """
 
     def __init__(
         self,
-        columns: Sequence[str] | None = None,
+        columns: Sequence[str] | None,
+        prefix: str,
+        suffix: str,
         exclude_columns: Sequence[str] = (),
+        exist_policy: str = "raise",
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
         self._kwargs = kwargs
@@ -112,20 +130,28 @@ class FillNanTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
-        return frame.with_columns(
-            frame.select((cs.by_name(columns) & cs.float()).fill_nan(**self._kwargs))
-        )
+        return frame.select((cs.by_name(columns) & cs.float()).fill_nan(**self._kwargs))
 
 
-class FillNullTransformer(BaseInNTransformer):
+class FillNullTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to fill null values.
 
     Args:
-        columns: The columns to prepare. If ``None``, it processes all
-            the columns of type string.
+        columns: The columns of type to convert. ``None`` means
+            all the columns.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message appears.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -142,9 +168,9 @@ class FillNullTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import FillNull
-    >>> transformer = FillNull(columns=["col1", "col4"], value=100)
+    >>> transformer = FillNull(columns=["col1", "col4"], prefix="", suffix="_out", value=100)
     >>> transformer
-    FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), missing_policy='raise', value=100)
+    FillNullTransformer(columns=('col1', 'col4'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', value=100)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, None],
@@ -168,32 +194,38 @@ class FillNullTransformer(BaseInNTransformer):
     └──────┴──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬───────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4  │
-    │ ---  ┆ ---  ┆ ---  ┆ ---   │
-    │ i64  ┆ f64  ┆ str  ┆ f64   │
-    ╞══════╪══════╪══════╪═══════╡
-    │ 1    ┆ 1.2  ┆ a    ┆ 1.2   │
-    │ 2    ┆ 2.2  ┆ b    ┆ NaN   │
-    │ 3    ┆ 3.2  ┆ c    ┆ 3.2   │
-    │ 4    ┆ 4.2  ┆ d    ┆ 100.0 │
-    │ 100  ┆ null ┆ null ┆ 5.2   │
-    └──────┴──────┴──────┴───────┘
+    shape: (5, 6)
+    ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col4_out │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
+    │ i64  ┆ f64  ┆ str  ┆ f64  ┆ i64      ┆ f64      │
+    ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
+    │ 1    ┆ 1.2  ┆ a    ┆ 1.2  ┆ 1        ┆ 1.2      │
+    │ 2    ┆ 2.2  ┆ b    ┆ NaN  ┆ 2        ┆ NaN      │
+    │ 3    ┆ 3.2  ┆ c    ┆ 3.2  ┆ 3        ┆ 3.2      │
+    │ 4    ┆ 4.2  ┆ d    ┆ null ┆ 4        ┆ 100.0    │
+    │ null ┆ null ┆ null ┆ 5.2  ┆ 100      ┆ 5.2      │
+    └──────┴──────┴──────┴──────┴──────────┴──────────┘
 
     ```
     """
 
     def __init__(
         self,
-        columns: Sequence[str] | None = None,
+        columns: Sequence[str] | None,
+        prefix: str,
+        suffix: str,
         exclude_columns: Sequence[str] = (),
+        exist_policy: str = "raise",
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
         self._kwargs = kwargs
@@ -210,4 +242,4 @@ class FillNullTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
-        return frame.with_columns(frame.select(cs.by_name(columns).fill_null(**self._kwargs)))
+        return frame.select(cs.by_name(columns).fill_null(**self._kwargs))

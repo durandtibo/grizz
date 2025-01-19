@@ -85,15 +85,15 @@ def test_setup_transformer_incorrect_type(caplog: pytest.LogCaptureFixture) -> N
 TRANSFORMER_EQUAL = [
     pytest.param(
         ExamplePair(
-            actual=FillNan(columns=["col1", "col4"]),
-            expected=FillNan(columns=["col1", "col4"]),
+            actual=FillNan(columns=["col1", "col4"], prefix="", suffix="_out"),
+            expected=FillNan(columns=["col1", "col4"], prefix="", suffix="_out"),
         ),
         id="CSV transformer",
     ),
     pytest.param(
         ExamplePair(
-            actual=FillNull(columns=["col1", "col4"]),
-            expected=FillNull(columns=["col1", "col4"]),
+            actual=FillNull(columns=["col1", "col4"], prefix="", suffix="_out"),
+            expected=FillNull(columns=["col1", "col4"], prefix="", suffix="_out"),
         ),
         id="parquet transformer",
     ),
@@ -104,15 +104,15 @@ TRANSFORMER_NOT_EQUAL = [
     pytest.param(
         ExamplePair(
             actual=42.0,
-            expected=FillNan(columns=["col1", "col4"]),
+            expected=FillNan(columns=["col1", "col4"], prefix="", suffix="_out"),
             expected_message="objects have different types:",
         ),
         id="different types",
     ),
     pytest.param(
         ExamplePair(
-            actual=FillNan(columns=["col1", "col4"]),
-            expected=FillNan(columns=["col1", "col2", "col4"]),
+            actual=FillNan(columns=["col1", "col4"], prefix="", suffix="_out"),
+            expected=FillNan(columns=["col1", "col2", "col4"], prefix="", suffix="_out"),
             expected_message="objects are not equal:",
         ),
         id="different elements",
@@ -144,7 +144,7 @@ def test_transformer_equality_comparator_clone() -> None:
 
 
 def test_transformer_equality_comparator_equal_true_same_object(config: EqualityConfig) -> None:
-    x = FillNan(columns=["col1", "col4"])
+    x = FillNan(columns=["col1", "col4"], prefix="", suffix="_out")
     assert TransformerEqualityComparator().equal(x, x, config)
 
 
