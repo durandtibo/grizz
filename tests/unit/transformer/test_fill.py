@@ -135,7 +135,7 @@ def test_fill_nan_transformer_get_args() -> None:
     )
 
 
-def test_fill_nan_transformer_transformer_fit(
+def test_fill_nan_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
     transformer = FillNan(columns=["col1", "col4"], prefix="", suffix="_out", value=100)
@@ -525,7 +525,7 @@ def test_inplace_fill_nan_transformer_get_args() -> None:
     )
 
 
-def test_inplace_fill_nan_transformer_transformer_fit(
+def test_inplace_fill_nan_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
     transformer = InplaceFillNan(columns=["col1", "col4"], value=100)
@@ -843,7 +843,7 @@ def test_fill_null_transformer_get_args() -> None:
     )
 
 
-def test_fill_null_transformer_transformer_fit(
+def test_fill_null_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
     transformer = FillNull(columns=["col1", "col4"], prefix="", suffix="_out", value=100)
@@ -1249,7 +1249,7 @@ def test_inplace_fill_null_transformer_get_args() -> None:
     )
 
 
-def test_inplace_fill_null_transformer_transformer_fit(
+def test_inplace_fill_null_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
     transformer = InplaceFillNull(columns=["col1", "col4"], value=100)
