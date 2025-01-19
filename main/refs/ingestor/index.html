@@ -1,0 +1,2313 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://durandtibo.github.io/grizz/main/refs/ingestor/">
+      
+      
+        <link rel="prev" href="../exporter/">
+      
+      
+        <link rel="next" href="../transformer/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>ingestor - grizz</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#grizz.ingestor" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+  You're not viewing the latest version.
+  <a href="../../..">
+    <strong>Click here to go to latest.</strong>
+  </a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),outdated=__md_get("__outdated",sessionStorage);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="grizz" class="md-header__button md-logo" aria-label="grizz" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            grizz
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ingestor
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/durandtibo/grizz" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    durandtibo/grizz
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../get_started/" class="md-tabs__link">
+        
+  
+    
+  
+  Get Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../exporter/" class="md-tabs__link">
+          
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://github.com/durandtibo/grizz" class="md-tabs__link">
+        
+  
+    
+  
+  GitHub
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="grizz" class="md-nav__button md-logo" aria-label="grizz" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    grizz
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/durandtibo/grizz" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    durandtibo/grizz
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../get_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Get Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    exporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    ingestor
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    ingestor
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#grizz.ingestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ingestor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ingestor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.BaseIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseIngestor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseIngestor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.BaseIngestor.equal" class="md-nav__link">
+    <span class="md-ellipsis">
+      equal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.BaseIngestor.ingest" class="md-nav__link">
+    <span class="md-ellipsis">
+      ingest
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.CacheIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.ClickHouseArrowIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClickHouseArrowIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.CsvIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      CsvIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.Ingestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ingestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.JoinIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      JoinIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.ParquetFileIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ParquetFileIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.ParquetIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ParquetIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.TransformIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      TransformIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.is_ingestor_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_ingestor_config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.setup_ingestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup_ingestor
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transformer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    transformer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/durandtibo/grizz" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    GitHub
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#grizz.ingestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ingestor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ingestor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.BaseIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseIngestor
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseIngestor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.BaseIngestor.equal" class="md-nav__link">
+    <span class="md-ellipsis">
+      equal
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.BaseIngestor.ingest" class="md-nav__link">
+    <span class="md-ellipsis">
+      ingest
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.CacheIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.ClickHouseArrowIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClickHouseArrowIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.CsvIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      CsvIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.Ingestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ingestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.JoinIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      JoinIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.ParquetFileIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ParquetFileIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.ParquetIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      ParquetIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.TransformIngestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      TransformIngestor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.is_ingestor_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_ingestor_config
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grizz.ingestor.setup_ingestor" class="md-nav__link">
+    <span class="md-ellipsis">
+      setup_ingestor
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>ingestor</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="grizz.ingestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">grizz.ingestor</span>
+
+
+<a href="#grizz.ingestor" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Contain DataFrame ingestors.</p>
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.BaseIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.BaseIngestor</span>
+
+
+<a href="#grizz.ingestor.BaseIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+
+        <p>Define the base class to implement a DataFrame ingestor.</p>
+<p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParquetFileIngestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">ParquetFileIngestor</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/path/to/frame.parquet&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">ParquetFileIngestor(source=/path/to/frame.parquet)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="grizz.ingestor.BaseIngestor.equal" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">grizz.ingestor.BaseIngestor.equal</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#grizz.ingestor.BaseIngestor.equal" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">equal</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Indicate if two ingestor objects are equal or not.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>other</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The other object to compare.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>equal_nan</code>
+            </td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to compare NaN's as equal. If <code>True</code>,
+NaN's in both objects will be considered equal.</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>True</code> if the two ingestors are equal, otherwise <code>False</code>.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">CsvIngestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj1</span> <span class="o">=</span> <span class="n">CsvIngestor</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/path/to/frame.csv&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj2</span> <span class="o">=</span> <span class="n">CsvIngestor</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/path/to/frame.csv&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj3</span> <span class="o">=</span> <span class="n">CsvIngestor</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/path/to/frame2.csv&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj1</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">obj2</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj1</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">obj3</span><span class="p">)</span>
+<span class="go">False</span>
+</code></pre></div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="grizz.ingestor.BaseIngestor.ingest" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">grizz.ingestor.BaseIngestor.ingest</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#grizz.ingestor.BaseIngestor.ingest" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ingest</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="polars.DataFrame">DataFrame</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Ingest a DataFrame.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="polars.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The ingested DataFrame.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>DataFrameNotFoundError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if the DataFrame cannot be ingested.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParquetFileIngestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">ParquetFileIngestor</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/path/to/frame.parquet&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</code></pre></div>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.CacheIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.CacheIngestor</span>
+
+
+<a href="#grizz.ingestor.CacheIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code></p>
+
+
+        <p>Implement an ingestor that attempts the fast ingestor first,
+falling back to the slow ingestor if needed.</p>
+<p>Internally, this ingestor attempts to load the DataFrame using
+the fast ingestor. If a <code>DataFrameNotFoundError</code> is raised,
+it falls back to the slow ingestor, then exports the DataFrame
+for ingestion by the fast ingestor during the next cycle.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>fast_ingestor</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a> | dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The fast DataFrame ingestor or its
+configuration.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>slow_ingestor</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a> | dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The slow DataFrame ingestor or its
+configuration.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>exporter</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="grizz.exporter.base.BaseExporter" href="../exporter/#grizz.exporter.BaseExporter">BaseExporter</a> | dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The DataFrame exporter or its configuration.
+The DataFrame exporter is responsible for storing the
+output of the slower DataFrame ingestor, allowing it to
+be ingested by the faster DataFrame ingestor during the
+next ingestion cycle.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">CacheIngestor</span><span class="p">,</span> <span class="n">Ingestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.exporter</span><span class="w"> </span><span class="kn">import</span> <span class="n">InMemoryExporter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">slow_ingestor</span> <span class="o">=</span> <span class="n">Ingestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;col1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col3&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exporter_ingestor</span> <span class="o">=</span> <span class="n">InMemoryExporter</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">CacheIngestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fast_ingestor</span><span class="o">=</span><span class="n">exporter_ingestor</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">slow_ingestor</span><span class="o">=</span><span class="n">slow_ingestor</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">exporter</span><span class="o">=</span><span class="n">exporter_ingestor</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">CacheIngestor(</span>
+<span class="go">  (fast_ingestor): InMemoryExporter(frame=None)</span>
+<span class="go">  (slow_ingestor): Ingestor(shape=(5, 3))</span>
+<span class="go">  (exporter): InMemoryExporter(frame=None)</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span>
+<span class="go">shape: (5, 3)</span>
+<span class="go">┌──────┬──────┬──────┐</span>
+<span class="go">│ col1 ┆ col2 ┆ col3 │</span>
+<span class="go">│ ---  ┆ ---  ┆ ---  │</span>
+<span class="go">│ str  ┆ str  ┆ f64  │</span>
+<span class="go">╞══════╪══════╪══════╡</span>
+<span class="go">│ 1    ┆ a    ┆ 1.2  │</span>
+<span class="go">│ 2    ┆ b    ┆ 2.2  │</span>
+<span class="go">│ 3    ┆ c    ┆ 3.2  │</span>
+<span class="go">│ 4    ┆ d    ┆ 4.2  │</span>
+<span class="go">│ 5    ┆ e    ┆ 5.2  │</span>
+<span class="go">└──────┴──────┴──────┘</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.ClickHouseArrowIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.ClickHouseArrowIngestor</span>
+
+
+<a href="#grizz.ingestor.ClickHouseArrowIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code></p>
+
+
+        <p>Implement a ClickHouse DataFrame ingestor that uses Arrow.</p>
+<p>This ingestor requires <code>clickhouse_connect</code> and <code>pyarrow</code>.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>query</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The query to get the data.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>client</code>
+            </td>
+            <td>
+                  <code><span title="clickhouse_connect.driver.Client">Client</span> | dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The ClickHouse client or its configuration.
+Please check the documentation of
+<code>clickhouse_connect.get_client</code> to get more information.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClickHouseArrowIngestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">clickhouse_connect</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">clickhouse_connect</span><span class="o">.</span><span class="n">get_client</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">ClickHouseArrowIngestor</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>  <span class="c1"># doctest: +SKIP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.CsvIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.CsvIngestor</span>
+
+
+<a href="#grizz.ingestor.CsvIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code></p>
+
+
+        <p>Implement a CSV DataFrame ingestor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>path</code>
+            </td>
+            <td>
+                  <code><span title="pathlib.Path">Path</span> | str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The path to the CSV file to ingest.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional keyword arguments for
+<code>polars.read_csv</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">CsvIngestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">CsvIngestor</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/path/to/frame.csv&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">CsvIngestor(path=/path/to/frame.csv)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.Ingestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.Ingestor</span>
+
+
+<a href="#grizz.ingestor.Ingestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code></p>
+
+
+        <p>Implement a simple DataFrame ingestor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>frame</code>
+            </td>
+            <td>
+                  <code><span title="polars.DataFrame">DataFrame</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The DataFrame to ingest.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ingestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">Ingestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">frame</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;col1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col3&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col4&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">Ingestor(shape=(5, 4))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.JoinIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.JoinIngestor</span>
+
+
+<a href="#grizz.ingestor.JoinIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code></p>
+
+
+        <p>Implement an ingestor that joins the output of multiple
+ingestors.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>ingestors</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a> | dict]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The list of ingestors.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional keyword arguments for
+<code>polars.DataFrame.join</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">JoinIngestor</span><span class="p">,</span> <span class="n">Ingestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor1</span> <span class="o">=</span> <span class="n">Ingestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">frame</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;col&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor2</span> <span class="o">=</span> <span class="n">Ingestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">frame</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;col&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col3&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor3</span> <span class="o">=</span> <span class="n">Ingestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">frame</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="p">{</span>
+<span class="gp">... </span>            <span class="s2">&quot;col&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col4&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="s2">&quot;col5&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span> <span class="s2">&quot;2.2&quot;</span><span class="p">,</span> <span class="s2">&quot;3.3&quot;</span><span class="p">,</span> <span class="s2">&quot;4.4&quot;</span><span class="p">,</span> <span class="s2">&quot;5.5&quot;</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">JoinIngestor</span><span class="p">([</span><span class="n">ingestor1</span><span class="p">,</span> <span class="n">ingestor2</span><span class="p">,</span> <span class="n">ingestor3</span><span class="p">],</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;col&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">JoinIngestor(</span>
+<span class="go">  (ingestors):</span>
+<span class="go">    (0): Ingestor(shape=(5, 3))</span>
+<span class="go">    (1): Ingestor(shape=(4, 2))</span>
+<span class="go">    (2): Ingestor(shape=(5, 3))</span>
+<span class="go">  (kwargs): on=&#39;col&#39;, how=&#39;inner&#39;</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span>
+<span class="go">shape: (4, 6)</span>
+<span class="go">┌─────┬──────┬──────┬──────┬──────┬──────┐</span>
+<span class="go">│ col ┆ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col5 │</span>
+<span class="go">│ --- ┆ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---  │</span>
+<span class="go">│ i64 ┆ str  ┆ str  ┆ i64  ┆ f64  ┆ str  │</span>
+<span class="go">╞═════╪══════╪══════╪══════╪══════╪══════╡</span>
+<span class="go">│ 1   ┆ 1    ┆ a    ┆ -1   ┆ 1.1  ┆ 1.1  │</span>
+<span class="go">│ 2   ┆ 2    ┆ b    ┆ -2   ┆ 2.2  ┆ 2.2  │</span>
+<span class="go">│ 3   ┆ 3    ┆ c    ┆ -3   ┆ 3.3  ┆ 3.3  │</span>
+<span class="go">│ 5   ┆ 5    ┆ e    ┆ -5   ┆ 5.5  ┆ 5.5  │</span>
+<span class="go">└─────┴──────┴──────┴──────┴──────┴──────┘</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.ParquetFileIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.ParquetFileIngestor</span>
+
+
+<a href="#grizz.ingestor.ParquetFileIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.parquet.ParquetIngestor" href="#grizz.ingestor.ParquetIngestor">ParquetIngestor</a></code></p>
+
+
+        <p>Implement a parquet file ingestor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>path</code>
+            </td>
+            <td>
+                  <code><span title="pathlib.Path">Path</span> | str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The path to the parquet file to ingest.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional keyword arguments for
+<code>polars.read_parquet</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParquetFileIngestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">ParquetFileIngestor</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/path/to/frame.parquet&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">ParquetFileIngestor(source=/path/to/frame.parquet)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.ParquetIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.ParquetIngestor</span>
+
+
+<a href="#grizz.ingestor.ParquetIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code></p>
+
+
+        <p>Implement a parquet ingestor.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>source</code>
+            </td>
+            <td>
+                  <code><span title="grizz.ingestor.parquet.FileSource">FileSource</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The source to the parquet data to ingest.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>**kwargs</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Additional keyword arguments for
+<code>polars.read_parquet</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParquetIngestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">ParquetIngestor</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s2">&quot;/path/to/frame.parquet&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">ParquetIngestor(source=/path/to/frame.parquet)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>  <span class="c1"># doctest: +SKIP</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="grizz.ingestor.TransformIngestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">grizz.ingestor.TransformIngestor</span>
+
+
+<a href="#grizz.ingestor.TransformIngestor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code></p>
+
+
+        <p>Implement an ingestor that also transforms the DataFrame.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>ingestor</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a> | dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The base ingestor.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>transformer</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="grizz.transformer.base.BaseTransformer" href="../transformer/#grizz.transformer.BaseTransformer">BaseTransformer</a> | dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The <code>polars.DataFrame</code> transformer or
+its configuration.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformIngestor</span><span class="p">,</span> <span class="n">Ingestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.transformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cast</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">TransformIngestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">ingestor</span><span class="o">=</span><span class="n">Ingestor</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>            <span class="p">{</span>
+<span class="gp">... </span>                <span class="s2">&quot;col1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">],</span>
+<span class="gp">... </span>                <span class="s2">&quot;col2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">],</span>
+<span class="gp">... </span>                <span class="s2">&quot;col3&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">],</span>
+<span class="gp">... </span>            <span class="p">}</span>
+<span class="gp">... </span>        <span class="p">)</span>
+<span class="gp">... </span>    <span class="p">),</span>
+<span class="gp">... </span>    <span class="n">transformer</span><span class="o">=</span><span class="n">Cast</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span> <span class="s2">&quot;col3&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">pl</span><span class="o">.</span><span class="n">Float32</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">TransformIngestor(</span>
+<span class="go">  (ingestor): Ingestor(shape=(5, 3))</span>
+<span class="go">  (transformer): CastTransformer(columns=(&#39;col1&#39;, &#39;col3&#39;), dtype=Float32, exclude_columns=(), missing_policy=&#39;raise&#39;)</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span> <span class="o">=</span> <span class="n">ingestor</span><span class="o">.</span><span class="n">ingest</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">frame</span>
+<span class="go">shape: (5, 3)</span>
+<span class="go">┌──────┬──────┬──────┐</span>
+<span class="go">│ col1 ┆ col2 ┆ col3 │</span>
+<span class="go">│ ---  ┆ ---  ┆ ---  │</span>
+<span class="go">│ f32  ┆ str  ┆ f32  │</span>
+<span class="go">╞══════╪══════╪══════╡</span>
+<span class="go">│ 1.0  ┆ a    ┆ 1.2  │</span>
+<span class="go">│ 2.0  ┆ b    ┆ 2.2  │</span>
+<span class="go">│ 3.0  ┆ c    ┆ 3.2  │</span>
+<span class="go">│ 4.0  ┆ d    ┆ 4.2  │</span>
+<span class="go">│ 5.0  ┆ e    ┆ 5.2  │</span>
+<span class="go">└──────┴──────┴──────┘</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="grizz.ingestor.is_ingestor_config" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">grizz.ingestor.is_ingestor_config</span>
+
+
+<a href="#grizz.ingestor.is_ingestor_config" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_ingestor_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Indicate if the input configuration is a configuration for a
+<code>BaseIngestor</code>.</p>
+<p>This function only checks if the value of the key  <code>_target_</code>
+is valid. It does not check the other values. If <code>_target_</code>
+indicates a function, the returned type hint is used to check
+the class.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>config</code>
+            </td>
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The configuration to check.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>True</code> if the input configuration is a configuration
+for a <code>BaseIngestor</code> object.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_ingestor_config</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_ingestor_config</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;_target_&quot;</span><span class="p">:</span> <span class="s2">&quot;grizz.ingestor.CsvIngestor&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/data.csv&quot;</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">True</span>
+</code></pre></div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="grizz.ingestor.setup_ingestor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">grizz.ingestor.setup_ingestor</span>
+
+
+<a href="#grizz.ingestor.setup_ingestor" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">setup_ingestor</span><span class="p">(</span>
+    <span class="n">ingestor</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></span> <span class="o">|</span> <span class="n">dict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Set up an ingestor.</p>
+<p>The ingestor is instantiated from its configuration
+by using the <code>BaseIngestor</code> factory function.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>ingestor</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a> | dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An ingestor or its configuration.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="grizz.ingestor.base.BaseIngestor" href="#grizz.ingestor.BaseIngestor">BaseIngestor</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An instantiated ingestor.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>Example usage:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">grizz.ingestor</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_ingestor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span> <span class="o">=</span> <span class="n">setup_ingestor</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;_target_&quot;</span><span class="p">:</span> <span class="s2">&quot;grizz.ingestor.CsvIngestor&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/data.csv&quot;</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ingestor</span>
+<span class="go">CsvIngestor(path=/path/to/data.csv)</span>
+</code></pre></div>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 - present Thibaut Durand
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.expand", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"method": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>
