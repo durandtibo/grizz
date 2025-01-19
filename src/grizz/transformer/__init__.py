@@ -8,6 +8,7 @@ __all__ = [
     "BaseIn1Out1Transformer",
     "BaseIn2Out1Transformer",
     "BaseInNOut1Transformer",
+    "BaseInNOutNTransformer",
     "BaseInNTransformer",
     "BaseTransformer",
     "Binarizer",
@@ -202,6 +203,7 @@ from grizz.transformer.columns import (
     BaseIn1Out1Transformer,
     BaseIn2Out1Transformer,
     BaseInNOut1Transformer,
+    BaseInNOutNTransformer,
     BaseInNTransformer,
 )
 from grizz.transformer.comparison import EqualMissingTransformer

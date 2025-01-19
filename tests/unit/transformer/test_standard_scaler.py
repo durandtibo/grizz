@@ -47,8 +47,8 @@ def dataframe() -> pl.DataFrame:
 def test_standard_scaler_transformer_repr() -> None:
     assert repr(StandardScaler(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "StandardScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 
@@ -56,8 +56,8 @@ def test_standard_scaler_transformer_repr() -> None:
 def test_standard_scaler_transformer_str() -> None:
     assert str(StandardScaler(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "StandardScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 

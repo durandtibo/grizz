@@ -10,8 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.column import check_column_exist_policy, check_existing_columns
+from grizz.transformer.columns import BaseInNOutNTransformer
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -24,15 +23,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class StandardScalerTransformer(BaseInNTransformer):
+class StandardScalerTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to standardize each column by removing
     the mean and scaling to unit variance.
 
     Args:
         columns: The columns to scale. ``None`` means all the
             columns.
-        prefix: The column name prefix for the copied columns.
-        suffix: The column name suffix for the copied columns.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
@@ -66,7 +65,7 @@ class StandardScalerTransformer(BaseInNTransformer):
     >>> from grizz.transformer import StandardScaler
     >>> transformer = StandardScaler(columns=["col1", "col3"], prefix="", suffix="_out")
     >>> transformer
-    StandardScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', suffix='_out')
+    StandardScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', propagate_nulls=True)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -121,15 +120,13 @@ class StandardScalerTransformer(BaseInNTransformer):
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
-        self._prefix = prefix
-        self._suffix = suffix
         self._propagate_nulls = propagate_nulls
-
-        check_column_exist_policy(exist_policy)
-        self._exist_policy = exist_policy
 
         check_sklearn()
         self._scaler = sklearn.preprocessing.StandardScaler(**kwargs)
@@ -139,10 +136,7 @@ class StandardScalerTransformer(BaseInNTransformer):
         return (
             super().get_args()
             | {
-                "exist_policy": self._exist_policy,
                 "propagate_nulls": self._propagate_nulls,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
             }
             | self._kwargs
         )
@@ -156,7 +150,6 @@ class StandardScalerTransformer(BaseInNTransformer):
         self._scaler.fit(frame.select(columns).to_numpy())
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_output_columns(frame)
         logger.info(
             f"Applying the robust scaling transformation on {len(self.find_columns(frame)):,} "
             f"columns | prefix={self._prefix!r} | suffix={self._suffix!r}"
@@ -169,15 +162,3 @@ class StandardScalerTransformer(BaseInNTransformer):
         if self._propagate_nulls:
             data_out = propagate_nulls(data_out, data)
         return frame.with_columns(data_out.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
-
-    def _check_output_columns(self, frame: pl.DataFrame) -> None:
-        r"""Check if the output columns already exist.
-
-        Args:
-            frame: The input DataFrame to check.
-        """
-        check_existing_columns(
-            frame,
-            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
-            exist_policy=self._exist_policy,
-        )
