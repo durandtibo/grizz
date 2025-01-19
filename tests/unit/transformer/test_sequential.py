@@ -121,7 +121,7 @@ def test_sequential_transformer_fit_2(
     assert caplog.messages[0].startswith(
         "Skipping 'CastTransformer.fit' as there are no parameters available to fit"
     )
-    assert caplog.messages[1].startswith(
+    assert caplog.messages[2].startswith(
         "Skipping 'CastTransformer.fit' as there are no parameters available to fit"
     )
 
