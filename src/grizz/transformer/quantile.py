@@ -29,8 +29,8 @@ class QuantileTransformer(BaseInNOutNTransformer):
     Args:
         columns: The columns to scale. ``None`` means all the
             columns.
-        prefix: The column name prefix for the copied columns.
-        suffix: The column name suffix for the copied columns.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
