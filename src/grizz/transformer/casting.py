@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 import polars.selectors as cs
-from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
 
@@ -123,12 +122,10 @@ class CastTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Casting {len(self.find_columns(frame)):,} columns to {self._dtype}...")
         columns = self.find_common_columns(frame)
-        return self._transform_frame(frame, columns)
+        return frame.with_columns(self._cast(frame, columns))
 
-    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
-        return frame.with_columns(
-            frame.select(cs.by_name(columns).cast(self._dtype, **self._kwargs))
-        )
+    def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+        return frame.select(cs.by_name(columns).cast(self._dtype, **self._kwargs))
 
 
 class DecimalCastTransformer(CastTransformer):
@@ -206,10 +203,8 @@ class DecimalCastTransformer(CastTransformer):
     ```
     """
 
-    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
-        return frame.with_columns(
-            frame.select((cs.by_name(columns) & cs.decimal()).cast(self._dtype, **self._kwargs))
-        )
+    def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+        return frame.select((cs.by_name(columns) & cs.decimal()).cast(self._dtype, **self._kwargs))
 
 
 class FloatCastTransformer(CastTransformer):
@@ -287,10 +282,8 @@ class FloatCastTransformer(CastTransformer):
     ```
     """
 
-    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
-        return frame.with_columns(
-            frame.select((cs.by_name(columns) & cs.float()).cast(self._dtype, **self._kwargs))
-        )
+    def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+        return frame.select((cs.by_name(columns) & cs.float()).cast(self._dtype, **self._kwargs))
 
 
 class IntegerCastTransformer(CastTransformer):
@@ -368,10 +361,8 @@ class IntegerCastTransformer(CastTransformer):
     ```
     """
 
-    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
-        return frame.with_columns(
-            frame.select((cs.by_name(columns) & cs.integer()).cast(self._dtype, **self._kwargs))
-        )
+    def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+        return frame.select((cs.by_name(columns) & cs.integer()).cast(self._dtype, **self._kwargs))
 
 
 class NumericCastTransformer(CastTransformer):
@@ -449,10 +440,8 @@ class NumericCastTransformer(CastTransformer):
     ```
     """
 
-    def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
-        return frame.with_columns(
-            frame.select((cs.by_name(columns) & cs.numeric()).cast(self._dtype, **self._kwargs))
-        )
+    def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
+        return frame.select((cs.by_name(columns) & cs.numeric()).cast(self._dtype, **self._kwargs))
 
 
 class CategoricalCastTransformer(BaseIn1Out1Transformer):
@@ -543,10 +532,6 @@ class CategoricalCastTransformer(BaseIn1Out1Transformer):
             missing_policy=missing_policy,
         )
         self._kwargs = kwargs
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
 
     def get_args(self) -> dict:
         return {
