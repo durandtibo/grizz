@@ -399,12 +399,12 @@ def test_to_time_transformer_get_args() -> None:
     )
 
 
-def test_standard_scaler_transformer_fit(frame_time: pl.DataFrame) -> None:
+def test_to_time_transformer_fit(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="_out")
     transformer.fit(frame_time)
 
 
-def test_standard_scaler_transformer_fit_missing_policy_ignore(
+def test_to_time_transformer_fit_missing_policy_ignore(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(
@@ -415,7 +415,7 @@ def test_standard_scaler_transformer_fit_missing_policy_ignore(
         transformer.fit(frame_time)
 
 
-def test_standard_scaler_transformer_fit_missing_policy_raise(
+def test_to_time_transformer_fit_missing_policy_raise(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
@@ -423,7 +423,7 @@ def test_standard_scaler_transformer_fit_missing_policy_raise(
         transformer.fit(frame_time)
 
 
-def test_standard_scaler_transformer_fit_missing_policy_warn(
+def test_to_time_transformer_fit_missing_policy_warn(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(
@@ -435,7 +435,7 @@ def test_standard_scaler_transformer_fit_missing_policy_warn(
         transformer.fit(frame_time)
 
 
-def test_standard_scaler_transformer_fit_transform(frame_time: pl.DataFrame) -> None:
+def test_to_time_transformer_fit_transform(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="_out")
     out = transformer.fit_transform(frame_time)
     assert_frame_equal(
@@ -473,7 +473,7 @@ def test_standard_scaler_transformer_fit_transform(frame_time: pl.DataFrame) -> 
     )
 
 
-def test_standard_scaler_transformer_transform(frame_time: pl.DataFrame) -> None:
+def test_to_time_transformer_transform(frame_time: pl.DataFrame) -> None:
     transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="_out")
     out = transformer.transform(frame_time)
     assert_frame_equal(
@@ -587,7 +587,7 @@ def test_to_time_transformer_transform_exclude_columns(frame_time: pl.DataFrame)
     )
 
 
-def test_standard_scaler_transformer_transform_nulls() -> None:
+def test_to_time_transformer_transform_nulls() -> None:
     frame = pl.DataFrame(
         {
             "col1": ["01:01:01", "02:02:02", None, "18:18:18", "23:59:59"],
@@ -634,7 +634,7 @@ def test_standard_scaler_transformer_transform_nulls() -> None:
     )
 
 
-def test_standard_scaler_transformer_transform_time() -> None:
+def test_to_time_transformer_transform_time() -> None:
     transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="_out")
     frame = pl.DataFrame(
         {
@@ -693,7 +693,7 @@ def test_standard_scaler_transformer_transform_time() -> None:
     )
 
 
-def test_standard_scaler_transformer_transform_incompatible_columns() -> None:
+def test_to_time_transformer_transform_incompatible_columns() -> None:
     transformer = ToTime(columns=None, prefix="", suffix="_out")
     frame = pl.DataFrame(
         {
@@ -714,7 +714,7 @@ def test_standard_scaler_transformer_transform_incompatible_columns() -> None:
         transformer.transform(frame)
 
 
-def test_standard_scaler_transformer_transform_exist_policy_ignore(
+def test_to_time_transformer_transform_exist_policy_ignore(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="", exist_policy="ignore")
@@ -747,7 +747,7 @@ def test_standard_scaler_transformer_transform_exist_policy_ignore(
     )
 
 
-def test_standard_scaler_transformer_transform_exist_policy_raise(
+def test_to_time_transformer_transform_exist_policy_raise(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="")
@@ -755,7 +755,7 @@ def test_standard_scaler_transformer_transform_exist_policy_raise(
         transformer.transform(frame_time)
 
 
-def test_standard_scaler_transformer_transform_exist_policy_warn(
+def test_to_time_transformer_transform_exist_policy_warn(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="", exist_policy="warn")
@@ -790,7 +790,7 @@ def test_standard_scaler_transformer_transform_exist_policy_warn(
     )
 
 
-def test_standard_scaler_transformer_transform_missing_policy_ignore(
+def test_to_time_transformer_transform_missing_policy_ignore(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(
@@ -834,7 +834,7 @@ def test_standard_scaler_transformer_transform_missing_policy_ignore(
     )
 
 
-def test_standard_scaler_transformer_transform_missing_policy_raise(
+def test_to_time_transformer_transform_missing_policy_raise(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
@@ -842,7 +842,7 @@ def test_standard_scaler_transformer_transform_missing_policy_raise(
         transformer.transform(frame_time)
 
 
-def test_standard_scaler_transformer_transform_missing_policy_warn(
+def test_to_time_transformer_transform_missing_policy_warn(
     frame_time: pl.DataFrame,
 ) -> None:
     transformer = ToTime(
