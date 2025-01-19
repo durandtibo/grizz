@@ -123,7 +123,7 @@ def test_max_abs_scaler_transformer_equal_false_different_type() -> None:
 
 
 @sklearn_available
-def test_max_abs_scaler_transformer_transformer_get_args() -> None:
+def test_max_abs_scaler_transformer_get_args() -> None:
     assert objects_are_equal(
         MaxAbsScaler(columns=["col1", "col3"], prefix="", suffix="_out").get_args(),
         {
