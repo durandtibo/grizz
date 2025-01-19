@@ -186,17 +186,13 @@ class TimeDiffTransformer(BaseArgTransformer):
             "shift": self._shift,
         }
 
-    def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit_dataframe(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
             f"available to fit"
         )
 
-    def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self.fit(frame)
-        return self.transform(frame)
-
-    def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
             f"Computing the time difference between consecutive time steps | "
             f"group_cols={self._group_cols} | time_col={self._time_col!r} | "
