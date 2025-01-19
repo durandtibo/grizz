@@ -14,7 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer.numeric import (
+from grizz.transformer.cast.numeric import (
     InplaceNumericCastTransformer,
     NumericCastTransformer,
 )

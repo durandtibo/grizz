@@ -168,6 +168,12 @@ from grizz.transformer.cardinality import FilterCardinalityTransformer
 from grizz.transformer.cardinality import (
     FilterCardinalityTransformer as FilterCardinality,
 )
+from grizz.transformer.cast.casting import InplaceCastTransformer
+from grizz.transformer.cast.casting import InplaceCastTransformer as InplaceCast
+from grizz.transformer.cast.numeric import InplaceNumericCastTransformer
+from grizz.transformer.cast.numeric import (
+    InplaceNumericCastTransformer as InplaceNumericCast,
+)
 from grizz.transformer.casting import CastTransformer
 from grizz.transformer.casting import CastTransformer as Cast
 from grizz.transformer.casting import DecimalCastTransformer
@@ -178,8 +184,6 @@ from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.casting import NumericCastTransformer
 from grizz.transformer.casting import NumericCastTransformer as NumericCast
-from grizz.transformer.casting2 import InplaceCastTransformer
-from grizz.transformer.casting2 import InplaceCastTransformer as InplaceCast
 from grizz.transformer.categorical import CategoricalCastTransformer
 from grizz.transformer.categorical import CategoricalCastTransformer as CategoricalCast
 from grizz.transformer.categorical import InplaceCategoricalCastTransformer
@@ -298,10 +302,6 @@ from grizz.transformer.null import DropNullColumnTransformer
 from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer
 from grizz.transformer.null import DropNullRowTransformer as DropNullRow
-from grizz.transformer.numeric import InplaceNumericCastTransformer
-from grizz.transformer.numeric import (
-    InplaceNumericCastTransformer as InplaceNumericCast,
-)
 from grizz.transformer.ordinal_encoder import OrdinalEncoderTransformer
 from grizz.transformer.ordinal_encoder import (
     OrdinalEncoderTransformer as OrdinalEncoder,
