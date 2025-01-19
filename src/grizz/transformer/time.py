@@ -123,7 +123,7 @@ class ToTimeTransformer(BaseInNOutNTransformer):
     ``polars.Time`` type.
 
     Args:
-        columns: The columns of type string to convert. ``None`` means
+        columns: The columns of type to convert. ``None`` means
             all the columns.
         prefix: The column name prefix for the output columns.
         suffix: The column name suffix for the output columns.
