@@ -38,84 +38,84 @@ def dataframe() -> pl.DataFrame:
 
 
 @sklearn_available
-def test_normarizer_transformer_repr() -> None:
+def test_normalizer_transformer_repr() -> None:
     assert repr(Normalizer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "NormalizerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out')"
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_str() -> None:
+def test_normalizer_transformer_str() -> None:
     assert str(Normalizer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "NormalizerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out')"
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_true() -> None:
+def test_normalizer_transformer_equal_true() -> None:
     assert Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col3"], prefix="", suffix="_out")
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_columns() -> None:
+def test_normalizer_transformer_equal_false_different_columns() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_prefix() -> None:
+def test_normalizer_transformer_equal_false_different_prefix() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col3"], prefix="bin_", suffix="_out")
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_suffix() -> None:
+def test_normalizer_transformer_equal_false_different_suffix() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col3"], prefix="", suffix="")
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_exclude_columns() -> None:
+def test_normalizer_transformer_equal_false_different_exclude_columns() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col3"], prefix="", suffix="_out", exclude_columns=["col4"])
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_exist_policy() -> None:
+def test_normalizer_transformer_equal_false_different_exist_policy() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col3"], prefix="", suffix="_out", exist_policy="warn")
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_missing_policy() -> None:
+def test_normalizer_transformer_equal_false_different_missing_policy() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col3"], prefix="", suffix="_out", missing_policy="warn")
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_kwargs() -> None:
+def test_normalizer_transformer_equal_false_different_kwargs() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         Normalizer(columns=["col1", "col3"], prefix="", suffix="_out", norm="l2")
     )
 
 
 @sklearn_available
-def test_normarizer_transformer_equal_false_different_type() -> None:
+def test_normalizer_transformer_equal_false_different_type() -> None:
     assert not Normalizer(columns=["col1", "col3"], prefix="", suffix="_out").equal(42)
 
 
 @sklearn_available
-def test_normarizer_transformer_get_args() -> None:
+def test_normalizer_transformer_get_args() -> None:
     assert objects_are_equal(
         Normalizer(columns=["col1", "col3"], prefix="", suffix="_out", norm="l2").get_args(),
         {
@@ -131,7 +131,7 @@ def test_normarizer_transformer_get_args() -> None:
 
 
 @sklearn_available
-def test_normarizer_transformer_fit(
+def test_normalizer_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
     transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="_out")
@@ -143,7 +143,7 @@ def test_normarizer_transformer_fit(
 
 
 @sklearn_available
-def test_normarizer_transformer_fit_missing_policy_ignore(
+def test_normalizer_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(
@@ -155,7 +155,7 @@ def test_normarizer_transformer_fit_missing_policy_ignore(
 
 
 @sklearn_available
-def test_normarizer_transformer_fit_missing_policy_raise(
+def test_normalizer_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
@@ -164,7 +164,7 @@ def test_normarizer_transformer_fit_missing_policy_raise(
 
 
 @sklearn_available
-def test_normarizer_transformer_fit_missing_policy_warn(
+def test_normalizer_transformer_fit_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(
@@ -177,7 +177,7 @@ def test_normarizer_transformer_fit_missing_policy_warn(
 
 
 @sklearn_available
-def test_normarizer_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+def test_normalizer_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="_out")
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
@@ -216,7 +216,7 @@ def test_normarizer_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
-def test_normarizer_transformer_transform(dataframe: pl.DataFrame) -> None:
+def test_normalizer_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="_out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -255,7 +255,48 @@ def test_normarizer_transformer_transform(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
-def test_normarizer_transformer_transform_nulls_and_nans() -> None:
+def test_normalizer_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = Normalizer(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [5, 4, 3, 2, 1],
+                "col4": ["a", "b", "c", "d", "e"],
+                "col1_out": [
+                    0.19611613513818404,
+                    0.4472135954999579,
+                    0.7071067811865476,
+                    0.8944271909999159,
+                    0.9805806756909202,
+                ],
+                "col3_out": [
+                    0.9805806756909202,
+                    0.8944271909999159,
+                    0.7071067811865476,
+                    0.4472135954999579,
+                    0.19611613513818404,
+                ],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float32,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_normalizer_transformer_transform_nulls_and_nans() -> None:
     frame = pl.DataFrame(
         {
             "col1": [0, 1, 2, 3, 4, 5, None, 1, None, float("nan"), 1, float("nan")],
@@ -355,7 +396,7 @@ def test_normarizer_transformer_transform_nulls_and_nans() -> None:
 
 
 @sklearn_available
-def test_normarizer_transformer_transform_exist_policy_ignore(
+def test_normalizer_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="", exist_policy="ignore")
@@ -394,7 +435,7 @@ def test_normarizer_transformer_transform_exist_policy_ignore(
 
 
 @sklearn_available
-def test_normarizer_transformer_transform_exist_policy_raise(
+def test_normalizer_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="")
@@ -403,7 +444,7 @@ def test_normarizer_transformer_transform_exist_policy_raise(
 
 
 @sklearn_available
-def test_normarizer_transformer_transform_exist_policy_warn(
+def test_normalizer_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="", exist_policy="warn")
@@ -444,7 +485,7 @@ def test_normarizer_transformer_transform_exist_policy_warn(
 
 
 @sklearn_available
-def test_normarizer_transformer_transform_missing_policy_ignore(
+def test_normalizer_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(
@@ -489,7 +530,7 @@ def test_normarizer_transformer_transform_missing_policy_ignore(
 
 
 @sklearn_available
-def test_normarizer_transformer_transform_missing_policy_raise(
+def test_normalizer_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
@@ -498,7 +539,7 @@ def test_normarizer_transformer_transform_missing_policy_raise(
 
 
 @sklearn_available
-def test_normarizer_transformer_transform_missing_policy_warn(
+def test_normalizer_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = Normalizer(
@@ -543,7 +584,7 @@ def test_normarizer_transformer_transform_missing_policy_warn(
     )
 
 
-def test_normarizer_transformer_no_sklearn() -> None:
+def test_normalizer_transformer_no_sklearn() -> None:
     with (
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
         pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
