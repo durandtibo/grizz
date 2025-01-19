@@ -20,10 +20,8 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
-from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.column import check_column_exist_policy, check_existing_columns
+from grizz.transformer.columns import BaseInNOutNTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -32,7 +30,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class BaseComparatorTransformer(BaseInNTransformer):
+class BaseComparatorTransformer(BaseInNOutNTransformer):
     r"""Define a base class to compare element-wise a DataFrame.
 
     Args:
@@ -74,29 +72,16 @@ class BaseComparatorTransformer(BaseInNTransformer):
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
         self._target = target
-        self._prefix = prefix
-        self._suffix = suffix
 
-        check_column_exist_policy(exist_policy)
-        self._exist_policy = exist_policy
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(
-            {
-                "columns": self._columns,
-                "target": self._target,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-                "exclude_columns": self._exclude_columns,
-                "exist_policy": self._exist_policy,
-                "missing_policy": self._missing_policy,
-            }
-        )
-        return f"{self.__class__.__qualname__}({args})"
+    def get_args(self) -> dict:
+        return super().get_args() | {"target": self._target}
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -105,27 +90,13 @@ class BaseComparatorTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_output_columns(frame)
         logger.info(
             f"Applying the {self._get_operation_name()} operation on "
             f"{len(self.find_columns(frame)):,} columns | "
             f"prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
         columns = self.find_common_columns(frame)
-        data = self._compare(frame.select(columns))
-        return frame.with_columns(data.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
-
-    def _check_output_columns(self, frame: pl.DataFrame) -> None:
-        r"""Check if the output columns already exist.
-
-        Args:
-            frame: The input DataFrame to check.
-        """
-        check_existing_columns(
-            frame,
-            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
-            exist_policy=self._exist_policy,
-        )
+        return self._compare(frame.select(columns))
 
     @abstractmethod
     def _compare(self, frame: pl.DataFrame) -> pl.DataFrame:
@@ -185,7 +156,7 @@ class EqualTransformer(BaseComparatorTransformer):
     >>> from grizz.transformer import Equal
     >>> transformer = Equal(columns=["col1", "col3"], target=3, prefix="", suffix="_out")
     >>> transformer
-    EqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    EqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=3)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -270,7 +241,7 @@ class EqualMissingTransformer(BaseComparatorTransformer):
     >>> from grizz.transformer import EqualMissing
     >>> transformer = EqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_out")
     >>> transformer
-    EqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    EqualMissingTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=3)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -357,7 +328,7 @@ class GreaterEqualTransformer(BaseComparatorTransformer):
     ...     columns=["col1", "col3"], target=4.2, prefix="", suffix="_out"
     ... )
     >>> transformer
-    GreaterEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    GreaterEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=4.2)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -442,7 +413,7 @@ class GreaterTransformer(BaseComparatorTransformer):
     >>> from grizz.transformer import Greater
     >>> transformer = Greater(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")
     >>> transformer
-    GreaterTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    GreaterTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=4.2)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -527,7 +498,7 @@ class LowerEqualTransformer(BaseComparatorTransformer):
     >>> from grizz.transformer import LowerEqual
     >>> transformer = LowerEqual(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")
     >>> transformer
-    LowerEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    LowerEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=4.2)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -611,7 +582,7 @@ class LowerTransformer(BaseComparatorTransformer):
     >>> from grizz.transformer import Lower
     >>> transformer = Lower(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")
     >>> transformer
-    LowerTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    LowerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=4.2)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -695,7 +666,7 @@ class NotEqualTransformer(BaseComparatorTransformer):
     >>> from grizz.transformer import NotEqual
     >>> transformer = NotEqual(columns=["col1", "col3"], target=3, prefix="", suffix="_out")
     >>> transformer
-    NotEqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    NotEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=3)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -782,7 +753,7 @@ class NotEqualMissingTransformer(BaseComparatorTransformer):
     ...     columns=["col1", "col3"], target=3, prefix="", suffix="_out"
     ... )
     >>> transformer
-    NotEqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', exclude_columns=(), exist_policy='raise', missing_policy='raise')
+    NotEqualMissingTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', target=3)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
