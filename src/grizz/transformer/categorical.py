@@ -132,6 +132,10 @@ class InplaceCategoricalCastTransformer(CategoricalCastTransformer):
     r"""Implement a transformer to convert a column to categorical data
     type.
 
+    ``InplaceCategoricalCastTransformer`` is a specific implementation
+    of ``CategoricalCastTransformer`` that performs the transformation
+    in-place.
+
     Args:
         col: The column name to cast.
         **kwargs: Additional arguments passed to
