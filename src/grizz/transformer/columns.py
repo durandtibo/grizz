@@ -814,7 +814,8 @@ class BaseInNOutNTransformer(BaseInNTransformer):
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
         self._check_output_column(frame)
-        return self._transform(frame)
+        out = self._transform(frame)
+        return frame.with_columns(out.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
 
     def get_args(self) -> dict:
         return {
