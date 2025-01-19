@@ -45,100 +45,100 @@ def dataframe() -> pl.DataFrame:
 
 @sklearn_available
 def test_simple_imputer_transformer_repr() -> None:
-    assert repr(SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")) == (
+    assert repr(SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "SimpleImputerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_imp')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_str() -> None:
-    assert str(SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")) == (
+    assert str(SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "SimpleImputerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_imp')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_true() -> None:
-    assert SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
+    assert SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_columns() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col2", "col3"], prefix="", suffix="_imp")
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_prefix() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col3"], prefix="bin_", suffix="_imp")
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="bin_", suffix="_out")
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_suffix() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         SimpleImputer(columns=["col1", "col3"], prefix="", suffix="")
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_exclude_columns() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", exclude_columns=["col4"])
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out", exclude_columns=["col4"])
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_exist_policy() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", exist_policy="warn")
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out", exist_policy="warn")
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_missing_policy() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", missing_policy="warn")
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out", missing_policy="warn")
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_propagate_nulls() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", propagate_nulls=False)
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out", propagate_nulls=False)
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_kwargs() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(
-        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp", strategy="mean")
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out", strategy="mean")
     )
 
 
 @sklearn_available
 def test_simple_imputer_transformer_equal_false_different_type() -> None:
-    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp").equal(42)
+    assert not SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out").equal(42)
 
 
 @sklearn_available
 def test_simple_imputer_transformer_get_args() -> None:
     assert objects_are_equal(
         SimpleImputer(
-            columns=["col1", "col3"], prefix="", suffix="_imp", strategy="mean"
+            columns=["col1", "col3"], prefix="", suffix="_out", strategy="mean"
         ).get_args(),
         {
             "columns": ("col1", "col3"),
             "prefix": "",
-            "suffix": "_imp",
+            "suffix": "_out",
             "exclude_columns": (),
             "exist_policy": "raise",
             "missing_policy": "raise",
@@ -150,9 +150,18 @@ def test_simple_imputer_transformer_get_args() -> None:
 
 @sklearn_available
 def test_simple_imputer_transformer_fit(dataframe: pl.DataFrame) -> None:
-    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
+    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
     transformer.fit(dataframe)
-    assert transformer._imputer.n_features_in_ == 2
+    assert transformer._oututer.n_features_in_ == 2
+
+
+@sklearn_available
+def test_simple_imputer_transformer_fit_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = SimpleImputer(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
+    transformer.fit(dataframe)
+    assert transformer._oututer.n_features_in_ == 2
 
 
 @sklearn_available
@@ -160,19 +169,19 @@ def test_simple_imputer_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = SimpleImputer(
-        columns=["col1", "col3", "col5"], prefix="", suffix="_imp", missing_policy="ignore"
+        columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="ignore"
     )
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         transformer.fit(dataframe)
-    assert transformer._imputer.n_features_in_ == 2
+    assert transformer._oututer.n_features_in_ == 2
 
 
 @sklearn_available
 def test_simple_imputer_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = SimpleImputer(columns=["col1", "col3", "col5"], prefix="", suffix="_imp")
+    transformer = SimpleImputer(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
@@ -182,20 +191,20 @@ def test_simple_imputer_transformer_fit_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = SimpleImputer(
-        columns=["col1", "col3", "col5"], prefix="", suffix="_imp", missing_policy="warn"
+        columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
     with pytest.warns(
         ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
-    assert transformer._imputer.n_features_in_ == 2
+    assert transformer._oututer.n_features_in_ == 2
 
 
 @sklearn_available
 def test_simple_imputer_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
-    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
+    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
     out = transformer.fit_transform(dataframe)
-    assert transformer._imputer.n_features_in_ == 2
+    assert transformer._oututer.n_features_in_ == 2
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -204,16 +213,16 @@ def test_simple_imputer_transformer_fit_transform(dataframe: pl.DataFrame) -> No
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": [10, 20, float("nan"), 40, 50],
                 "col4": ["a", "b", "c", "d", "e"],
-                "col1_imp": [1.0, 2.0, 2.0, 3.0, None],
-                "col3_imp": [10.0, 20.0, 30.0, 40.0, 50.0],
+                "col1_out": [1.0, 2.0, 2.0, 3.0, None],
+                "col3_out": [10.0, 20.0, 30.0, 40.0, 50.0],
             },
             schema={
                 "col1": pl.Float64,
                 "col2": pl.Float32,
                 "col3": pl.Float32,
                 "col4": pl.String,
-                "col1_imp": pl.Float64,
-                "col3_imp": pl.Float64,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -221,8 +230,8 @@ def test_simple_imputer_transformer_fit_transform(dataframe: pl.DataFrame) -> No
 
 @sklearn_available
 def test_simple_imputer_transformer_transform(dataframe: pl.DataFrame) -> None:
-    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
-    transformer._imputer.fit(
+    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
+    transformer._oututer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     out = transformer.transform(dataframe)
@@ -234,16 +243,48 @@ def test_simple_imputer_transformer_transform(dataframe: pl.DataFrame) -> None:
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": [10, 20, float("nan"), 40, 50],
                 "col4": ["a", "b", "c", "d", "e"],
-                "col1_imp": [1.0, 2.0, 2.0, 3.0, None],
-                "col3_imp": [10.0, 20.0, 30.0, 40.0, 50.0],
+                "col1_out": [1.0, 2.0, 2.0, 3.0, None],
+                "col3_out": [10.0, 20.0, 30.0, 40.0, 50.0],
             },
             schema={
                 "col1": pl.Float64,
                 "col2": pl.Float32,
                 "col3": pl.Float32,
                 "col4": pl.String,
-                "col1_imp": pl.Float64,
-                "col3_imp": pl.Float64,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_simple_imputer_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = SimpleImputer(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
+    transformer._oututer.fit(
+        np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
+    )
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, float("nan"), 3, None],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [10, 20, float("nan"), 40, 50],
+                "col4": ["a", "b", "c", "d", "e"],
+                "col1_out": [1.0, 2.0, 2.0, 3.0, None],
+                "col3_out": [10.0, 20.0, 30.0, 40.0, 50.0],
+            },
+            schema={
+                "col1": pl.Float64,
+                "col2": pl.Float32,
+                "col3": pl.Float32,
+                "col4": pl.String,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -251,8 +292,8 @@ def test_simple_imputer_transformer_transform(dataframe: pl.DataFrame) -> None:
 
 @sklearn_available
 def test_simple_imputer_transformer_transform_propagate_nulls_true(dataframe: pl.DataFrame) -> None:
-    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
-    transformer._imputer.fit(
+    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
+    transformer._oututer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     out = transformer.transform(dataframe)
@@ -264,16 +305,16 @@ def test_simple_imputer_transformer_transform_propagate_nulls_true(dataframe: pl
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": [10, 20, float("nan"), 40, 50],
                 "col4": ["a", "b", "c", "d", "e"],
-                "col1_imp": [1.0, 2.0, 2.0, 3.0, None],
-                "col3_imp": [10.0, 20.0, 30.0, 40.0, 50.0],
+                "col1_out": [1.0, 2.0, 2.0, 3.0, None],
+                "col3_out": [10.0, 20.0, 30.0, 40.0, 50.0],
             },
             schema={
                 "col1": pl.Float64,
                 "col2": pl.Float32,
                 "col3": pl.Float32,
                 "col4": pl.String,
-                "col1_imp": pl.Float64,
-                "col3_imp": pl.Float64,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -284,9 +325,9 @@ def test_simple_imputer_transformer_transform_propagate_nulls_false(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = SimpleImputer(
-        columns=["col1", "col3"], prefix="", suffix="_imp", propagate_nulls=False
+        columns=["col1", "col3"], prefix="", suffix="_out", propagate_nulls=False
     )
-    transformer._imputer.fit(
+    transformer._oututer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     out = transformer.transform(dataframe)
@@ -298,16 +339,16 @@ def test_simple_imputer_transformer_transform_propagate_nulls_false(
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": [10, 20, float("nan"), 40, 50],
                 "col4": ["a", "b", "c", "d", "e"],
-                "col1_imp": [1.0, 2.0, 2.0, 3.0, 2.0],
-                "col3_imp": [10.0, 20.0, 30.0, 40.0, 50.0],
+                "col1_out": [1.0, 2.0, 2.0, 3.0, 2.0],
+                "col3_out": [10.0, 20.0, 30.0, 40.0, 50.0],
             },
             schema={
                 "col1": pl.Float64,
                 "col2": pl.Float32,
                 "col3": pl.Float32,
                 "col4": pl.String,
-                "col1_imp": pl.Float64,
-                "col3_imp": pl.Float64,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -315,7 +356,7 @@ def test_simple_imputer_transformer_transform_propagate_nulls_false(
 
 @sklearn_available
 def test_simple_imputer_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> None:
-    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
+    transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
     with pytest.raises(
         sklearn.exceptions.NotFittedError, match="This SimpleImputer instance is not fitted yet."
     ):
@@ -329,7 +370,7 @@ def test_simple_imputer_transformer_transform_exist_policy_ignore(
     transformer = SimpleImputer(
         columns=["col1", "col3"], prefix="", suffix="", exist_policy="ignore"
     )
-    transformer._imputer.fit(
+    transformer._oututer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with warnings.catch_warnings():
@@ -368,7 +409,7 @@ def test_simple_imputer_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="", exist_policy="warn")
-    transformer._imputer.fit(
+    transformer._oututer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with pytest.warns(
@@ -400,9 +441,9 @@ def test_simple_imputer_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = SimpleImputer(
-        columns=["col1", "col3", "col5"], prefix="", suffix="_imp", missing_policy="ignore"
+        columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="ignore"
     )
-    transformer._imputer.fit(
+    transformer._oututer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with warnings.catch_warnings():
@@ -416,16 +457,16 @@ def test_simple_imputer_transformer_transform_missing_policy_ignore(
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": [10, 20, float("nan"), 40, 50],
                 "col4": ["a", "b", "c", "d", "e"],
-                "col1_imp": [1.0, 2.0, 2.0, 3.0, None],
-                "col3_imp": [10.0, 20.0, 30.0, 40.0, 50.0],
+                "col1_out": [1.0, 2.0, 2.0, 3.0, None],
+                "col3_out": [10.0, 20.0, 30.0, 40.0, 50.0],
             },
             schema={
                 "col1": pl.Float64,
                 "col2": pl.Float32,
                 "col3": pl.Float32,
                 "col4": pl.String,
-                "col1_imp": pl.Float64,
-                "col3_imp": pl.Float64,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -435,7 +476,7 @@ def test_simple_imputer_transformer_transform_missing_policy_ignore(
 def test_simple_imputer_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = SimpleImputer(columns=["col1", "col3", "col5"], prefix="", suffix="_imp")
+    transformer = SimpleImputer(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
@@ -445,9 +486,9 @@ def test_simple_imputer_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = SimpleImputer(
-        columns=["col1", "col3", "col5"], prefix="", suffix="_imp", missing_policy="warn"
+        columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
-    transformer._imputer.fit(
+    transformer._oututer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with pytest.warns(
@@ -462,16 +503,16 @@ def test_simple_imputer_transformer_transform_missing_policy_warn(
                 "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
                 "col3": [10, 20, float("nan"), 40, 50],
                 "col4": ["a", "b", "c", "d", "e"],
-                "col1_imp": [1.0, 2.0, 2.0, 3.0, None],
-                "col3_imp": [10.0, 20.0, 30.0, 40.0, 50.0],
+                "col1_out": [1.0, 2.0, 2.0, 3.0, None],
+                "col3_out": [10.0, 20.0, 30.0, 40.0, 50.0],
             },
             schema={
                 "col1": pl.Float64,
                 "col2": pl.Float32,
                 "col3": pl.Float32,
                 "col4": pl.String,
-                "col1_imp": pl.Float64,
-                "col3_imp": pl.Float64,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
             },
         ),
     )
@@ -482,4 +523,4 @@ def test_simple_imputer_transformer_no_sklearn() -> None:
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
         pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
     ):
-        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_imp")
+        SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
