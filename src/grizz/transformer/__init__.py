@@ -80,6 +80,8 @@ __all__ = [
     "GreaterEqual",
     "GreaterEqualTransformer",
     "GreaterTransformer",
+    "InplaceCast",
+    "InplaceCastTransformer",
     "InplaceCategoricalCast",
     "InplaceCategoricalCastTransformer",
     "InplaceFillNan",
@@ -174,6 +176,8 @@ from grizz.transformer.casting import IntegerCastTransformer
 from grizz.transformer.casting import IntegerCastTransformer as IntegerCast
 from grizz.transformer.casting import NumericCastTransformer
 from grizz.transformer.casting import NumericCastTransformer as NumericCast
+from grizz.transformer.casting2 import InplaceCastTransformer
+from grizz.transformer.casting2 import InplaceCastTransformer as InplaceCast
 from grizz.transformer.categorical import CategoricalCastTransformer
 from grizz.transformer.categorical import CategoricalCastTransformer as CategoricalCast
 from grizz.transformer.categorical import InplaceCategoricalCastTransformer
