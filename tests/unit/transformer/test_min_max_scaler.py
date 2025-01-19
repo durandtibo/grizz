@@ -47,8 +47,8 @@ def dataframe() -> pl.DataFrame:
 def test_min_max_scaler_transformer_repr() -> None:
     assert repr(MinMaxScaler(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "MinMaxScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 
@@ -56,8 +56,8 @@ def test_min_max_scaler_transformer_repr() -> None:
 def test_min_max_scaler_transformer_str() -> None:
     assert str(MinMaxScaler(columns=["col1", "col3"], prefix="", suffix="_out")) == (
         "MinMaxScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', "
-        "suffix='_out')"
+        "exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', "
+        "propagate_nulls=True)"
     )
 
 
@@ -154,6 +154,15 @@ def test_min_max_scaler_transformer_fit(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
+def test_min_max_scaler_transformer_fit_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = MinMaxScaler(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
+    transformer.fit(dataframe)
+    assert objects_are_equal(transformer._scaler.scale_, np.array([0.25, 0.025]))
+
+
+@sklearn_available
 def test_min_max_scaler_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -220,6 +229,36 @@ def test_min_max_scaler_transformer_fit_transform(dataframe: pl.DataFrame) -> No
 @sklearn_available
 def test_min_max_scaler_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = MinMaxScaler(columns=["col1", "col3"], prefix="", suffix="_out")
+    transformer._scaler.fit(np.array([[1, 0], [5, 50]]))
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [10, 20, 30, 40, 50],
+                "col4": ["a", "b", "c", "d", "e"],
+                "col1_out": [0.0, 0.25, 0.5, 0.75, 1.0],
+                "col3_out": [0.2, 0.4, 0.6, 0.8, 1.0],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float32,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "col1_out": pl.Float64,
+                "col3_out": pl.Float64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_min_max_scaler_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = MinMaxScaler(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
     transformer._scaler.fit(np.array([[1, 0], [5, 50]]))
     out = transformer.transform(dataframe)
     assert_frame_equal(
