@@ -44,29 +44,29 @@ def dataframe() -> pl.DataFrame:
 
 def test_cast_transformer_repr() -> None:
     assert repr(Cast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "CastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_cast_transformer_repr_with_kwargs() -> None:
     assert repr(Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "CastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
 def test_cast_transformer_str() -> None:
     assert str(Cast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "CastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_cast_transformer_str_with_kwargs() -> None:
     assert str(Cast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "CastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "CastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
@@ -415,29 +415,29 @@ def frame_decimal() -> pl.DataFrame:
 
 def test_decimal_cast_transformer_repr() -> None:
     assert repr(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "DecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_decimal_cast_transformer_repr_with_kwargs() -> None:
     assert repr(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "DecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
 def test_decimal_cast_transformer_str() -> None:
     assert str(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "DecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_decimal_cast_transformer_str_with_kwargs() -> None:
     assert str(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "DecimalCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "DecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
@@ -723,29 +723,29 @@ def frame_float() -> pl.DataFrame:
 
 def test_float_cast_transformer_repr() -> None:
     assert repr(FloatCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "FloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_float_cast_transformer_repr_with_kwargs() -> None:
     assert repr(FloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "FloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
 def test_float_cast_transformer_str() -> None:
     assert str(FloatCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "FloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_float_cast_transformer_str_with_kwargs() -> None:
     assert str(FloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "FloatCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "FloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
@@ -1019,29 +1019,29 @@ def frame_integer() -> pl.DataFrame:
 
 def test_integer_cast_transformer_repr() -> None:
     assert repr(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "IntegerCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_integer_cast_transformer_repr_with_kwargs() -> None:
     assert repr(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "IntegerCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
 def test_integer_cast_transformer_str() -> None:
     assert str(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "IntegerCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_integer_cast_transformer_str_with_kwargs() -> None:
     assert str(IntegerCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "IntegerCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "IntegerCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
@@ -1327,29 +1327,29 @@ def frame_numeric() -> pl.DataFrame:
 
 def test_numeric_cast_transformer_repr() -> None:
     assert repr(NumericCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "NumericCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_numeric_cast_transformer_repr_with_kwargs() -> None:
     assert repr(NumericCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "NumericCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
 def test_numeric_cast_transformer_str() -> None:
     assert str(NumericCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
-        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise')"
+        "NumericCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_numeric_cast_transformer_str_with_kwargs() -> None:
     assert str(NumericCast(columns=["col1", "col3"], dtype=pl.Int32, strict=False)) == (
-        "NumericCastTransformer(columns=('col1', 'col3'), dtype=Int32, exclude_columns=(), "
-        "missing_policy='raise', strict=False)"
+        "NumericCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=Int32, strict=False)"
     )
 
 
