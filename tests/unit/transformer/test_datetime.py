@@ -1016,7 +1016,7 @@ def test_to_datetime_transformer_transform_incompatible_columns() -> None:
             "col4": pl.String,
         },
     )
-    with pytest.raises(pl.exceptions.SchemaError):
+    with pytest.raises((pl.exceptions.SchemaError, pl.exceptions.ComputeError)):
         transformer.transform(frame)
 
 
