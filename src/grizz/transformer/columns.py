@@ -369,45 +369,43 @@ class BaseInNTransformer(BaseArgTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import StripChars
-    >>> transformer = StripChars(columns=["col2", "col3"])
+    >>> from grizz.transformer import DropNullRow
+    >>> transformer = DropNullRow()
     >>> transformer
-    StripCharsTransformer(columns=('col2', 'col3'), exclude_columns=(), missing_policy='raise')
+    DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.DataFrame(
     ...     {
-    ...         "col1": [1, 2, 3, 4, 5],
-    ...         "col2": ["1", "2", "3", "4", "5"],
-    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
-    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+    ...         "col2": [1, None, 3, None, None],
+    ...         "col3": [None, None, None, None, None],
     ...     }
     ... )
     >>> frame
-    shape: (5, 4)
-    ┌──────┬──────┬───────┬───────┐
-    │ col1 ┆ col2 ┆ col3  ┆ col4  │
-    │ ---  ┆ ---  ┆ ---   ┆ ---   │
-    │ i64  ┆ str  ┆ str   ┆ str   │
-    ╞══════╪══════╪═══════╪═══════╡
-    │ 1    ┆ 1    ┆ a     ┆ a     │
-    │ 2    ┆ 2    ┆  b    ┆  b    │
-    │ 3    ┆ 3    ┆   c   ┆   c   │
-    │ 4    ┆ 4    ┆ d     ┆ d     │
-    │ 5    ┆ 5    ┆ e     ┆ e     │
-    └──────┴──────┴───────┴───────┘
+    shape: (5, 3)
+    ┌────────────┬──────┬──────┐
+    │ col1       ┆ col2 ┆ col3 │
+    │ ---        ┆ ---  ┆ ---  │
+    │ str        ┆ i64  ┆ null │
+    ╞════════════╪══════╪══════╡
+    │ 2020-1-1   ┆ 1    ┆ null │
+    │ 2020-1-2   ┆ null ┆ null │
+    │ 2020-1-31  ┆ 3    ┆ null │
+    │ 2020-12-31 ┆ null ┆ null │
+    │ null       ┆ null ┆ null │
+    └────────────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬───────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4  │
-    │ ---  ┆ ---  ┆ ---  ┆ ---   │
-    │ i64  ┆ str  ┆ str  ┆ str   │
-    ╞══════╪══════╪══════╪═══════╡
-    │ 1    ┆ 1    ┆ a    ┆ a     │
-    │ 2    ┆ 2    ┆ b    ┆  b    │
-    │ 3    ┆ 3    ┆ c    ┆   c   │
-    │ 4    ┆ 4    ┆ d    ┆ d     │
-    │ 5    ┆ 5    ┆ e    ┆ e     │
-    └──────┴──────┴──────┴───────┘
+    shape: (4, 3)
+    ┌────────────┬──────┬──────┐
+    │ col1       ┆ col2 ┆ col3 │
+    │ ---        ┆ ---  ┆ ---  │
+    │ str        ┆ i64  ┆ null │
+    ╞════════════╪══════╪══════╡
+    │ 2020-1-1   ┆ 1    ┆ null │
+    │ 2020-1-2   ┆ null ┆ null │
+    │ 2020-1-31  ┆ 3    ┆ null │
+    │ 2020-12-31 ┆ null ┆ null │
+    └────────────┴──────┴──────┘
 
     ```
     """
@@ -459,7 +457,7 @@ class BaseInNTransformer(BaseArgTransformer):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer import StripChars
+        >>> from grizz.transformer import DropNullRow
         >>> frame = pl.DataFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
@@ -468,10 +466,10 @@ class BaseInNTransformer(BaseArgTransformer):
         ...         "col4": ["a ", " b", "  c  ", "d", "e"],
         ...     }
         ... )
-        >>> transformer = StripChars(columns=["col2", "col3"])
+        >>> transformer = DropNullRow(columns=["col2", "col3"])
         >>> transformer.find_columns(frame)
         ('col2', 'col3')
-        >>> transformer = StripChars()
+        >>> transformer = DropNullRow()
         >>> transformer.find_columns(frame)
         ('col1', 'col2', 'col3', 'col4')
 
@@ -498,7 +496,7 @@ class BaseInNTransformer(BaseArgTransformer):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer import StripChars
+        >>> from grizz.transformer import DropNullRow
         >>> frame = pl.DataFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
@@ -507,10 +505,10 @@ class BaseInNTransformer(BaseArgTransformer):
         ...         "col4": ["a ", " b", "  c  ", "d", "e"],
         ...     }
         ... )
-        >>> transformer = StripChars(columns=["col2", "col3", "col5"])
+        >>> transformer = DropNullRow(columns=["col2", "col3", "col5"])
         >>> transformer.find_common_columns(frame)
         ('col2', 'col3')
-        >>> transformer = StripChars()
+        >>> transformer = DropNullRow()
         >>> transformer.find_common_columns(frame)
         ('col1', 'col2', 'col3', 'col4')
 
@@ -534,7 +532,7 @@ class BaseInNTransformer(BaseArgTransformer):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer import StripChars
+        >>> from grizz.transformer import DropNullRow
         >>> frame = pl.DataFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
@@ -543,10 +541,10 @@ class BaseInNTransformer(BaseArgTransformer):
         ...         "col4": ["a ", " b", "  c  ", "d", "e"],
         ...     }
         ... )
-        >>> transformer = StripChars(columns=["col2", "col3", "col5"])
+        >>> transformer = DropNullRow(columns=["col2", "col3", "col5"])
         >>> transformer.find_missing_columns(frame)
         ('col5',)
-        >>> transformer = StripChars()
+        >>> transformer = DropNullRow()
         >>> transformer.find_missing_columns(frame)
         ()
 
