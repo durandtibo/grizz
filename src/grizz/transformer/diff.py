@@ -5,14 +5,11 @@ from __future__ import annotations
 __all__ = ["DiffTransformer", "TimeDiffTransformer"]
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import polars as pl
-from coola import objects_are_equal
-from coola.utils.format import repr_mapping_line
 
-from grizz.transformer.base import BaseTransformer
-from grizz.transformer.columns import BaseIn1Out1Transformer
+from grizz.transformer.columns import BaseArgTransformer, BaseIn1Out1Transformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -121,7 +118,7 @@ class DiffTransformer(BaseIn1Out1Transformer):
         )
 
 
-class TimeDiffTransformer(BaseTransformer):
+class TimeDiffTransformer(BaseArgTransformer):
     r"""Implement a transformer to compute the time difference between
     consecutive time steps.
 
@@ -180,15 +177,6 @@ class TimeDiffTransformer(BaseTransformer):
         self._time_col = time_col
         self._time_diff_col = time_diff_col
         self._shift = shift
-
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
 
     def get_args(self) -> dict:
         return {
