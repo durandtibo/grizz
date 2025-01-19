@@ -6,16 +6,10 @@ from __future__ import annotations
 __all__ = ["CopyColumnTransformer", "CopyColumnsTransformer"]
 
 import logging
-from typing import TYPE_CHECKING
 
 import polars as pl
 
-from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
-from grizz.utils.column import check_column_exist_policy, check_existing_columns
-from grizz.utils.format import str_shape_diff
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
+from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNOutNTransformer
 
 logger = logging.getLogger(__name__)
 
@@ -102,14 +96,14 @@ class CopyColumnTransformer(BaseIn1Out1Transformer):
         return frame.with_columns(pl.col(self._in_col).alias(self._out_col))
 
 
-class CopyColumnsTransformer(BaseInNTransformer):
+class CopyColumnsTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to copy some columns.
 
     Args:
         columns: The columns to copy. ``None`` means all the
             columns.
-        prefix: The column name prefix for the copied columns.
-        suffix: The column name suffix for the copied columns.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
@@ -138,7 +132,7 @@ class CopyColumnsTransformer(BaseInNTransformer):
     >>> from grizz.transformer import CopyColumns
     >>> transformer = CopyColumns(columns=["col1", "col3"], prefix="", suffix="_out")
     >>> transformer
-    CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')
+    CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -178,33 +172,6 @@ class CopyColumnsTransformer(BaseInNTransformer):
     ```
     """
 
-    def __init__(
-        self,
-        columns: Sequence[str] | None,
-        prefix: str,
-        suffix: str,
-        exclude_columns: Sequence[str] = (),
-        exist_policy: str = "raise",
-        missing_policy: str = "raise",
-    ) -> None:
-        super().__init__(
-            columns=columns,
-            exclude_columns=exclude_columns,
-            missing_policy=missing_policy,
-        )
-        self._prefix = prefix
-        self._suffix = suffix
-
-        check_column_exist_policy(exist_policy)
-        self._exist_policy = exist_policy
-
-    def get_args(self) -> dict:
-        return super().get_args() | {
-            "exist_policy": self._exist_policy,
-            "prefix": self._prefix,
-            "suffix": self._suffix,
-        }
-
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
             f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
@@ -212,26 +179,9 @@ class CopyColumnsTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_output_columns(frame)
         logger.info(
             f"Copying {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
             f"suffix={self._suffix!r} ..."
         )
         columns = self.find_common_columns(frame)
-        out = frame.with_columns(
-            frame.select(pl.col(columns)).rename(lambda name: f"{self._prefix}{name}{self._suffix}")
-        )
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        return out
-
-    def _check_output_columns(self, frame: pl.DataFrame) -> None:
-        r"""Check if the output columns already exist.
-
-        Args:
-            frame: The input DataFrame to check.
-        """
-        check_existing_columns(
-            frame,
-            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
-            exist_policy=self._exist_policy,
-        )
+        return frame.select(columns)

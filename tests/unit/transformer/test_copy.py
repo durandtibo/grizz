@@ -307,14 +307,14 @@ def test_copy_column_transformer_transform_missing_policy_warn(
 def test_copy_columns_transformer_repr() -> None:
     assert repr(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
         "CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s')"
+        "exist_policy='raise', missing_policy='raise', prefix='p_', suffix='_s')"
     )
 
 
 def test_copy_columns_transformer_str() -> None:
     assert str(CopyColumns(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
         "CopyColumnsTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s')"
+        "exist_policy='raise', missing_policy='raise', prefix='p_', suffix='_s')"
     )
 
 
@@ -387,6 +387,8 @@ def test_copy_columns_transformer_fit(
     assert caplog.messages[0].startswith(
         "Skipping 'CopyColumnsTransformer.fit' as there are no parameters available to fit"
     )
+
+
 
 
 def test_copy_columns_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
