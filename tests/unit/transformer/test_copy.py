@@ -389,8 +389,6 @@ def test_copy_columns_transformer_fit(
     )
 
 
-
-
 def test_copy_columns_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
     transformer = CopyColumns(
         columns=["col1", "col3", "col5"], prefix="p_", suffix="_s", missing_policy="ignore"

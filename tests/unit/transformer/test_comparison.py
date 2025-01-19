@@ -45,15 +45,15 @@ def dataframe() -> pl.DataFrame:
 
 def test_equal_transformer_repr() -> None:
     assert repr(Equal(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "EqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "EqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
 def test_equal_transformer_str() -> None:
     assert str(Equal(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "EqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "EqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
@@ -362,15 +362,15 @@ def test_equal_transformer_transform_missing_policy_warn(
 
 def test_equal_missing_transformer_repr() -> None:
     assert repr(EqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "EqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "EqualMissingTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
 def test_equal_missing_transformer_str() -> None:
     assert str(EqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "EqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "EqualMissingTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
@@ -681,15 +681,15 @@ def test_equal_missing_transformer_transform_missing_policy_warn(
 
 def test_greater_equal_transformer_repr() -> None:
     assert repr(GreaterEqual(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "GreaterEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "GreaterEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
 def test_greater_equal_transformer_str() -> None:
     assert str(GreaterEqual(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "GreaterEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "GreaterEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
@@ -1004,15 +1004,15 @@ def test_greater_equal_transformer_transform_missing_policy_warn(
 
 def test_greater_transformer_repr() -> None:
     assert repr(Greater(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "GreaterTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "GreaterTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
 def test_greater_transformer_str() -> None:
     assert str(Greater(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "GreaterTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "GreaterTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
@@ -1321,15 +1321,15 @@ def test_greater_transformer_transform_missing_policy_warn(
 
 def test_lower_equal_transformer_repr() -> None:
     assert repr(LowerEqual(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "LowerEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "LowerEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
 def test_lower_equal_transformer_str() -> None:
     assert str(LowerEqual(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "LowerEqualTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "LowerEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
@@ -1640,15 +1640,15 @@ def test_lower_equal_transformer_transform_missing_policy_warn(
 
 def test_lower_transformer_repr() -> None:
     assert repr(Lower(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "LowerTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "LowerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
 def test_lower_transformer_str() -> None:
     assert str(Lower(columns=["col1", "col3"], target=4.2, prefix="", suffix="_out")) == (
-        "LowerTransformer(columns=('col1', 'col3'), target=4.2, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "LowerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=4.2)"
     )
 
 
@@ -1957,15 +1957,15 @@ def test_lower_transformer_transform_missing_policy_warn(
 
 def test_not_equal_transformer_repr() -> None:
     assert repr(NotEqual(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "NotEqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "NotEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
 def test_not_equal_transformer_str() -> None:
     assert str(NotEqual(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "NotEqualTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "NotEqualTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
@@ -2276,15 +2276,15 @@ def test_not_equal_transformer_transform_missing_policy_warn(
 
 def test_not_equal_missing_transformer_repr() -> None:
     assert repr(NotEqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "NotEqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "NotEqualMissingTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
 def test_not_equal_missing_transformer_str() -> None:
     assert str(NotEqualMissing(columns=["col1", "col3"], target=3, prefix="", suffix="_out")) == (
-        "NotEqualMissingTransformer(columns=('col1', 'col3'), target=3, prefix='', suffix='_out', "
-        "exclude_columns=(), exist_policy='raise', missing_policy='raise')"
+        "NotEqualMissingTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', target=3)"
     )
 
 
