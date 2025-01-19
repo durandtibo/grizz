@@ -634,6 +634,86 @@ def test_standard_scaler_transformer_transform_nulls() -> None:
     )
 
 
+def test_standard_scaler_transformer_transform_time() -> None:
+    transformer = ToTime(columns=["col1", "col3"], prefix="", suffix="_out")
+    frame = pl.DataFrame(
+        {
+            "col1": [
+                datetime.time(1, 1, 1),
+                datetime.time(2, 2, 2),
+                datetime.time(12, 0, 1),
+                datetime.time(18, 18, 18),
+                datetime.time(23, 59, 59),
+            ],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
+            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+        },
+        schema={"col1": pl.Time, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+    )
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+                "col1_out": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col3_out": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+            },
+            schema={
+                "col1": pl.Time,
+                "col2": pl.String,
+                "col3": pl.String,
+                "col4": pl.String,
+                "col1_out": pl.Time,
+                "col3_out": pl.Time,
+            },
+        ),
+    )
+
+
+def test_standard_scaler_transformer_transform_incompatible_columns() -> None:
+    transformer = ToTime(columns=None, prefix="", suffix="_out")
+    frame = pl.DataFrame(
+        {
+            "col1": [
+                datetime.time(1, 1, 1),
+                datetime.time(2, 2, 2),
+                datetime.time(12, 0, 1),
+                datetime.time(18, 18, 18),
+                datetime.time(23, 59, 59),
+            ],
+            "col2": [1, 2, 3, 4, 5],
+            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
+            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+        },
+        schema={"col1": pl.Time, "col2": pl.Int32, "col3": pl.String, "col4": pl.String},
+    )
+    with pytest.raises(pl.exceptions.SchemaError):
+        transformer.transform(frame)
+
+
 def test_standard_scaler_transformer_transform_exist_policy_ignore(
     frame_time: pl.DataFrame,
 ) -> None:
