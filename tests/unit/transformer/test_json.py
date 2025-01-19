@@ -44,32 +44,28 @@ def dataframe() -> pl.DataFrame:
 def test_json_decode_transformer_repr() -> None:
     assert repr(JsonDecode(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
         "JsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s', "
-        "dtype=None)"
+        "exist_policy='raise', missing_policy='raise', prefix='p_', suffix='_s')"
     )
 
 
 def test_json_decode_transformer_repr_with_kwargs() -> None:
-    assert repr(JsonDecode(columns=["col1", "col3"], prefix="p_", suffix="_s", strict=False)) == (
+    assert repr(JsonDecode(columns=["col1", "col3"], prefix="p_", suffix="_s", dtype=None)) == (
         "JsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s', "
-        "dtype=None, strict=False)"
+        "exist_policy='raise', missing_policy='raise', prefix='p_', suffix='_s', dtype=None)"
     )
 
 
 def test_json_decode_transformer_str() -> None:
     assert str(JsonDecode(columns=["col1", "col3"], prefix="p_", suffix="_s")) == (
         "JsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s', "
-        "dtype=None)"
+        "exist_policy='raise', missing_policy='raise', prefix='p_', suffix='_s')"
     )
 
 
 def test_json_decode_transformer_str_with_kwargs() -> None:
-    assert str(JsonDecode(columns=["col1", "col3"], prefix="p_", suffix="_s", strict=False)) == (
+    assert str(JsonDecode(columns=["col1", "col3"], prefix="p_", suffix="_s", dtype=None)) == (
         "JsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='p_', suffix='_s', "
-        "dtype=None, strict=False)"
+        "exist_policy='raise', missing_policy='raise', prefix='p_', suffix='_s', dtype=None)"
     )
 
 
@@ -117,7 +113,7 @@ def test_json_decode_transformer_equal_false_different_missing_policy() -> None:
 
 def test_json_decode_transformer_equal_false_different_kwargs() -> None:
     assert not JsonDecode(columns=["col1", "col3"], prefix="", suffix="_out").equal(
-        JsonDecode(columns=["col1", "col3"], prefix="", suffix="_out", threshold=1.0)
+        JsonDecode(columns=["col1", "col3"], prefix="", suffix="_out", dtype=None)
     )
 
 
@@ -127,7 +123,7 @@ def test_json_decode_transformer_equal_false_different_type() -> None:
 
 def test_json_decode_transformer_get_args() -> None:
     assert objects_are_equal(
-        JsonDecode(columns=["col1", "col3"], prefix="", suffix="_out", strict=False).get_args(),
+        JsonDecode(columns=["col1", "col3"], prefix="", suffix="_out", dtype=None).get_args(),
         {
             "columns": ("col1", "col3"),
             "prefix": "",
@@ -136,7 +132,6 @@ def test_json_decode_transformer_get_args() -> None:
             "exist_policy": "raise",
             "missing_policy": "raise",
             "dtype": None,
-            "strict": False,
         },
     )
 
@@ -368,27 +363,41 @@ def test_json_decode_transformer_transform_columns_none() -> None:
     )
 
 
-def test_json_decode_transformer_transform_exclude_columns() -> None:
+def test_json_decode_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
     transformer = JsonDecode(
-        columns=None,
-        exclude_columns=["list", "col1"],
-        prefix="",
-        suffix="",
-        exist_policy="ignore",
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
     )
-    out = transformer.transform(
-        pl.DataFrame(
-            {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
-            schema={"list": pl.String, "dict": pl.String},
-        )
-    )
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
-            {"list": ["[]", "[1]"], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
+            {
+                "col1": ["[]", "[1]", "[1, 2]", "[1, 2, 3]", "[1, 2, 3, 4]"],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [
+                    "{'a': 1, 'b': 'abc'}",
+                    "{'a': 2, 'b': 'def'}",
+                    "{'a': 0, 'b': ''}",
+                    "{'a': 1, 'b': 'meow'}",
+                    "{'a': 0, 'b': ''}",
+                ],
+                "col4": ["a", "b", "c", "d", "e"],
+                "col1_out": [[], [1], [1, 2], [1, 2, 3], [1, 2, 3, 4]],
+                "col3_out": [
+                    {"a": 1, "b": "abc"},
+                    {"a": 2, "b": "def"},
+                    {"a": 0, "b": ""},
+                    {"a": 1, "b": "meow"},
+                    {"a": 0, "b": ""},
+                ],
+            },
             schema={
-                "list": pl.String,
-                "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+                "col1": pl.String,
+                "col2": pl.Float32,
+                "col3": pl.String,
+                "col4": pl.String,
+                "col1_out": pl.List(pl.Int64),
+                "col3_out": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
             },
         ),
     )
