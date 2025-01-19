@@ -6,11 +6,11 @@ from __future__ import annotations
 __all__ = ["SqlTransformer"]
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from coola.utils import repr_indent, repr_mapping
 
-from grizz.transformer.base import BaseTransformer
+from grizz.transformer.columns import BaseArgTransformer
 from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class SqlTransformer(BaseTransformer):
+class SqlTransformer(BaseArgTransformer):
     r"""Implement a transformer that executes a SQL query against the
     DataFrame.
 
@@ -68,10 +68,8 @@ class SqlTransformer(BaseTransformer):
         args = repr_indent(repr_mapping({"query": self._query}))
         return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:  # noqa: ARG002
-        if not isinstance(other, self.__class__):
-            return False
-        return self._query == other._query
+    def get_args(self) -> dict:
+        return {"query": self._query}
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

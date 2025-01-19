@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "AbsDiffHorizontal",
     "AbsDiffHorizontalTransformer",
+    "BaseArgTransformer",
     "BaseIn1Out1Transformer",
     "BaseIn2Out1Transformer",
     "BaseInNOut1Transformer",
@@ -200,6 +201,7 @@ from grizz.transformer.column_comparison import (
     ColumnNotEqualTransformer as ColumnNotEqual,
 )
 from grizz.transformer.columns import (
+    BaseArgTransformer,
     BaseIn1Out1Transformer,
     BaseIn2Out1Transformer,
     BaseInNOut1Transformer,
