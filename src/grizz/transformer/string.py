@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
 import polars as pl
 import polars.selectors as cs
 
-from grizz.transformer.columns import BaseInNTransformer
+from grizz.transformer.columns import BaseInNOutNTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -21,16 +21,28 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class StripCharsTransformer(BaseInNTransformer):
+class StripCharsTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to remove leading and trailing
     characters.
+
+    This transformer ignores the columns that are not of type string.
 
     Args:
         columns: The columns to prepare. If ``None``, it processes all
             the columns of type string.
+        prefix: The column name prefix for the output columns.
+        suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
+        exist_policy: The policy on how to handle existing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column already exist.
+            If ``'warn'``, a warning is raised if at least one column
+            already exist and the existing columns are overwritten.
+            If ``'ignore'``, the existing columns are overwritten and
+            no warning message appears.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
@@ -47,9 +59,9 @@ class StripCharsTransformer(BaseInNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import StripChars
-    >>> transformer = StripChars(columns=["col2", "col3"])
+    >>> transformer = StripChars(columns=["col2", "col3"], prefix="", suffix="_out")
     >>> transformer
-    StripCharsTransformer(columns=('col2', 'col3'), exclude_columns=(), missing_policy='raise')
+    StripCharsTransformer(columns=('col2', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -73,32 +85,38 @@ class StripCharsTransformer(BaseInNTransformer):
     └──────┴──────┴───────┴───────┘
     >>> out = transformer.transform(frame)
     >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬───────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4  │
-    │ ---  ┆ ---  ┆ ---  ┆ ---   │
-    │ i64  ┆ str  ┆ str  ┆ str   │
-    ╞══════╪══════╪══════╪═══════╡
-    │ 1    ┆ 1    ┆ a    ┆ a     │
-    │ 2    ┆ 2    ┆ b    ┆  b    │
-    │ 3    ┆ 3    ┆ c    ┆   c   │
-    │ 4    ┆ 4    ┆ d    ┆ d     │
-    │ 5    ┆ 5    ┆ e    ┆ e     │
-    └──────┴──────┴──────┴───────┘
+    shape: (5, 6)
+    ┌──────┬──────┬───────┬───────┬──────────┬──────────┐
+    │ col1 ┆ col2 ┆ col3  ┆ col4  ┆ col2_out ┆ col3_out │
+    │ ---  ┆ ---  ┆ ---   ┆ ---   ┆ ---      ┆ ---      │
+    │ i64  ┆ str  ┆ str   ┆ str   ┆ str      ┆ str      │
+    ╞══════╪══════╪═══════╪═══════╪══════════╪══════════╡
+    │ 1    ┆ 1    ┆ a     ┆ a     ┆ 1        ┆ a        │
+    │ 2    ┆ 2    ┆  b    ┆  b    ┆ 2        ┆ b        │
+    │ 3    ┆ 3    ┆   c   ┆   c   ┆ 3        ┆ c        │
+    │ 4    ┆ 4    ┆ d     ┆ d     ┆ 4        ┆ d        │
+    │ 5    ┆ 5    ┆ e     ┆ e     ┆ 5        ┆ e        │
+    └──────┴──────┴───────┴───────┴──────────┴──────────┘
 
     ```
     """
 
     def __init__(
         self,
-        columns: Sequence[str] | None = None,
+        columns: Sequence[str] | None,
+        prefix: str,
+        suffix: str,
         exclude_columns: Sequence[str] = (),
+        exist_policy: str = "raise",
         missing_policy: str = "raise",
         **kwargs: Any,
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
         self._kwargs = kwargs
@@ -115,6 +133,4 @@ class StripCharsTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Stripping characters of {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
-        return frame.with_columns(
-            frame.select((cs.by_name(columns) & cs.string()).str.strip_chars(**self._kwargs))
-        )
+        return frame.select((cs.by_name(columns) & cs.string()).str.strip_chars(**self._kwargs))
