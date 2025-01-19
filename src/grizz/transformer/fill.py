@@ -133,6 +133,99 @@ class FillNanTransformer(BaseInNOutNTransformer):
         return frame.select((cs.by_name(columns) & cs.float()).fill_nan(**self._kwargs))
 
 
+class InplaceFillNanTransformer(FillNanTransformer):
+    r"""Implement a transformer to fill NaN values.
+
+    This transformer ignores the columns that are not of type float.
+
+    Args:
+        columns: The columns of type to convert. ``None`` means
+            all the columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: The keyword arguments for ``fill_nan``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceFillNan
+    >>> transformer = InplaceFillNan(columns=["col1", "col4"], value=100)
+    >>> transformer
+    InplaceFillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), missing_policy='raise', value=100)
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, None],
+    ...         "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+    ...         "col3": ["a", "b", "c", "d", None],
+    ...         "col4": [1.2, float("nan"), 3.2, None, 5.2],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ f64  ┆ str  ┆ f64  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 1    ┆ 1.2  ┆ a    ┆ 1.2  │
+    │ 2    ┆ 2.2  ┆ b    ┆ NaN  │
+    │ 3    ┆ 3.2  ┆ c    ┆ 3.2  │
+    │ 4    ┆ 4.2  ┆ d    ┆ null │
+    │ null ┆ NaN  ┆ null ┆ 5.2  │
+    └──────┴──────┴──────┴──────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬───────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4  │
+    │ ---  ┆ ---  ┆ ---  ┆ ---   │
+    │ i64  ┆ f64  ┆ str  ┆ f64   │
+    ╞══════╪══════╪══════╪═══════╡
+    │ 1    ┆ 1.2  ┆ a    ┆ 1.2   │
+    │ 2    ┆ 2.2  ┆ b    ┆ 100.0 │
+    │ 3    ┆ 3.2  ┆ c    ┆ 3.2   │
+    │ 4    ┆ 4.2  ┆ d    ┆ null  │
+    │ null ┆ NaN  ┆ null ┆ 5.2   │
+    └──────┴──────┴──────┴───────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str] | None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            columns=columns,
+            prefix="",
+            suffix="",
+            exclude_columns=exclude_columns,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+            **kwargs,
+        )
+
+    def get_args(self) -> dict:
+        args = super().get_args()
+        for key in ["prefix", "suffix", "exist_policy"]:
+            args.pop(key)
+        return args
+
+
 class FillNullTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to fill null values.
 

@@ -14,7 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer import FillNan, FillNull
+from grizz.transformer import FillNan, FillNull, InplaceFillNan
 
 
 @pytest.fixture
@@ -445,6 +445,301 @@ def test_fill_nan_transformer_find_missing_columns(dataframe: pl.DataFrame) -> N
 
 def test_fill_nan_transformer_find_missing_columns_none(dataframe: pl.DataFrame) -> None:
     transformer = FillNan(columns=None, prefix="", suffix="", value=100)
+    assert transformer.find_missing_columns(dataframe) == ()
+
+
+###############################################
+#     Tests for InplaceFillNanTransformer     #
+###############################################
+
+
+def test_inplace_fill_nan_transformer_repr() -> None:
+    assert repr(InplaceFillNan(columns=["col1", "col4"])) == (
+        "InplaceFillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_inplace_fill_nan_transformer_repr_with_kwargs() -> None:
+    assert repr(InplaceFillNan(columns=["col1", "col4"], value=100)) == (
+        "InplaceFillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise', value=100)"
+    )
+
+
+def test_inplace_fill_nan_transformer_str() -> None:
+    assert str(InplaceFillNan(columns=["col1", "col4"])) == (
+        "InplaceFillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_inplace_fill_nan_transformer_str_with_kwargs() -> None:
+    assert str(InplaceFillNan(columns=["col1", "col4"], value=100)) == (
+        "InplaceFillNanTransformer(columns=('col1', 'col4'), exclude_columns=(), "
+        "missing_policy='raise', value=100)"
+    )
+
+
+def test_inplace_fill_nan_transformer_equal_true() -> None:
+    assert InplaceFillNan(columns=["col1", "col3"]).equal(InplaceFillNan(columns=["col1", "col3"]))
+
+
+def test_inplace_fill_nan_transformer_equal_false_different_columns() -> None:
+    assert not InplaceFillNan(columns=["col1", "col3"]).equal(
+        InplaceFillNan(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_inplace_fill_nan_transformer_equal_false_different_exclude_columns() -> None:
+    assert not InplaceFillNan(columns=["col1", "col3"]).equal(
+        InplaceFillNan(columns=["col1", "col3"], exclude_columns=["col4"])
+    )
+
+
+def test_inplace_fill_nan_transformer_equal_false_different_missing_policy() -> None:
+    assert not InplaceFillNan(columns=["col1", "col3"]).equal(
+        InplaceFillNan(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_inplace_fill_nan_transformer_equal_false_different_kwargs() -> None:
+    assert not InplaceFillNan(columns=["col1", "col3"]).equal(
+        InplaceFillNan(columns=["col1", "col3"], value=100)
+    )
+
+
+def test_inplace_fill_nan_transformer_equal_false_different_type() -> None:
+    assert not InplaceFillNan(columns=["col1", "col3"]).equal(42)
+
+
+def test_inplace_fill_nan_transformer_get_args() -> None:
+    assert objects_are_equal(
+        InplaceFillNan(columns=["col1", "col3"], value=100).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "value": 100,
+        },
+    )
+
+
+def test_inplace_fill_nan_transformer_transformer_fit(
+    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = InplaceFillNan(columns=["col1", "col4"], value=100)
+    with caplog.at_level(logging.INFO):
+        transformer.fit(dataframe)
+    assert caplog.messages[0].startswith(
+        "Skipping 'InplaceFillNanTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_inplace_fill_nan_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(
+        columns=["col1", "col4", "col5"], missing_policy="ignore", value=100
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(dataframe)
+
+
+def test_inplace_fill_nan_transformer_fit_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceFillNan(columns=["col2", "col3", "col5"], value=100)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(dataframe)
+
+
+def test_inplace_fill_nan_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=["col1", "col4", "col5"], missing_policy="warn", value=100)
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(dataframe)
+
+
+def test_inplace_fill_nan_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=["col1", "col4"], value=100)
+    out = transformer.fit_transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float64,
+                "col3": pl.String,
+                "col4": pl.Float64,
+            },
+        ),
+    )
+
+
+def test_inplace_fill_nan_transformer_transform(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=["col1", "col4"], value=100)
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float64,
+                "col3": pl.String,
+                "col4": pl.Float64,
+            },
+        ),
+    )
+
+
+def test_inplace_fill_nan_transformer_transform_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=None, value=100)
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, 100.0],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float64,
+                "col3": pl.String,
+                "col4": pl.Float64,
+            },
+        ),
+    )
+
+
+def test_inplace_fill_nan_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=None, value=100, exclude_columns=["col2", "col3", "col5"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float64, "col3": pl.String, "col4": pl.Float64},
+        ),
+    )
+
+
+def test_inplace_fill_nan_transformer_transform_empty() -> None:
+    transformer = InplaceFillNan(columns=[], value=100)
+    out = transformer.transform(pl.DataFrame({}))
+    assert_frame_equal(out, pl.DataFrame({}))
+
+
+def test_inplace_fill_nan_transformer_transform_empty_row() -> None:
+    frame = pl.DataFrame({"col": []}, schema={"col": pl.Float64})
+    transformer = InplaceFillNan(columns=["col"], value=100)
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame({"col": []}, schema={"col": pl.Float64}),
+    )
+
+
+def test_inplace_fill_nan_transformer_transform_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceFillNan(
+        columns=["col1", "col4", "col5"], missing_policy="ignore", value=100
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float64, "col3": pl.String, "col4": pl.Float64},
+        ),
+    )
+
+
+def test_inplace_fill_nan_transformer_transform_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceFillNan(columns=["col2", "col3", "col5"], value=100)
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(dataframe)
+
+
+def test_inplace_fill_nan_transformer_transform_missing_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceFillNan(columns=["col1", "col4", "col5"], missing_policy="warn", value=100)
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, None],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, 100.0, 3.2, None, 5.2],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float64, "col3": pl.String, "col4": pl.Float64},
+        ),
+    )
+
+
+def test_inplace_fill_nan_transformer_find_columns(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=["col2", "col3", "col5"], value=100)
+    assert transformer.find_columns(dataframe) == ("col2", "col3", "col5")
+
+
+def test_inplace_fill_nan_transformer_find_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=None, value=100)
+    assert transformer.find_columns(dataframe) == ("col1", "col2", "col3", "col4")
+
+
+def test_inplace_fill_nan_transformer_find_common_columns(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=["col2", "col3", "col5"], value=100)
+    assert transformer.find_common_columns(dataframe) == ("col2", "col3")
+
+
+def test_inplace_fill_nan_transformer_find_common_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=None, value=100)
+    assert transformer.find_common_columns(dataframe) == ("col1", "col2", "col3", "col4")
+
+
+def test_inplace_fill_nan_transformer_find_missing_columns(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=["col2", "col3", "col5"], value=100)
+    assert transformer.find_missing_columns(dataframe) == ("col5",)
+
+
+def test_inplace_fill_nan_transformer_find_missing_columns_none(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceFillNan(columns=None, value=100)
     assert transformer.find_missing_columns(dataframe) == ()
 
 
