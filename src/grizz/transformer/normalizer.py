@@ -10,8 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.column import check_column_exist_policy, check_existing_columns
+from grizz.transformer.columns import BaseInNOutNTransformer
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NormalizerTransformer(BaseInNTransformer):
+class NormalizerTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to normalize data points individually to
     unit norm.
 
@@ -63,7 +62,7 @@ class NormalizerTransformer(BaseInNTransformer):
     >>> from grizz.transformer import Normalizer
     >>> transformer = Normalizer(columns=["col1", "col3"], prefix="", suffix="_norm")
     >>> transformer
-    NormalizerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', exist_policy='raise', prefix='', suffix='_norm')
+    NormalizerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_norm')
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -86,7 +85,6 @@ class NormalizerTransformer(BaseInNTransformer):
     │ 4    ┆ 4    ┆ 1    ┆ e    │
     │ 5    ┆ 5    ┆ 0    ┆ f    │
     └──────┴──────┴──────┴──────┘
-
     >>> out = transformer.fit_transform(frame)
     >>> out
     shape: (6, 6)
@@ -118,29 +116,19 @@ class NormalizerTransformer(BaseInNTransformer):
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
-        self._prefix = prefix
-        self._suffix = suffix
-
-        check_column_exist_policy(exist_policy)
-        self._exist_policy = exist_policy
 
         check_sklearn()
         self._scaler = sklearn.preprocessing.Normalizer(**kwargs)
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
-        return (
-            super().get_args()
-            | {
-                "exist_policy": self._exist_policy,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-            }
-            | self._kwargs
-        )
+        return super().get_args() | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -149,7 +137,6 @@ class NormalizerTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_output_columns(frame)
         logger.info(
             f"Binarize the data of {len(self.find_columns(frame)):,} columns | "
             f"prefix={self._prefix!r} | suffix={self._suffix!r}"
@@ -158,20 +145,5 @@ class NormalizerTransformer(BaseInNTransformer):
         data = frame.select(columns).fill_nan(None)
 
         x = self._scaler.transform(data.fill_null(0).to_numpy())
-        data_norm = pl.from_numpy(x, schema=data.columns)
-        data_norm = propagate_nulls(data_norm, data)
-        return frame.with_columns(
-            data_norm.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
-        )
-
-    def _check_output_columns(self, frame: pl.DataFrame) -> None:
-        r"""Check if the output columns already exist.
-
-        Args:
-            frame: The input DataFrame to check.
-        """
-        check_existing_columns(
-            frame,
-            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
-            exist_policy=self._exist_policy,
-        )
+        out = pl.from_numpy(x, schema=data.columns)
+        return propagate_nulls(out, data)
