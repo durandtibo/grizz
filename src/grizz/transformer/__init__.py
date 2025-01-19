@@ -82,6 +82,8 @@ __all__ = [
     "GreaterTransformer",
     "InplaceCategoricalCast",
     "InplaceCategoricalCastTransformer",
+    "InplaceFillNan",
+    "InplaceFillNanTransformer",
     "IntegerCast",
     "IntegerCastTransformer",
     "JsonDecode",
@@ -256,6 +258,8 @@ from grizz.transformer.fill import FillNanTransformer
 from grizz.transformer.fill import FillNanTransformer as FillNan
 from grizz.transformer.fill import FillNullTransformer
 from grizz.transformer.fill import FillNullTransformer as FillNull
+from grizz.transformer.fill import InplaceFillNanTransformer
+from grizz.transformer.fill import InplaceFillNanTransformer as InplaceFillNan
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
 from grizz.transformer.impute import SimpleImputerTransformer
