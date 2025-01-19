@@ -6,11 +6,9 @@ from __future__ import annotations
 __all__ = ["FirstRowTransformer"]
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from coola import objects_are_equal
-
-from grizz.transformer.base import BaseTransformer
+from grizz.transformer.columns import BaseArgTransformer
 from grizz.utils.format import str_shape_diff, str_size_diff
 
 if TYPE_CHECKING:
@@ -20,7 +18,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class FirstRowTransformer(BaseTransformer):
+class FirstRowTransformer(BaseArgTransformer):
     r"""Implement a transformer that select the first ``n`` rows.
 
     Example usage:
@@ -72,13 +70,8 @@ class FirstRowTransformer(BaseTransformer):
     def __init__(self, n: int) -> None:
         self._n = n
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(n={self._n:,})"
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return objects_are_equal(self._n, other._n, equal_nan=equal_nan)
+    def get_args(self) -> dict:
+        return {"n": self._n}
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(

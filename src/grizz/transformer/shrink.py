@@ -5,9 +5,9 @@ from __future__ import annotations
 __all__ = ["ShrinkMemoryTransformer"]
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from grizz.transformer.base import BaseTransformer
+from grizz.transformer.columns import BaseArgTransformer
 from grizz.utils.format import str_size_diff
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class ShrinkMemoryTransformer(BaseTransformer):
+class ShrinkMemoryTransformer(BaseArgTransformer):
     r"""Implement a transformer that shrinks DataFrame memory usage.
 
     Example usage:
@@ -67,11 +67,8 @@ class ShrinkMemoryTransformer(BaseTransformer):
     ```
     """
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}()"
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:  # noqa: ARG002
-        return isinstance(other, self.__class__)
+    def get_args(self) -> dict:
+        return {}
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
