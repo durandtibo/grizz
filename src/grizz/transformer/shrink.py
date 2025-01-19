@@ -8,7 +8,6 @@ import logging
 from typing import TYPE_CHECKING
 
 from grizz.transformer.columns import BaseArgTransformer
-from grizz.utils.format import str_size_diff
 
 if TYPE_CHECKING:
     import polars as pl
@@ -78,6 +77,4 @@ class ShrinkMemoryTransformer(BaseArgTransformer):
 
     def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info("Shrinking DataFrame memory usage...")
-        out = frame.shrink_to_fit()
-        logger.info(str_size_diff(orig=frame.estimated_size(), final=out.estimated_size()))
-        return out
+        return frame.shrink_to_fit()

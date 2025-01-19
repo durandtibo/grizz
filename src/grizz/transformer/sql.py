@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 from coola.utils import repr_indent, repr_mapping
 
 from grizz.transformer.columns import BaseArgTransformer
-from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     import polars as pl
@@ -79,6 +78,4 @@ class SqlTransformer(BaseArgTransformer):
 
     def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Executing the following SQL query:\n{self._query}")
-        out = frame.sql(self._query)
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        return out
+        return frame.sql(self._query)

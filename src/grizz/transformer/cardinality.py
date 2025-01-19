@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 import polars as pl
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -107,10 +106,7 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         self._n_max = n_max
 
     def get_args(self) -> dict:
-        return super().get_args() | {
-            "n_min": self._n_min,
-            "n_max": self._n_max,
-        }
+        return super().get_args() | {"n_min": self._n_min, "n_max": self._n_max}
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
@@ -129,6 +125,4 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         )
         cols_to_drop = [col.name for col in valid.iter_columns() if not col[0]]
         logger.info(f"Dropping {len(cols_to_drop):,} columns: {cols_to_drop}")
-        out = frame.drop(cols_to_drop)
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        return out
+        return frame.drop(cols_to_drop)
