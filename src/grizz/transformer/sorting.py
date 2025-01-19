@@ -7,8 +7,7 @@ __all__ = ["SortColumnsTransformer", "SortTransformer"]
 import logging
 from typing import TYPE_CHECKING, Any
 
-from grizz.transformer.base import BaseTransformer
-from grizz.transformer.columns import BaseInNTransformer
+from grizz.transformer.columns import BaseArgTransformer, BaseInNTransformer
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +111,7 @@ class SortTransformer(BaseInNTransformer):
         return [col for col in cols if col in frame]
 
 
-class SortColumnsTransformer(BaseTransformer):
+class SortColumnsTransformer(BaseArgTransformer):
     r"""Implement a transformer to sort the DataFrame columns by name.
 
     Args:
@@ -161,13 +160,8 @@ class SortColumnsTransformer(BaseTransformer):
     def __init__(self, reverse: bool = False) -> None:
         self._reverse = reverse
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(reverse={self._reverse})"
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:  # noqa: ARG002
-        if not isinstance(other, self.__class__):
-            return False
-        return self._reverse == other._reverse
+    def get_args(self) -> dict:
+        return {"reverse": self._reverse}
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
