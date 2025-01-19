@@ -158,7 +158,7 @@ class StandardScalerTransformer(BaseInNOutNTransformer):
         data = frame.select(columns)
 
         x = self._scaler.transform(data.to_numpy())
-        data_out = pl.from_numpy(x, schema=data.columns)
+        out = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
-            data_out = propagate_nulls(data_out, data)
-        return frame.with_columns(data_out.rename(lambda col: f"{self._prefix}{col}{self._suffix}"))
+            out = propagate_nulls(out, data)
+        return out
