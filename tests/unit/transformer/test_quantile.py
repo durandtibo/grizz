@@ -62,35 +62,35 @@ def test_quantile_transformer_str() -> None:
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_true() -> None:
+def test_quantile_transformer_equal_true() -> None:
     assert QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out")
     )
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_columns() -> None:
+def test_quantile_transformer_equal_false_different_columns() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(columns=["col1", "col2", "col3"], prefix="", suffix="_out")
     )
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_prefix() -> None:
+def test_quantile_transformer_equal_false_different_prefix() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(columns=["col1", "col3"], prefix="bin_", suffix="_out")
     )
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_suffix() -> None:
+def test_quantile_transformer_equal_false_different_suffix() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="")
     )
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_exclude_columns() -> None:
+def test_quantile_transformer_equal_false_different_exclude_columns() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(
             columns=["col1", "col3"], prefix="", suffix="_out", exclude_columns=["col4"]
@@ -99,14 +99,14 @@ def test_quantile_transformer_transformer_equal_false_different_exclude_columns(
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_exist_policy() -> None:
+def test_quantile_transformer_equal_false_different_exist_policy() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out", exist_policy="warn")
     )
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_missing_policy() -> None:
+def test_quantile_transformer_equal_false_different_missing_policy() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(
             columns=["col1", "col3"], prefix="", suffix="_out", missing_policy="warn"
@@ -115,7 +115,7 @@ def test_quantile_transformer_transformer_equal_false_different_missing_policy()
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_propagate_nulls() -> None:
+def test_quantile_transformer_equal_false_different_propagate_nulls() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(
             columns=["col1", "col3"], prefix="", suffix="_out", propagate_nulls=False
@@ -124,19 +124,19 @@ def test_quantile_transformer_transformer_equal_false_different_propagate_nulls(
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_kwargs() -> None:
+def test_quantile_transformer_equal_false_different_kwargs() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(
         QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out", n_quantiles=100)
     )
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_equal_false_different_type() -> None:
+def test_quantile_transformer_equal_false_different_type() -> None:
     assert not QuantileTransformer(columns=["col1", "col3"], prefix="", suffix="_out").equal(42)
 
 
 @sklearn_available
-def test_quantile_transformer_transformer_get_args() -> None:
+def test_quantile_transformer_get_args() -> None:
     assert objects_are_equal(
         QuantileTransformer(
             columns=["col1", "col3"], prefix="", suffix="_out", n_quantiles=100
