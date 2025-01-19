@@ -4,6 +4,7 @@ that transform DataFrames by using multiple columns."""
 from __future__ import annotations
 
 __all__ = [
+    "BaseArgTransformer",
     "BaseIn1Out1Transformer",
     "BaseIn2Out1Transformer",
     "BaseInNOut1Transformer",
@@ -38,7 +39,29 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class BaseIn1Out1Transformer(BaseTransformer):
+class BaseArgTransformer(BaseTransformer):
+    r"""Define a base class to implement transformers with custom
+    arguments."""
+
+    def __repr__(self) -> str:
+        args = repr_mapping_line(self.get_args())
+        return f"{self.__class__.__qualname__}({args})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
+
+    @abstractmethod
+    def get_args(self) -> dict:
+        r"""Get the arguments of the transformer.
+
+        Returns:
+            The arguments of the transformer.
+        """
+
+
+class BaseIn1Out1Transformer(BaseArgTransformer):
     r"""Define a base class to implement ``polars.DataFrame``
     transformers that takes one input column and generate one output
     column.
@@ -79,10 +102,6 @@ class BaseIn1Out1Transformer(BaseTransformer):
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
-
     def fit(self, frame: pl.DataFrame) -> None:
         self._check_input_column(frame)
         if self._in_col not in frame:
@@ -107,11 +126,6 @@ class BaseIn1Out1Transformer(BaseTransformer):
             return frame
         self._check_output_column(frame)
         return self._transform(frame)
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
 
     def get_args(self) -> dict:
         return {
@@ -157,7 +171,7 @@ class BaseIn1Out1Transformer(BaseTransformer):
         """
 
 
-class BaseIn2Out1Transformer(BaseTransformer):
+class BaseIn2Out1Transformer(BaseArgTransformer):
     r"""Define a base class to implement ``polars.DataFrame``
     transformers that takes two input columns and generate one output
     column.
@@ -247,10 +261,6 @@ class BaseIn2Out1Transformer(BaseTransformer):
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
-
     def fit(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         if self._in1_col not in frame:
@@ -287,11 +297,6 @@ class BaseIn2Out1Transformer(BaseTransformer):
             return frame
         self._check_output_column(frame)
         return self._transform(frame)
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
 
     def get_args(self) -> dict:
         return {
@@ -339,7 +344,7 @@ class BaseIn2Out1Transformer(BaseTransformer):
         """
 
 
-class BaseInNTransformer(BaseTransformer):
+class BaseInNTransformer(BaseArgTransformer):
     r"""Define a base class to implement ``polars.DataFrame``
     transformers that transform DataFrames by using multiple input
     columns.
@@ -419,10 +424,6 @@ class BaseInNTransformer(BaseTransformer):
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
 
-    def __repr__(self) -> str:
-        args = repr_mapping_line(self.get_args())
-        return f"{self.__class__.__qualname__}({args})"
-
     def fit(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         self._fit(frame)
@@ -434,11 +435,6 @@ class BaseInNTransformer(BaseTransformer):
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
         return self._transform(frame)
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return objects_are_equal(self.get_args(), other.get_args(), equal_nan=equal_nan)
 
     def get_args(self) -> dict:
         return {
