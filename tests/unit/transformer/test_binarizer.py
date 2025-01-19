@@ -40,16 +40,32 @@ def dataframe() -> pl.DataFrame:
 @sklearn_available
 def test_binarizer_transformer_repr() -> None:
     assert repr(Binarizer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
-        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')"
+        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out')"
+    )
+
+
+@sklearn_available
+def test_binarizer_transformer_repr_with_kwargs() -> None:
+    assert repr(Binarizer(columns=["col1", "col3"], prefix="", suffix="_out", threshold=1.5)) == (
+        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', threshold=1.5)"
     )
 
 
 @sklearn_available
 def test_binarizer_transformer_str() -> None:
     assert str(Binarizer(columns=["col1", "col3"], prefix="", suffix="_out")) == (
-        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), "
-        "missing_policy='raise', exist_policy='raise', prefix='', suffix='_out')"
+        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out')"
+    )
+
+
+@sklearn_available
+def test_binarizer_transformer_str_with_kwargs() -> None:
+    assert str(Binarizer(columns=["col1", "col3"], prefix="", suffix="_out", threshold=1.5)) == (
+        "BinarizerTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
+        "missing_policy='raise', prefix='', suffix='_out', threshold=1.5)"
     )
 
 
@@ -206,6 +222,35 @@ def test_binarizer_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
 @sklearn_available
 def test_binarizer_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = Binarizer(columns=["col1", "col3"], prefix="", suffix="_out", threshold=1.5)
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [5, 4, 3, 2, 1],
+                "col4": ["a", "b", "c", "d", "e"],
+                "col1_out": [0, 1, 1, 1, 1],
+                "col3_out": [1, 1, 1, 1, 0],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float32,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "col1_out": pl.Int64,
+                "col3_out": pl.Int64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_binarizer_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = Binarizer(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"], threshold=1.5
+    )
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
