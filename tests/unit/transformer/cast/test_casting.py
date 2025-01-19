@@ -14,7 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer.casting2 import CastTransformer, InplaceCastTransformer
+from grizz.transformer.cast.casting import CastTransformer, InplaceCastTransformer
 
 
 @pytest.fixture

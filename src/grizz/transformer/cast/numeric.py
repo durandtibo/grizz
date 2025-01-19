@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 import polars.selectors as cs
 
-from grizz.transformer.casting2 import CastTransformer, InplaceCastTransformer
+from grizz.transformer.cast.casting import CastTransformer, InplaceCastTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
