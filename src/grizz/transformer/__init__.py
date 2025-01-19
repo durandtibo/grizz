@@ -88,6 +88,8 @@ __all__ = [
     "InplaceFillNanTransformer",
     "InplaceFillNull",
     "InplaceFillNullTransformer",
+    "InplaceNumericCast",
+    "InplaceNumericCastTransformer",
     "IntegerCast",
     "IntegerCastTransformer",
     "JsonDecode",
@@ -296,6 +298,10 @@ from grizz.transformer.null import DropNullColumnTransformer
 from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer
 from grizz.transformer.null import DropNullRowTransformer as DropNullRow
+from grizz.transformer.numeric import InplaceNumericCastTransformer
+from grizz.transformer.numeric import (
+    InplaceNumericCastTransformer as InplaceNumericCast,
+)
 from grizz.transformer.ordinal_encoder import OrdinalEncoderTransformer
 from grizz.transformer.ordinal_encoder import (
     OrdinalEncoderTransformer as OrdinalEncoder,
