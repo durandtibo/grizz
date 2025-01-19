@@ -6,6 +6,7 @@ __all__ = [
     "human_byte",
     "str_boolean_series_stats",
     "str_col_diff",
+    "str_dataframe_diff",
     "str_kwargs",
     "str_row_diff",
     "str_shape_diff",
@@ -197,6 +198,53 @@ def str_size_diff(orig: float, final: float) -> str:
         f"DataFrame estimated size: {human_byte(orig)} -> {human_byte(final)} | "
         f"difference: {human_byte(diff)} ({pct:.4f} %)"
     )
+
+
+def str_dataframe_diff(orig: pl.DataFrame, final: pl.DataFrame) -> str:
+    r"""Return a string that shows the difference between DataFrames.
+
+    Args:
+        orig: The original DataFrame.
+        final: The final DataFrame.
+
+    Returns:
+        The generated string with the difference of DataFrames.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.utils.format import str_dataframe_diff
+    >>> frame1 = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["1", "2", "3", "4", "5"],
+    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...     }
+    ... )
+    >>> frame2 = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+    ...     }
+    ... )
+    >>> print(str_dataframe_diff(orig=frame1, final=frame2))
+    DataFrame shape: (5, 4) -> (5, 3) | 1/4 (25.0000 %) column has been removed
+    DataFrame estimated size: 55.00 B -> 85.00 B | difference: 30.00 B (54.5455 %)
+
+    ```
+    """
+    out = []
+    if orig.shape != final.shape:
+        out.append(str_shape_diff(orig=orig.shape, final=final.shape))
+    if orig.estimated_size() != final.estimated_size():
+        out.append(str_size_diff(orig=orig.estimated_size(), final=final.estimated_size()))
+    if out:
+        return "\n".join(out)
+    return "DataFrame shape and size did not changed"
 
 
 def str_boolean_series_stats(series: pl.Series) -> str:
