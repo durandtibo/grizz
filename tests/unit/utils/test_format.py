@@ -7,6 +7,7 @@ from grizz.utils.format import (
     human_byte,
     str_boolean_series_stats,
     str_col_diff,
+    str_dataframe_diff,
     str_kwargs,
     str_row_diff,
     str_shape_diff,
@@ -177,6 +178,84 @@ def test_str_size_diff_decrease() -> None:
     assert (
         str_size_diff(orig=100, final=80)
         == "DataFrame estimated size: 100.00 B -> 80.00 B | difference: -20.00 B (-20.0000 %)"
+    )
+
+
+########################################
+#     Tests for str_dataframe_diff     #
+########################################
+
+
+def test_str_dataframe_diff_same() -> None:
+    frame1 = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64, "col4": pl.String},
+    )
+    frame2 = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64, "col4": pl.String},
+    )
+    assert (
+        str_dataframe_diff(orig=frame1, final=frame2) == "DataFrame shape and size did not changed"
+    )
+
+
+def test_str_dataframe_diff_type() -> None:
+    frame1 = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64, "col4": pl.String},
+    )
+    frame2 = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float32, "col4": pl.String},
+    )
+    assert (
+        str_dataframe_diff(orig=frame1, final=frame2)
+        == "DataFrame estimated size: 90.00 B -> 70.00 B | difference: -20.00 B (-22.2222 %)"
+    )
+
+
+def test_str_dataframe_diff_shape() -> None:
+    frame1 = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64, "col4": pl.String},
+    )
+    frame2 = pl.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5, 6],
+            "col2": ["1", "2", "3", "4", "5", "6"],
+            "col3": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            "col4": ["a", "b", "c", "d", "e", "f"],
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64, "col4": pl.String},
+    )
+    assert str_dataframe_diff(orig=frame1, final=frame2).startswith(
+        "DataFrame shape: (5, 4) -> (6, 4)"
     )
 
 
