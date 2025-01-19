@@ -20,7 +20,6 @@ import polars.selectors as cs
 from coola.utils.format import repr_mapping_line
 
 from grizz.transformer.columns import BaseIn1Out1Transformer, BaseInNTransformer
-from grizz.utils.format import str_size_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -124,9 +123,7 @@ class CastTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Casting {len(self.find_columns(frame)):,} columns to {self._dtype}...")
         columns = self.find_common_columns(frame)
-        out = self._transform_frame(frame, columns)
-        logger.info(str_size_diff(orig=frame.estimated_size(), final=out.estimated_size()))
-        return out
+        return self._transform_frame(frame, columns)
 
     def _transform_frame(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
         return frame.with_columns(

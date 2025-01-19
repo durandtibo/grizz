@@ -9,7 +9,6 @@ import logging
 from typing import TYPE_CHECKING
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     import polars as pl
@@ -79,6 +78,4 @@ class ColumnSelectionTransformer(BaseInNTransformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Selecting {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
-        out = frame.select(columns)
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        return out
+        return frame.select(columns)

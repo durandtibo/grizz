@@ -9,7 +9,6 @@ import logging
 from typing import TYPE_CHECKING
 
 from grizz.transformer.columns import BaseArgTransformer
-from grizz.utils.format import str_shape_diff, str_size_diff
 
 if TYPE_CHECKING:
     import polars as pl
@@ -81,7 +80,4 @@ class FirstRowTransformer(BaseArgTransformer):
 
     def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Select {self._n} rows...")
-        out = frame.limit(self._n)
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        logger.info(str_size_diff(orig=frame.estimated_size(), final=out.estimated_size()))
-        return out
+        return frame.limit(self._n)

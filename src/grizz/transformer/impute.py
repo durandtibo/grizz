@@ -129,7 +129,7 @@ class SimpleImputerTransformer(BaseInNOutNTransformer):
         self._propagate_nulls = propagate_nulls
 
         check_sklearn()
-        self._oututer = SimpleImputer(**kwargs)
+        self._imputer = SimpleImputer(**kwargs)
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
@@ -140,7 +140,7 @@ class SimpleImputerTransformer(BaseInNOutNTransformer):
             f"Fitting the imputation parameters of {len(self.find_columns(frame)):,} columns..."
         )
         columns = self.find_common_columns(frame)
-        self._oututer.fit(frame.select(columns).to_numpy())
+        self._imputer.fit(frame.select(columns).to_numpy())
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
@@ -149,7 +149,7 @@ class SimpleImputerTransformer(BaseInNOutNTransformer):
         )
         columns = self.find_common_columns(frame)
         data = frame.select(columns)
-        x = self._oututer.transform(data.to_numpy())
+        x = self._imputer.transform(data.to_numpy())
         out = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
             out = propagate_nulls(out, data)

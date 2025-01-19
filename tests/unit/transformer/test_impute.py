@@ -152,7 +152,7 @@ def test_simple_imputer_transformer_get_args() -> None:
 def test_simple_imputer_transformer_fit(dataframe: pl.DataFrame) -> None:
     transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
     transformer.fit(dataframe)
-    assert transformer._oututer.n_features_in_ == 2
+    assert transformer._imputer.n_features_in_ == 2
 
 
 @sklearn_available
@@ -161,7 +161,7 @@ def test_simple_imputer_transformer_fit_exclude_columns(dataframe: pl.DataFrame)
         columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
     )
     transformer.fit(dataframe)
-    assert transformer._oututer.n_features_in_ == 2
+    assert transformer._imputer.n_features_in_ == 2
 
 
 @sklearn_available
@@ -174,7 +174,7 @@ def test_simple_imputer_transformer_fit_missing_policy_ignore(
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         transformer.fit(dataframe)
-    assert transformer._oututer.n_features_in_ == 2
+    assert transformer._imputer.n_features_in_ == 2
 
 
 @sklearn_available
@@ -197,14 +197,14 @@ def test_simple_imputer_transformer_fit_missing_policy_warn(
         ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
-    assert transformer._oututer.n_features_in_ == 2
+    assert transformer._imputer.n_features_in_ == 2
 
 
 @sklearn_available
 def test_simple_imputer_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
     transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
     out = transformer.fit_transform(dataframe)
-    assert transformer._oututer.n_features_in_ == 2
+    assert transformer._imputer.n_features_in_ == 2
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -231,7 +231,7 @@ def test_simple_imputer_transformer_fit_transform(dataframe: pl.DataFrame) -> No
 @sklearn_available
 def test_simple_imputer_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     out = transformer.transform(dataframe)
@@ -263,7 +263,7 @@ def test_simple_imputer_transformer_transform_exclude_columns(dataframe: pl.Data
     transformer = SimpleImputer(
         columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
     )
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     out = transformer.transform(dataframe)
@@ -293,7 +293,7 @@ def test_simple_imputer_transformer_transform_exclude_columns(dataframe: pl.Data
 @sklearn_available
 def test_simple_imputer_transformer_transform_propagate_nulls_true(dataframe: pl.DataFrame) -> None:
     transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="_out")
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     out = transformer.transform(dataframe)
@@ -327,7 +327,7 @@ def test_simple_imputer_transformer_transform_propagate_nulls_false(
     transformer = SimpleImputer(
         columns=["col1", "col3"], prefix="", suffix="_out", propagate_nulls=False
     )
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     out = transformer.transform(dataframe)
@@ -370,7 +370,7 @@ def test_simple_imputer_transformer_transform_exist_policy_ignore(
     transformer = SimpleImputer(
         columns=["col1", "col3"], prefix="", suffix="", exist_policy="ignore"
     )
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with warnings.catch_warnings():
@@ -409,7 +409,7 @@ def test_simple_imputer_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = SimpleImputer(columns=["col1", "col3"], prefix="", suffix="", exist_policy="warn")
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with pytest.warns(
@@ -443,7 +443,7 @@ def test_simple_imputer_transformer_transform_missing_policy_ignore(
     transformer = SimpleImputer(
         columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="ignore"
     )
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with warnings.catch_warnings():
@@ -488,7 +488,7 @@ def test_simple_imputer_transformer_transform_missing_policy_warn(
     transformer = SimpleImputer(
         columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
-    transformer._oututer.fit(
+    transformer._imputer.fit(
         np.array([[1, 10], [2, 20], [float("nan"), float("nan")], [3, 40], [None, 50]])
     )
     with pytest.warns(

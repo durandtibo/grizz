@@ -12,7 +12,6 @@ import polars as pl
 import polars.selectors as cs
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -131,9 +130,7 @@ class DropNullColumnTransformer(BaseInNTransformer):
             f"many null values (threshold={self._threshold})..."
         )
         logger.info(f"dropped columns: {cols}")
-        out = frame.drop(cols, **self._kwargs)
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        return out
+        return frame.drop(cols, **self._kwargs)
 
 
 class DropNullRowTransformer(BaseInNTransformer):
@@ -216,6 +213,4 @@ class DropNullRowTransformer(BaseInNTransformer):
             f"{len(self.find_columns(frame)):,} columns...."
         )
         columns = self.find_common_columns(frame)
-        out = frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        return out
+        return frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))

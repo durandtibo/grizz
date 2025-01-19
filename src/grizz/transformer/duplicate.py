@@ -11,7 +11,6 @@ import polars as pl
 import polars.selectors as cs
 
 from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.format import str_shape_diff
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -113,6 +112,4 @@ class DropDuplicateTransformer(BaseInNTransformer):
             f"Dropping duplicate rows by checking {len(self.find_columns(frame)):,} columns...."
         )
         columns = self.find_common_columns(frame)
-        out = frame.unique(subset=cs.by_name(columns), **self._kwargs)
-        logger.info(str_shape_diff(orig=frame.shape, final=out.shape))
-        return out
+        return frame.unique(subset=cs.by_name(columns), **self._kwargs)
