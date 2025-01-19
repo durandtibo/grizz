@@ -6,11 +6,10 @@ from __future__ import annotations
 __all__ = ["FunctionTransformer"]
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from coola import objects_are_equal
 
-from grizz.transformer.base import BaseTransformer
+from grizz.transformer.columns import BaseArgTransformer
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class FunctionTransformer(BaseTransformer):
+class FunctionTransformer(BaseArgTransformer):
     r"""Implement a transformer that is a wrapper around a function to
     transform the DataFrame.
 
@@ -64,13 +63,8 @@ class FunctionTransformer(BaseTransformer):
     def __init__(self, func: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
         self._func = func
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(func={self._func})"
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return objects_are_equal(self._func, other._func, equal_nan=equal_nan)
+    def get_args(self) -> dict:
+        return {"func": self._func}
 
     def fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(
