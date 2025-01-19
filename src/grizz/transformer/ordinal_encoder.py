@@ -10,8 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 import polars as pl
 
-from grizz.transformer.columns import BaseInNTransformer
-from grizz.utils.column import check_column_exist_policy, check_existing_columns
+from grizz.transformer.columns import BaseInNOutNTransformer
 from grizz.utils.imports import check_sklearn, is_sklearn_available
 from grizz.utils.null import propagate_nulls
 
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class OrdinalEncoderTransformer(BaseInNTransformer):
+class OrdinalEncoderTransformer(BaseInNOutNTransformer):
     r"""Implement a transformer to convert each column ordinal integers.
 
     Args:
@@ -65,7 +64,7 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
     >>> from grizz.transformer import OrdinalEncoder
     >>> transformer = OrdinalEncoder(columns=["col1", "col2"], prefix="", suffix="_out")
     >>> transformer
-    OrdinalEncoderTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', exist_policy='raise', propagate_nulls=True, prefix='', suffix='_out')
+    OrdinalEncoderTransformer(columns=('col1', 'col2'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', propagate_nulls=True)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [0, 1, 2, 3, 4, 5],
@@ -87,7 +86,6 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
     │ 4    ┆ e    ┆ 40   │
     │ 5    ┆ f    ┆ 50   │
     └──────┴──────┴──────┘
-
     >>> out = transformer.fit_transform(frame)
     >>> out
     shape: (6, 5)
@@ -120,31 +118,20 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
     ) -> None:
         super().__init__(
             columns=columns,
+            prefix=prefix,
+            suffix=suffix,
             exclude_columns=exclude_columns,
+            exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
-        self._prefix = prefix
-        self._suffix = suffix
         self._propagate_nulls = propagate_nulls
-
-        check_column_exist_policy(exist_policy)
-        self._exist_policy = exist_policy
 
         check_sklearn()
         self._encoder = sklearn.preprocessing.OrdinalEncoder(**kwargs)
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
-        return (
-            super().get_args()
-            | {
-                "exist_policy": self._exist_policy,
-                "propagate_nulls": self._propagate_nulls,
-                "prefix": self._prefix,
-                "suffix": self._suffix,
-            }
-            | self._kwargs
-        )
+        return super().get_args() | {"propagate_nulls": self._propagate_nulls} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(f"Fitting the ordinal encoder on {len(self.find_columns(frame)):,} columns...")
@@ -152,7 +139,6 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
         self._encoder.fit(frame.select(columns).to_numpy())
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        self._check_output_columns(frame)
         logger.info(
             f"Applying the ordinal encoding on {len(self.find_columns(frame)):,} columns | "
             f"prefix={self._prefix!r} | suffix={self._suffix!r}"
@@ -161,21 +147,7 @@ class OrdinalEncoderTransformer(BaseInNTransformer):
         data = frame.select(columns)
 
         x = self._encoder.transform(data.to_numpy())
-        data_scaled = pl.from_numpy(x, schema=data.columns)
+        out = pl.from_numpy(x, schema=data.columns)
         if self._propagate_nulls:
-            data_scaled = propagate_nulls(data_scaled, data)
-        return frame.with_columns(
-            data_scaled.rename(lambda col: f"{self._prefix}{col}{self._suffix}")
-        )
-
-    def _check_output_columns(self, frame: pl.DataFrame) -> None:
-        r"""Check if the output columns already exist.
-
-        Args:
-            frame: The input DataFrame to check.
-        """
-        check_existing_columns(
-            frame,
-            columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
-            exist_policy=self._exist_policy,
-        )
+            out = propagate_nulls(out, data)
+        return out
