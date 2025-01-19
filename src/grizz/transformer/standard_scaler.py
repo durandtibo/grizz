@@ -133,13 +133,7 @@ class StandardScalerTransformer(BaseInNOutNTransformer):
         self._kwargs = kwargs
 
     def get_args(self) -> dict:
-        return (
-            super().get_args()
-            | {
-                "propagate_nulls": self._propagate_nulls,
-            }
-            | self._kwargs
-        )
+        return super().get_args() | {"propagate_nulls": self._propagate_nulls} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:
         logger.info(

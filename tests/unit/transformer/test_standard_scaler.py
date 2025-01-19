@@ -156,6 +156,15 @@ def test_standard_scaler_transformer_fit(dataframe: pl.DataFrame) -> None:
 
 
 @sklearn_available
+def test_standard_scaler_transformer_fit_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = StandardScaler(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
+    transformer.fit(dataframe)
+    assert transformer._scaler.n_features_in_ == 2
+
+
+@sklearn_available
 def test_standard_scaler_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
@@ -351,6 +360,50 @@ def test_standard_scaler_transformer_transform_propagate_nulls_true() -> None:
                 "col3": pl.Int64,
                 "col1_out": pl.Float64,
                 "col2_out": pl.Float64,
+                "col3_out": pl.Float64,
+            },
+        ),
+    )
+
+
+@sklearn_available
+def test_standard_scaler_transformer_transform_exclude_columns(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = StandardScaler(
+        columns=None, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
+    )
+    transformer._scaler.fit(np.array([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]))
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [10, 20, 30, 40, 50],
+                "col4": ["a", "b", "c", "d", "e"],
+                "col1_out": [
+                    -1.414213562373095,
+                    -0.7071067811865475,
+                    0.0,
+                    0.7071067811865475,
+                    1.414213562373095,
+                ],
+                "col3_out": [
+                    -1.414213562373095,
+                    -0.7071067811865475,
+                    0.0,
+                    0.7071067811865475,
+                    1.414213562373095,
+                ],
+            },
+            schema={
+                "col1": pl.Int64,
+                "col2": pl.Float32,
+                "col3": pl.Int64,
+                "col4": pl.String,
+                "col1_out": pl.Float64,
                 "col3_out": pl.Float64,
             },
         ),
