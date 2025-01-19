@@ -8,7 +8,6 @@ __all__ = ["FunctionTransformer"]
 import logging
 from typing import TYPE_CHECKING
 
-
 from grizz.transformer.columns import BaseArgTransformer
 
 if TYPE_CHECKING:
