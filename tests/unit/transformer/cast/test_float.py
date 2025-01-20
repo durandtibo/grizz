@@ -14,10 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer.cast.float import (
-    FloatCastTransformer,
-    InplaceFloatCastTransformer,
-)
+from grizz.transformer import FloatCast, InplaceFloatCast
 
 
 @pytest.fixture
@@ -39,68 +36,52 @@ def dataframe() -> pl.DataFrame:
 
 
 def test_float_cast_transformer_repr() -> None:
-    assert repr(
-        FloatCastTransformer(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)
-    ) == (
+    assert repr(FloatCast(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)) == (
         "FloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
         "missing_policy='raise', prefix='', suffix='_out', dtype=Int32)"
     )
 
 
 def test_float_cast_transformer_str() -> None:
-    assert str(
-        FloatCastTransformer(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)
-    ) == (
+    assert str(FloatCast(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)) == (
         "FloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
         "missing_policy='raise', prefix='', suffix='_out', dtype=Int32)"
     )
 
 
 def test_float_cast_transformer_equal_true() -> None:
-    assert FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
+    assert FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     )
 
 
 def test_float_cast_transformer_equal_false_different_columns() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(
-            columns=["col1", "col2", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-        )
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(columns=["col1", "col2", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     )
 
 
 def test_float_cast_transformer_equal_false_different_dtype() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int64, prefix="", suffix="_out")
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int64, prefix="", suffix="_out")
     )
 
 
 def test_float_cast_transformer_equal_false_different_prefix() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32, prefix="bin_", suffix="_out")
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="bin_", suffix="_out")
     )
 
 
 def test_float_cast_transformer_equal_false_different_suffix() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(FloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix=""))
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="")
+    )
 
 
 def test_float_cast_transformer_equal_false_different_exclude_columns() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             prefix="",
@@ -111,20 +92,16 @@ def test_float_cast_transformer_equal_false_different_exclude_columns() -> None:
 
 
 def test_float_cast_transformer_equal_false_different_exist_policy() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(
             columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", exist_policy="warn"
         )
     )
 
 
 def test_float_cast_transformer_equal_false_different_missing_policy() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             prefix="",
@@ -135,24 +112,20 @@ def test_float_cast_transformer_equal_false_different_missing_policy() -> None:
 
 
 def test_float_cast_transformer_equal_false_different_kwargs() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        FloatCastTransformer(
-            columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", strict=True
-        )
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", strict=True)
     )
 
 
 def test_float_cast_transformer_equal_false_different_type() -> None:
-    assert not FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(42)
+    assert not FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        42
+    )
 
 
 def test_float_cast_transformer_get_args() -> None:
     assert objects_are_equal(
-        FloatCastTransformer(
+        FloatCast(
             columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", strict=True
         ).get_args(),
         {
@@ -171,9 +144,7 @@ def test_float_cast_transformer_get_args() -> None:
 def test_float_cast_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
-    transformer = FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    )
+    transformer = FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
@@ -182,7 +153,7 @@ def test_float_cast_transformer_fit(
 
 
 def test_float_cast_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         prefix="",
@@ -197,7 +168,7 @@ def test_float_cast_transformer_fit_missing_policy_ignore(dataframe: pl.DataFram
 def test_float_cast_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3", "col5"], dtype=pl.Float32, prefix="", suffix="_out"
     )
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
@@ -205,7 +176,7 @@ def test_float_cast_transformer_fit_missing_policy_raise(
 
 
 def test_float_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         prefix="",
@@ -219,9 +190,7 @@ def test_float_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame)
 
 
 def test_float_cast_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
-    transformer = FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    )
+    transformer = FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
         out,
@@ -245,9 +214,7 @@ def test_float_cast_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
 
 
 def test_float_cast_transformer_transform(dataframe: pl.DataFrame) -> None:
-    transformer = FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    )
+    transformer = FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -271,9 +238,7 @@ def test_float_cast_transformer_transform(dataframe: pl.DataFrame) -> None:
 
 
 def test_float_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> None:
-    transformer = FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Float32, prefix="", suffix="_out"
-    )
+    transformer = FloatCast(columns=["col1", "col3"], dtype=pl.Float32, prefix="", suffix="_out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -299,7 +264,7 @@ def test_float_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> No
 def test_float_cast_transformer_transform_exclude_columns(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=None, dtype=pl.Int32, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
     )
     out = transformer.transform(dataframe)
@@ -327,7 +292,7 @@ def test_float_cast_transformer_transform_exclude_columns(
 def test_float_cast_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="", exist_policy="ignore"
     )
     with warnings.catch_warnings():
@@ -355,9 +320,7 @@ def test_float_cast_transformer_transform_exist_policy_ignore(
 def test_float_cast_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix=""
-    )
+    transformer = FloatCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="")
     with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
@@ -365,7 +328,7 @@ def test_float_cast_transformer_transform_exist_policy_raise(
 def test_float_cast_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="", exist_policy="warn"
     )
     with pytest.warns(
@@ -395,7 +358,7 @@ def test_float_cast_transformer_transform_exist_policy_warn(
 def test_float_cast_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Int32,
         prefix="",
@@ -429,7 +392,7 @@ def test_float_cast_transformer_transform_missing_policy_ignore(
 def test_float_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3", "col5"], dtype=pl.Int32, prefix="", suffix="_out"
     )
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
@@ -439,7 +402,7 @@ def test_float_cast_transformer_transform_missing_policy_raise(
 def test_float_cast_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = FloatCastTransformer(
+    transformer = FloatCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Int32,
         prefix="",
@@ -477,40 +440,40 @@ def test_float_cast_transformer_transform_missing_policy_warn(
 
 
 def test_inplace_float_cast_transformer_repr() -> None:
-    assert repr(InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)) == (
+    assert repr(InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
         "InplaceFloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
         "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_inplace_float_cast_transformer_str() -> None:
-    assert str(InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)) == (
+    assert str(InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
         "InplaceFloatCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
         "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_inplace_float_cast_transformer_equal_true() -> None:
-    assert InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    assert InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32)
     )
 
 
 def test_inplace_float_cast_transformer_equal_false_different_columns() -> None:
-    assert not InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceFloatCastTransformer(columns=["col1", "col2", "col3"], dtype=pl.Int32)
+    assert not InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceFloatCast(columns=["col1", "col2", "col3"], dtype=pl.Int32)
     )
 
 
 def test_inplace_float_cast_transformer_equal_false_different_dtype() -> None:
-    assert not InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int64)
+    assert not InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int64)
     )
 
 
 def test_inplace_float_cast_transformer_equal_false_different_exclude_columns() -> None:
-    assert not InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceFloatCastTransformer(
+    assert not InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceFloatCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             exclude_columns=["col4"],
@@ -519,8 +482,8 @@ def test_inplace_float_cast_transformer_equal_false_different_exclude_columns() 
 
 
 def test_inplace_float_cast_transformer_equal_false_different_missing_policy() -> None:
-    assert not InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceFloatCastTransformer(
+    assert not InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceFloatCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             missing_policy="warn",
@@ -529,20 +492,18 @@ def test_inplace_float_cast_transformer_equal_false_different_missing_policy() -
 
 
 def test_inplace_float_cast_transformer_equal_false_different_kwargs() -> None:
-    assert not InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32, strict=True)
+    assert not InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=True)
     )
 
 
 def test_inplace_float_cast_transformer_equal_false_different_type() -> None:
-    assert not InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
+    assert not InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
 
 
 def test_inplace_float_cast_transformer_get_args() -> None:
     assert objects_are_equal(
-        InplaceFloatCastTransformer(
-            columns=["col1", "col3"], dtype=pl.Int32, strict=True
-        ).get_args(),
+        InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32, strict=True).get_args(),
         {
             "columns": ("col1", "col3"),
             "exclude_columns": (),
@@ -556,7 +517,7 @@ def test_inplace_float_cast_transformer_get_args() -> None:
 def test_inplace_float_cast_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
-    transformer = InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    transformer = InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32)
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
@@ -567,7 +528,7 @@ def test_inplace_float_cast_transformer_fit(
 def test_inplace_float_cast_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceFloatCastTransformer(
+    transformer = InplaceFloatCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         missing_policy="ignore",
@@ -580,13 +541,13 @@ def test_inplace_float_cast_transformer_fit_missing_policy_ignore(
 def test_inplace_float_cast_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceFloatCastTransformer(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    transformer = InplaceFloatCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
 def test_inplace_float_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceFloatCastTransformer(
+    transformer = InplaceFloatCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         missing_policy="warn",
@@ -598,7 +559,7 @@ def test_inplace_float_cast_transformer_fit_missing_policy_warn(dataframe: pl.Da
 
 
 def test_inplace_float_cast_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    transformer = InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32)
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
         out,
@@ -615,7 +576,7 @@ def test_inplace_float_cast_transformer_fit_transform(dataframe: pl.DataFrame) -
 
 
 def test_inplace_float_cast_transformer_transform(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    transformer = InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Int32)
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -632,7 +593,7 @@ def test_inplace_float_cast_transformer_transform(dataframe: pl.DataFrame) -> No
 
 
 def test_inplace_float_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceFloatCastTransformer(columns=["col1", "col3"], dtype=pl.Float32)
+    transformer = InplaceFloatCast(columns=["col1", "col3"], dtype=pl.Float32)
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -651,9 +612,7 @@ def test_inplace_float_cast_transformer_transform_float32(dataframe: pl.DataFram
 def test_inplace_float_cast_transformer_transform_exclude_columns(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceFloatCastTransformer(
-        columns=None, dtype=pl.Int32, exclude_columns=["col2", "col4"]
-    )
+    transformer = InplaceFloatCast(columns=None, dtype=pl.Int32, exclude_columns=["col2", "col4"])
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -672,7 +631,7 @@ def test_inplace_float_cast_transformer_transform_exclude_columns(
 def test_inplace_float_cast_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceFloatCastTransformer(
+    transformer = InplaceFloatCast(
         columns=["col1", "col3", "col5"], dtype=pl.Int32, missing_policy="ignore"
     )
     with warnings.catch_warnings():
@@ -695,7 +654,7 @@ def test_inplace_float_cast_transformer_transform_missing_policy_ignore(
 def test_inplace_float_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceFloatCastTransformer(columns=["col1", "col3", "col5"], dtype=pl.Int32)
+    transformer = InplaceFloatCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
@@ -703,7 +662,7 @@ def test_inplace_float_cast_transformer_transform_missing_policy_raise(
 def test_inplace_float_cast_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceFloatCastTransformer(
+    transformer = InplaceFloatCast(
         columns=["col1", "col3", "col5"], dtype=pl.Int32, missing_policy="warn"
     )
     with pytest.warns(

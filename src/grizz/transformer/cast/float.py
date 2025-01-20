@@ -57,9 +57,11 @@ class FloatCastTransformer(CastTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import FloatCast
-    >>> transformer = FloatCast(columns=["col1", "col2"], dtype=pl.Int32)
+    >>> transformer = FloatCast(
+    ...     columns=["col1", "col2"], dtype=pl.Int32, prefix="", suffix="_out"
+    ... )
     >>> transformer
-    FloatCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Int32)
+    FloatCastTransformer(columns=('col1', 'col2'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', dtype=Int32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -89,18 +91,18 @@ class FloatCastTransformer(CastTransformer):
     └──────┴──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ i32  ┆ f64  ┆ str  │
-    ╞══════╪══════╪══════╪══════╡
-    │ 1    ┆ 1    ┆ 1.0  ┆ a    │
-    │ 2    ┆ 2    ┆ 2.0  ┆ b    │
-    │ 3    ┆ 3    ┆ 3.0  ┆ c    │
-    │ 4    ┆ 4    ┆ 4.0  ┆ d    │
-    │ 5    ┆ 5    ┆ 5.0  ┆ e    │
-    └──────┴──────┴──────┴──────┘
+    shape: (5, 5)
+    ┌──────┬──────┬──────┬──────┬──────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col2_out │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      │
+    │ i64  ┆ f64  ┆ f64  ┆ str  ┆ i32      │
+    ╞══════╪══════╪══════╪══════╪══════════╡
+    │ 1    ┆ 1.0  ┆ 1.0  ┆ a    ┆ 1        │
+    │ 2    ┆ 2.0  ┆ 2.0  ┆ b    ┆ 2        │
+    │ 3    ┆ 3.0  ┆ 3.0  ┆ c    ┆ 3        │
+    │ 4    ┆ 4.0  ┆ 4.0  ┆ d    ┆ 4        │
+    │ 5    ┆ 5.0  ┆ 5.0  ┆ e    ┆ 5        │
+    └──────┴──────┴──────┴──────┴──────────┘
 
     ```
     """

@@ -14,10 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer.cast.decimal import (
-    DecimalCastTransformer,
-    InplaceDecimalCastTransformer,
-)
+from grizz.transformer import DecimalCast, InplaceDecimalCast
 
 
 @pytest.fixture
@@ -40,7 +37,7 @@ def dataframe() -> pl.DataFrame:
 
 def test_decimal_cast_transformer_repr() -> None:
     assert repr(
-        DecimalCastTransformer(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)
+        DecimalCast(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)
     ) == (
         "DecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
         "missing_policy='raise', prefix='', suffix='_out', dtype=Int32)"
@@ -48,61 +45,47 @@ def test_decimal_cast_transformer_repr() -> None:
 
 
 def test_decimal_cast_transformer_str() -> None:
-    assert str(
-        DecimalCastTransformer(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)
-    ) == (
+    assert str(DecimalCast(columns=["col1", "col3"], prefix="", suffix="_out", dtype=pl.Int32)) == (
         "DecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', "
         "missing_policy='raise', prefix='', suffix='_out', dtype=Int32)"
     )
 
 
 def test_decimal_cast_transformer_equal_true() -> None:
-    assert DecimalCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        DecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
+    assert DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out").equal(
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     )
 
 
 def test_decimal_cast_transformer_equal_false_different_columns() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        DecimalCastTransformer(
-            columns=["col1", "col2", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-        )
-    )
+    ).equal(DecimalCast(columns=["col1", "col2", "col3"], dtype=pl.Int32, prefix="", suffix="_out"))
 
 
 def test_decimal_cast_transformer_equal_false_different_dtype() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        DecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int64, prefix="", suffix="_out")
-    )
+    ).equal(DecimalCast(columns=["col1", "col3"], dtype=pl.Int64, prefix="", suffix="_out"))
 
 
 def test_decimal_cast_transformer_equal_false_different_prefix() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(
-        DecimalCastTransformer(
-            columns=["col1", "col3"], dtype=pl.Int32, prefix="bin_", suffix="_out"
-        )
-    )
+    ).equal(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="bin_", suffix="_out"))
 
 
 def test_decimal_cast_transformer_equal_false_different_suffix() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    ).equal(DecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix=""))
+    ).equal(DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix=""))
 
 
 def test_decimal_cast_transformer_equal_false_different_exclude_columns() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
     ).equal(
-        DecimalCastTransformer(
+        DecimalCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             prefix="",
@@ -113,20 +96,20 @@ def test_decimal_cast_transformer_equal_false_different_exclude_columns() -> Non
 
 
 def test_decimal_cast_transformer_equal_false_different_exist_policy() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
     ).equal(
-        DecimalCastTransformer(
+        DecimalCast(
             columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", exist_policy="warn"
         )
     )
 
 
 def test_decimal_cast_transformer_equal_false_different_missing_policy() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
     ).equal(
-        DecimalCastTransformer(
+        DecimalCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             prefix="",
@@ -137,24 +120,22 @@ def test_decimal_cast_transformer_equal_false_different_missing_policy() -> None
 
 
 def test_decimal_cast_transformer_equal_false_different_kwargs() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
     ).equal(
-        DecimalCastTransformer(
-            columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", strict=True
-        )
+        DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", strict=True)
     )
 
 
 def test_decimal_cast_transformer_equal_false_different_type() -> None:
-    assert not DecimalCastTransformer(
+    assert not DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
     ).equal(42)
 
 
 def test_decimal_cast_transformer_get_args() -> None:
     assert objects_are_equal(
-        DecimalCastTransformer(
+        DecimalCast(
             columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out", strict=True
         ).get_args(),
         {
@@ -173,9 +154,7 @@ def test_decimal_cast_transformer_get_args() -> None:
 def test_decimal_cast_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
-    transformer = DecimalCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    )
+    transformer = DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
@@ -184,7 +163,7 @@ def test_decimal_cast_transformer_fit(
 
 
 def test_decimal_cast_transformer_fit_missing_policy_ignore(dataframe: pl.DataFrame) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         prefix="",
@@ -199,7 +178,7 @@ def test_decimal_cast_transformer_fit_missing_policy_ignore(dataframe: pl.DataFr
 def test_decimal_cast_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3", "col5"], dtype=pl.Float32, prefix="", suffix="_out"
     )
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
@@ -207,7 +186,7 @@ def test_decimal_cast_transformer_fit_missing_policy_raise(
 
 
 def test_decimal_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         prefix="",
@@ -221,9 +200,7 @@ def test_decimal_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFram
 
 
 def test_decimal_cast_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
-    transformer = DecimalCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    )
+    transformer = DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
         out,
@@ -247,9 +224,7 @@ def test_decimal_cast_transformer_fit_transform(dataframe: pl.DataFrame) -> None
 
 
 def test_decimal_cast_transformer_transform(dataframe: pl.DataFrame) -> None:
-    transformer = DecimalCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out"
-    )
+    transformer = DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -273,9 +248,7 @@ def test_decimal_cast_transformer_transform(dataframe: pl.DataFrame) -> None:
 
 
 def test_decimal_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> None:
-    transformer = DecimalCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Float32, prefix="", suffix="_out"
-    )
+    transformer = DecimalCast(columns=["col1", "col3"], dtype=pl.Float32, prefix="", suffix="_out")
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -301,7 +274,7 @@ def test_decimal_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> 
 def test_decimal_cast_transformer_transform_exclude_columns(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=None, dtype=pl.Int32, prefix="", suffix="_out", exclude_columns=["col2", "col4"]
     )
     out = transformer.transform(dataframe)
@@ -329,7 +302,7 @@ def test_decimal_cast_transformer_transform_exclude_columns(
 def test_decimal_cast_transformer_transform_exist_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="", exist_policy="ignore"
     )
     with warnings.catch_warnings():
@@ -352,9 +325,7 @@ def test_decimal_cast_transformer_transform_exist_policy_ignore(
 def test_decimal_cast_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
-        columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix=""
-    )
+    transformer = DecimalCast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="")
     with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
@@ -362,7 +333,7 @@ def test_decimal_cast_transformer_transform_exist_policy_raise(
 def test_decimal_cast_transformer_transform_exist_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="", exist_policy="warn"
     )
     with pytest.warns(
@@ -387,7 +358,7 @@ def test_decimal_cast_transformer_transform_exist_policy_warn(
 def test_decimal_cast_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Int32,
         prefix="",
@@ -421,7 +392,7 @@ def test_decimal_cast_transformer_transform_missing_policy_ignore(
 def test_decimal_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3", "col5"], dtype=pl.Int32, prefix="", suffix="_out"
     )
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
@@ -431,7 +402,7 @@ def test_decimal_cast_transformer_transform_missing_policy_raise(
 def test_decimal_cast_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = DecimalCastTransformer(
+    transformer = DecimalCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Int32,
         prefix="",
@@ -469,40 +440,40 @@ def test_decimal_cast_transformer_transform_missing_policy_warn(
 
 
 def test_inplace_decimal_cast_transformer_repr() -> None:
-    assert repr(InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)) == (
+    assert repr(InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
         "InplaceDecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
         "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_inplace_decimal_cast_transformer_str() -> None:
-    assert str(InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)) == (
+    assert str(InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32)) == (
         "InplaceDecimalCastTransformer(columns=('col1', 'col3'), exclude_columns=(), "
         "missing_policy='raise', dtype=Int32)"
     )
 
 
 def test_inplace_decimal_cast_transformer_equal_true() -> None:
-    assert InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    assert InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32)
     )
 
 
 def test_inplace_decimal_cast_transformer_equal_false_different_columns() -> None:
-    assert not InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceDecimalCastTransformer(columns=["col1", "col2", "col3"], dtype=pl.Int32)
+    assert not InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceDecimalCast(columns=["col1", "col2", "col3"], dtype=pl.Int32)
     )
 
 
 def test_inplace_decimal_cast_transformer_equal_false_different_dtype() -> None:
-    assert not InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int64)
+    assert not InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int64)
     )
 
 
 def test_inplace_decimal_cast_transformer_equal_false_different_exclude_columns() -> None:
-    assert not InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceDecimalCastTransformer(
+    assert not InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceDecimalCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             exclude_columns=["col4"],
@@ -511,8 +482,8 @@ def test_inplace_decimal_cast_transformer_equal_false_different_exclude_columns(
 
 
 def test_inplace_decimal_cast_transformer_equal_false_different_missing_policy() -> None:
-    assert not InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceDecimalCastTransformer(
+    assert not InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceDecimalCast(
             columns=["col1", "col3"],
             dtype=pl.Int32,
             missing_policy="warn",
@@ -521,20 +492,18 @@ def test_inplace_decimal_cast_transformer_equal_false_different_missing_policy()
 
 
 def test_inplace_decimal_cast_transformer_equal_false_different_kwargs() -> None:
-    assert not InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(
-        InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32, strict=True)
+    assert not InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(
+        InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=True)
     )
 
 
 def test_inplace_decimal_cast_transformer_equal_false_different_type() -> None:
-    assert not InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
+    assert not InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32).equal(42)
 
 
 def test_inplace_decimal_cast_transformer_get_args() -> None:
     assert objects_are_equal(
-        InplaceDecimalCastTransformer(
-            columns=["col1", "col3"], dtype=pl.Int32, strict=True
-        ).get_args(),
+        InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32, strict=True).get_args(),
         {
             "columns": ("col1", "col3"),
             "exclude_columns": (),
@@ -548,7 +517,7 @@ def test_inplace_decimal_cast_transformer_get_args() -> None:
 def test_inplace_decimal_cast_transformer_fit(
     dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
 ) -> None:
-    transformer = InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    transformer = InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32)
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
@@ -559,7 +528,7 @@ def test_inplace_decimal_cast_transformer_fit(
 def test_inplace_decimal_cast_transformer_fit_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceDecimalCastTransformer(
+    transformer = InplaceDecimalCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         missing_policy="ignore",
@@ -572,13 +541,13 @@ def test_inplace_decimal_cast_transformer_fit_missing_policy_ignore(
 def test_inplace_decimal_cast_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceDecimalCastTransformer(columns=["col1", "col3", "col5"], dtype=pl.Float32)
+    transformer = InplaceDecimalCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
 def test_inplace_decimal_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceDecimalCastTransformer(
+    transformer = InplaceDecimalCast(
         columns=["col1", "col3", "col5"],
         dtype=pl.Float32,
         missing_policy="warn",
@@ -590,7 +559,7 @@ def test_inplace_decimal_cast_transformer_fit_missing_policy_warn(dataframe: pl.
 
 
 def test_inplace_decimal_cast_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    transformer = InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32)
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
         out,
@@ -607,7 +576,7 @@ def test_inplace_decimal_cast_transformer_fit_transform(dataframe: pl.DataFrame)
 
 
 def test_inplace_decimal_cast_transformer_transform(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Int32)
+    transformer = InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Int32)
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -624,7 +593,7 @@ def test_inplace_decimal_cast_transformer_transform(dataframe: pl.DataFrame) -> 
 
 
 def test_inplace_decimal_cast_transformer_transform_float32(dataframe: pl.DataFrame) -> None:
-    transformer = InplaceDecimalCastTransformer(columns=["col1", "col3"], dtype=pl.Float32)
+    transformer = InplaceDecimalCast(columns=["col1", "col3"], dtype=pl.Float32)
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -643,9 +612,7 @@ def test_inplace_decimal_cast_transformer_transform_float32(dataframe: pl.DataFr
 def test_inplace_decimal_cast_transformer_transform_exclude_columns(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceDecimalCastTransformer(
-        columns=None, dtype=pl.Int32, exclude_columns=["col2", "col4"]
-    )
+    transformer = InplaceDecimalCast(columns=None, dtype=pl.Int32, exclude_columns=["col2", "col4"])
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -664,7 +631,7 @@ def test_inplace_decimal_cast_transformer_transform_exclude_columns(
 def test_inplace_decimal_cast_transformer_transform_missing_policy_ignore(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceDecimalCastTransformer(
+    transformer = InplaceDecimalCast(
         columns=["col1", "col3", "col5"], dtype=pl.Int32, missing_policy="ignore"
     )
     with warnings.catch_warnings():
@@ -687,7 +654,7 @@ def test_inplace_decimal_cast_transformer_transform_missing_policy_ignore(
 def test_inplace_decimal_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceDecimalCastTransformer(columns=["col1", "col3", "col5"], dtype=pl.Int32)
+    transformer = InplaceDecimalCast(columns=["col1", "col3", "col5"], dtype=pl.Int32)
     with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
@@ -695,7 +662,7 @@ def test_inplace_decimal_cast_transformer_transform_missing_policy_raise(
 def test_inplace_decimal_cast_transformer_transform_missing_policy_warn(
     dataframe: pl.DataFrame,
 ) -> None:
-    transformer = InplaceDecimalCastTransformer(
+    transformer = InplaceDecimalCast(
         columns=["col1", "col3", "col5"], dtype=pl.Int32, missing_policy="warn"
     )
     with pytest.warns(
