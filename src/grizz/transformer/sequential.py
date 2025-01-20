@@ -30,10 +30,7 @@ class SequentialTransformer(BaseTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import (
-    ...     Sequential,
-    ...     InplaceCast,
-    ... )
+    >>> from grizz.transformer import Sequential, InplaceCast
     >>> transformer = Sequential(
     ...     [
     ...         InplaceCast(columns=["col1"], dtype=pl.Float32),
