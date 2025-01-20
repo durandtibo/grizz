@@ -58,9 +58,11 @@ class DecimalCastTransformer(CastTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import DecimalCast
-    >>> transformer = DecimalCast(columns=["col1", "col2"], dtype=pl.Float32)
+    >>> transformer = DecimalCast(
+    ...     columns=["col1", "col2"], dtype=pl.Float32, prefix="", suffix="_out"
+    ... )
     >>> transformer
-    DecimalCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Float32)
+    DecimalCastTransformer(columns=('col1', 'col2'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', dtype=Float32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -90,18 +92,18 @@ class DecimalCastTransformer(CastTransformer):
     └──────┴──────────────┴──────────────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────────────┬──────┐
-    │ col1 ┆ col2 ┆ col3         ┆ col4 │
-    │ ---  ┆ ---  ┆ ---          ┆ ---  │
-    │ i64  ┆ f32  ┆ decimal[*,0] ┆ str  │
-    ╞══════╪══════╪══════════════╪══════╡
-    │ 1    ┆ 1.0  ┆ 1            ┆ a    │
-    │ 2    ┆ 2.0  ┆ 2            ┆ b    │
-    │ 3    ┆ 3.0  ┆ 3            ┆ c    │
-    │ 4    ┆ 4.0  ┆ 4            ┆ d    │
-    │ 5    ┆ 5.0  ┆ 5            ┆ e    │
-    └──────┴──────┴──────────────┴──────┘
+    shape: (5, 5)
+    ┌──────┬──────────────┬──────────────┬──────┬──────────┐
+    │ col1 ┆ col2         ┆ col3         ┆ col4 ┆ col2_out │
+    │ ---  ┆ ---          ┆ ---          ┆ ---  ┆ ---      │
+    │ i64  ┆ decimal[*,0] ┆ decimal[*,0] ┆ str  ┆ f32      │
+    ╞══════╪══════════════╪══════════════╪══════╪══════════╡
+    │ 1    ┆ 1            ┆ 1            ┆ a    ┆ 1.0      │
+    │ 2    ┆ 2            ┆ 2            ┆ b    ┆ 2.0      │
+    │ 3    ┆ 3            ┆ 3            ┆ c    ┆ 3.0      │
+    │ 4    ┆ 4            ┆ 4            ┆ d    ┆ 4.0      │
+    │ 5    ┆ 5            ┆ 5            ┆ e    ┆ 5.0      │
+    └──────┴──────────────┴──────────────┴──────┴──────────┘
 
     ```
     """

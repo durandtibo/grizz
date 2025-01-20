@@ -72,8 +72,8 @@ For example, the following example shows how to change the casting of some colum
 ```pycon
 
 >>> import polars as pl
->>> from grizz.transformer import Cast
->>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+>>> from grizz.transformer import InplaceCast
+>>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
 >>> frame = pl.DataFrame(
 ...     {
 ...         "col1": [1, 2, 3, 4, 5],
