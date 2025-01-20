@@ -33,7 +33,7 @@ class TransformIngestor(BaseIngestor):
 
     >>> import polars as pl
     >>> from grizz.ingestor import TransformIngestor, Ingestor
-    >>> from grizz.transformer import Cast
+    >>> from grizz.transformer import InplaceCast
     >>> ingestor = TransformIngestor(
     ...     ingestor=Ingestor(
     ...         pl.DataFrame(
@@ -44,12 +44,12 @@ class TransformIngestor(BaseIngestor):
     ...             }
     ...         )
     ...     ),
-    ...     transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ...     transformer=InplaceCast(columns=["col1", "col3"], dtype=pl.Float32),
     ... )
     >>> ingestor
     TransformIngestor(
       (ingestor): Ingestor(shape=(5, 3))
-      (transformer): CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Float32)
+      (transformer): InplaceCastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Float32)
     )
     >>> frame = ingestor.ingest()
     >>> frame

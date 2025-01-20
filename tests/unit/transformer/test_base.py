@@ -11,9 +11,9 @@ from coola.equality.testers import EqualityTester
 from objectory import OBJECT_TARGET
 
 from grizz.transformer import (
-    Cast,
     FillNan,
     FillNull,
+    InplaceCast,
     is_transformer_config,
     setup_transformer,
 )
@@ -37,7 +37,7 @@ def config() -> EqualityConfig:
 def test_is_transformer_config_true() -> None:
     assert is_transformer_config(
         {
-            OBJECT_TARGET: "grizz.transformer.Cast",
+            OBJECT_TARGET: "grizz.transformer.InplaceCast",
             "columns": ["col1", "col3"],
             "dtype": pl.Int32,
         }
@@ -54,7 +54,7 @@ def test_is_transformer_config_false() -> None:
 
 
 def test_setup_transformer_object() -> None:
-    transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+    transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
     assert setup_transformer(transformer) is transformer
 
 
@@ -62,12 +62,12 @@ def test_setup_transformer_dict() -> None:
     assert isinstance(
         setup_transformer(
             {
-                OBJECT_TARGET: "grizz.transformer.Cast",
+                OBJECT_TARGET: "grizz.transformer.InplaceCast",
                 "columns": ["col1", "col3"],
                 "dtype": pl.Int32,
             }
         ),
-        Cast,
+        InplaceCast,
     )
 
 

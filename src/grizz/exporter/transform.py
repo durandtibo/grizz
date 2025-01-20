@@ -34,7 +34,7 @@ class TransformExporter(BaseExporter):
 
     >>> import polars as pl
     >>> from grizz.exporter import TransformExporter, ParquetExporter
-    >>> from grizz.transformer import Cast
+    >>> from grizz.transformer import InplaceCast
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -43,16 +43,15 @@ class TransformExporter(BaseExporter):
     ...     }
     ... )
     >>> exporter = TransformExporter(
-    ...     transformer=Cast(columns=["col1", "col3"], dtype=pl.Float32),
+    ...     transformer=InplaceCast(columns=["col1", "col3"], dtype=pl.Float32),
     ...     exporter=ParquetExporter(path="/path/to/frame.parquet"),
     ... )
     >>> exporter
     TransformExporter(
-      (transformer): CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Float32)
+      (transformer): InplaceCastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Float32)
       (exporter): ParquetExporter(path=/path/to/frame.parquet)
     )
     >>> exporter.export(frame)  # doctest: +SKIP
-
 
     ```
     """

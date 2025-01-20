@@ -6,7 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from grizz.transformer import Cast, Sequential
+from grizz.transformer import InplaceCast, Sequential
 
 
 @pytest.fixture
@@ -29,8 +29,8 @@ def test_sequential_transformer_repr() -> None:
     assert repr(
         Sequential(
             [
-                Cast(columns=["col1"], dtype=pl.Float32),
-                Cast(columns=["col2"], dtype=pl.Int64),
+                InplaceCast(columns=["col1"], dtype=pl.Float32),
+                InplaceCast(columns=["col2"], dtype=pl.Int64),
             ]
         )
     ).startswith("SequentialTransformer(")
@@ -44,8 +44,8 @@ def test_sequential_transformer_str() -> None:
     assert str(
         Sequential(
             [
-                Cast(columns=["col1"], dtype=pl.Float32),
-                Cast(columns=["col2"], dtype=pl.Int64),
+                InplaceCast(columns=["col1"], dtype=pl.Float32),
+                InplaceCast(columns=["col2"], dtype=pl.Int64),
             ]
         )
     ).startswith("SequentialTransformer(")
@@ -58,14 +58,14 @@ def test_sequential_transformer_str_empty() -> None:
 def test_sequential_transformer_equal_true() -> None:
     assert Sequential(
         [
-            Cast(columns=["col1"], dtype=pl.Float32),
-            Cast(columns=["col2"], dtype=pl.Int64),
+            InplaceCast(columns=["col1"], dtype=pl.Float32),
+            InplaceCast(columns=["col2"], dtype=pl.Int64),
         ]
     ).equal(
         Sequential(
             [
-                Cast(columns=["col1"], dtype=pl.Float32),
-                Cast(columns=["col2"], dtype=pl.Int64),
+                InplaceCast(columns=["col1"], dtype=pl.Float32),
+                InplaceCast(columns=["col2"], dtype=pl.Int64),
             ]
         )
     )
@@ -74,14 +74,14 @@ def test_sequential_transformer_equal_true() -> None:
 def test_sequential_transformer_equal_false_different_transformers() -> None:
     assert not Sequential(
         [
-            Cast(columns=["col1"], dtype=pl.Float32),
-            Cast(columns=["col2"], dtype=pl.Int64),
+            InplaceCast(columns=["col1"], dtype=pl.Float32),
+            InplaceCast(columns=["col2"], dtype=pl.Int64),
         ]
     ).equal(
         Sequential(
             [
-                Cast(columns=["col1"], dtype=pl.Float32),
-                Cast(columns=["col2", "col3"], dtype=pl.Int64),
+                InplaceCast(columns=["col1"], dtype=pl.Float32),
+                InplaceCast(columns=["col2", "col3"], dtype=pl.Int64),
             ]
         )
     )
@@ -90,8 +90,8 @@ def test_sequential_transformer_equal_false_different_transformers() -> None:
 def test_sequential_transformer_equal_false_different_type() -> None:
     assert not Sequential(
         [
-            Cast(columns=["col1"], dtype=pl.Float32),
-            Cast(columns=["col2"], dtype=pl.Int64),
+            InplaceCast(columns=["col1"], dtype=pl.Float32),
+            InplaceCast(columns=["col2"], dtype=pl.Int64),
         ]
     ).equal(42)
 
@@ -99,11 +99,11 @@ def test_sequential_transformer_equal_false_different_type() -> None:
 def test_sequential_transformer_fit_1(
     caplog: pytest.LogCaptureFixture, dataframe: pl.DataFrame
 ) -> None:
-    transformer = Sequential([Cast(columns=["col1"], dtype=pl.Float32)])
+    transformer = Sequential([InplaceCast(columns=["col1"], dtype=pl.Float32)])
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
-        "Skipping 'CastTransformer.fit' as there are no parameters available to fit"
+        "Skipping 'InplaceCastTransformer.fit' as there are no parameters available to fit"
     )
 
 
@@ -112,22 +112,22 @@ def test_sequential_transformer_fit_2(
 ) -> None:
     transformer = Sequential(
         [
-            Cast(columns=["col1"], dtype=pl.Float32),
-            Cast(columns=["col2"], dtype=pl.Int64),
+            InplaceCast(columns=["col1"], dtype=pl.Float32),
+            InplaceCast(columns=["col2"], dtype=pl.Int64),
         ]
     )
     with caplog.at_level(logging.INFO):
         transformer.fit(dataframe)
     assert caplog.messages[0].startswith(
-        "Skipping 'CastTransformer.fit' as there are no parameters available to fit"
+        "Skipping 'InplaceCastTransformer.fit' as there are no parameters available to fit"
     )
     assert caplog.messages[2].startswith(
-        "Skipping 'CastTransformer.fit' as there are no parameters available to fit"
+        "Skipping 'InplaceCastTransformer.fit' as there are no parameters available to fit"
     )
 
 
 def test_sequential_transformer_fit_transform_1(dataframe: pl.DataFrame) -> None:
-    transformer = Sequential([Cast(columns=["col1"], dtype=pl.Float32)])
+    transformer = Sequential([InplaceCast(columns=["col1"], dtype=pl.Float32)])
     out = transformer.fit_transform(dataframe)
     assert_frame_equal(
         out,
@@ -145,8 +145,8 @@ def test_sequential_transformer_fit_transform_1(dataframe: pl.DataFrame) -> None
 def test_sequential_transformer_fit_transform_2(dataframe: pl.DataFrame) -> None:
     transformer = Sequential(
         [
-            Cast(columns=["col1"], dtype=pl.Float32),
-            Cast(columns=["col2"], dtype=pl.Int64),
+            InplaceCast(columns=["col1"], dtype=pl.Float32),
+            InplaceCast(columns=["col2"], dtype=pl.Int64),
         ]
     )
     out = transformer.fit_transform(dataframe)
@@ -164,7 +164,7 @@ def test_sequential_transformer_fit_transform_2(dataframe: pl.DataFrame) -> None
 
 
 def test_sequential_transformer_transform_1(dataframe: pl.DataFrame) -> None:
-    transformer = Sequential([Cast(columns=["col1"], dtype=pl.Float32)])
+    transformer = Sequential([InplaceCast(columns=["col1"], dtype=pl.Float32)])
     out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
@@ -182,8 +182,8 @@ def test_sequential_transformer_transform_1(dataframe: pl.DataFrame) -> None:
 def test_sequential_transformer_transform_2(dataframe: pl.DataFrame) -> None:
     transformer = Sequential(
         [
-            Cast(columns=["col1"], dtype=pl.Float32),
-            Cast(columns=["col2"], dtype=pl.Int64),
+            InplaceCast(columns=["col1"], dtype=pl.Float32),
+            InplaceCast(columns=["col2"], dtype=pl.Int64),
         ]
     )
     out = transformer.transform(dataframe)
