@@ -57,9 +57,9 @@ class CastTransformer(BaseInNOutNTransformer):
 
     >>> import polars as pl
     >>> from grizz.transformer import Cast
-    >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+    >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32, prefix="", suffix="_out")
     >>> transformer
-    CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
+    CastTransformer(columns=('col1', 'col3'), exclude_columns=(), exist_policy='raise', missing_policy='raise', prefix='', suffix='_out', dtype=Int32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -83,18 +83,18 @@ class CastTransformer(BaseInNOutNTransformer):
     └──────┴──────┴──────┴──────┘
     >>> out = transformer.transform(frame)
     >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i32  ┆ str  ┆ i32  ┆ str  │
-    ╞══════╪══════╪══════╪══════╡
-    │ 1    ┆ 1    ┆ 1    ┆ a    │
-    │ 2    ┆ 2    ┆ 2    ┆ b    │
-    │ 3    ┆ 3    ┆ 3    ┆ c    │
-    │ 4    ┆ 4    ┆ 4    ┆ d    │
-    │ 5    ┆ 5    ┆ 5    ┆ e    │
-    └──────┴──────┴──────┴──────┘
+    shape: (5, 6)
+    ┌──────┬──────┬──────┬──────┬──────────┬──────────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col1_out ┆ col3_out │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---      ┆ ---      │
+    │ i64  ┆ str  ┆ str  ┆ str  ┆ i32      ┆ i32      │
+    ╞══════╪══════╪══════╪══════╪══════════╪══════════╡
+    │ 1    ┆ 1    ┆ 1    ┆ a    ┆ 1        ┆ 1        │
+    │ 2    ┆ 2    ┆ 2    ┆ b    ┆ 2        ┆ 2        │
+    │ 3    ┆ 3    ┆ 3    ┆ c    ┆ 3        ┆ 3        │
+    │ 4    ┆ 4    ┆ 4    ┆ d    ┆ 4        ┆ 4        │
+    │ 5    ┆ 5    ┆ 5    ┆ e    ┆ 5        ┆ 5        │
+    └──────┴──────┴──────┴──────┴──────────┴──────────┘
 
     ```
     """
