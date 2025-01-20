@@ -90,6 +90,8 @@ __all__ = [
     "InplaceFillNullTransformer",
     "InplaceFloatCast",
     "InplaceFloatCastTransformer",
+    "InplaceIntegerCast",
+    "InplaceIntegerCastTransformer",
     "InplaceNumericCast",
     "InplaceNumericCastTransformer",
     "IntegerCast",
@@ -174,6 +176,10 @@ from grizz.transformer.cast.casting import InplaceCastTransformer
 from grizz.transformer.cast.casting import InplaceCastTransformer as InplaceCast
 from grizz.transformer.cast.float import InplaceFloatCastTransformer
 from grizz.transformer.cast.float import InplaceFloatCastTransformer as InplaceFloatCast
+from grizz.transformer.cast.integer import InplaceIntegerCastTransformer
+from grizz.transformer.cast.integer import (
+    InplaceIntegerCastTransformer as InplaceIntegerCast,
+)
 from grizz.transformer.cast.numeric import InplaceNumericCastTransformer
 from grizz.transformer.cast.numeric import (
     InplaceNumericCastTransformer as InplaceNumericCast,
