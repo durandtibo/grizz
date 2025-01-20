@@ -163,22 +163,12 @@ class InplaceStandardScalerTransformer(StandardScalerTransformer):
     Args:
         columns: The columns to scale. ``None`` means all the
             columns.
-        prefix: The column name prefix for the output columns.
-        suffix: The column name suffix for the output columns.
         exclude_columns: The columns to exclude from the input
             ``columns``. If any column is not found, it will be ignored
             during the filtering process.
         propagate_nulls: If set to ``True``, the ``None`` values are
             propagated after the transformation. If ``False``, the
             ``None`` values are replaced by NaNs.
-        exist_policy: The policy on how to handle existing columns.
-            The following options are available: ``'ignore'``,
-            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
-            is raised if at least one column already exist.
-            If ``'warn'``, a warning is raised if at least one column
-            already exist and the existing columns are overwritten.
-            If ``'ignore'``, the existing columns are overwritten and
-            no warning message appears.
         missing_policy: The policy on how to handle missing columns.
             The following options are available: ``'ignore'``,
             ``'warn'``, and ``'raise'``. If ``'raise'``, an exception

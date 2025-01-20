@@ -4,7 +4,7 @@ values."""
 
 from __future__ import annotations
 
-__all__ = ["StripCharsTransformer"]
+__all__ = ["InplaceStripCharsTransformer", "StripCharsTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -134,3 +134,97 @@ class StripCharsTransformer(BaseInNOutNTransformer):
         logger.info(f"Stripping characters of {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
         return frame.select((cs.by_name(columns) & cs.string()).str.strip_chars(**self._kwargs))
+
+
+class InplaceStripCharsTransformer(StripCharsTransformer):
+    r"""Implement a transformer to remove leading and trailing
+    characters.
+
+    This transformer ignores the columns that are not of type string.
+
+    Args:
+        columns: The columns to prepare. If ``None``, it processes all
+            the columns of type string.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: The keyword arguments for ``strip_chars``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceStripChars
+    >>> transformer = InplaceStripChars(columns=["col2", "col3"])
+    >>> transformer
+    InplaceStripCharsTransformer(columns=('col2', 'col3'), exclude_columns=(), missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [1, 2, 3, 4, 5],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["a ", " b", "  c  ", "d", "e"],
+    ...         "col4": ["a ", " b", "  c  ", "d", "e"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌──────┬──────┬───────┬───────┐
+    │ col1 ┆ col2 ┆ col3  ┆ col4  │
+    │ ---  ┆ ---  ┆ ---   ┆ ---   │
+    │ i64  ┆ str  ┆ str   ┆ str   │
+    ╞══════╪══════╪═══════╪═══════╡
+    │ 1    ┆ 1    ┆ a     ┆ a     │
+    │ 2    ┆ 2    ┆  b    ┆  b    │
+    │ 3    ┆ 3    ┆   c   ┆   c   │
+    │ 4    ┆ 4    ┆ d     ┆ d     │
+    │ 5    ┆ 5    ┆ e     ┆ e     │
+    └──────┴──────┴───────┴───────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 4)
+    ┌──────┬──────┬──────┬───────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4  │
+    │ ---  ┆ ---  ┆ ---  ┆ ---   │
+    │ i64  ┆ str  ┆ str  ┆ str   │
+    ╞══════╪══════╪══════╪═══════╡
+    │ 1    ┆ 1    ┆ a    ┆ a     │
+    │ 2    ┆ 2    ┆ b    ┆  b    │
+    │ 3    ┆ 3    ┆ c    ┆   c   │
+    │ 4    ┆ 4    ┆ d    ┆ d     │
+    │ 5    ┆ 5    ┆ e    ┆ e     │
+    └──────┴──────┴──────┴───────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str] | None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            columns=columns,
+            prefix="",
+            suffix="",
+            exclude_columns=exclude_columns,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+            **kwargs,
+        )
+
+    def get_args(self) -> dict:
+        args = super().get_args()
+        for key in ["prefix", "suffix", "exist_policy"]:
+            args.pop(key)
+        return args

@@ -98,6 +98,8 @@ __all__ = [
     "InplaceNumericCastTransformer",
     "InplaceStandardScaler",
     "InplaceStandardScalerTransformer",
+    "InplaceStripChars",
+    "InplaceStripCharsTransformer",
     "IntegerCast",
     "IntegerCastTransformer",
     "JsonDecode",
@@ -353,6 +355,8 @@ from grizz.transformer.standard_scaler import StandardScalerTransformer
 from grizz.transformer.standard_scaler import (
     StandardScalerTransformer as StandardScaler,
 )
+from grizz.transformer.string import InplaceStripCharsTransformer
+from grizz.transformer.string import InplaceStripCharsTransformer as InplaceStripChars
 from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
 from grizz.transformer.sum import SumHorizontalTransformer
