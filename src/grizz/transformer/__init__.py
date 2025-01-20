@@ -84,6 +84,8 @@ __all__ = [
     "InplaceCastTransformer",
     "InplaceCategoricalCast",
     "InplaceCategoricalCastTransformer",
+    "InplaceDecimalCast",
+    "InplaceDecimalCastTransformer",
     "InplaceFillNan",
     "InplaceFillNanTransformer",
     "InplaceFillNull",
@@ -174,6 +176,10 @@ from grizz.transformer.cardinality import (
 )
 from grizz.transformer.cast.casting import InplaceCastTransformer
 from grizz.transformer.cast.casting import InplaceCastTransformer as InplaceCast
+from grizz.transformer.cast.decimal import InplaceDecimalCastTransformer
+from grizz.transformer.cast.decimal import (
+    InplaceDecimalCastTransformer as InplaceDecimalCast,
+)
 from grizz.transformer.cast.float import InplaceFloatCastTransformer
 from grizz.transformer.cast.float import InplaceFloatCastTransformer as InplaceFloatCast
 from grizz.transformer.cast.integer import InplaceIntegerCastTransformer
