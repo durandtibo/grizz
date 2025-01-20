@@ -1,9 +1,9 @@
-r"""Contain ``polars.DataFrame`` transformers to convert numeric columns
+r"""Contain ``polars.DataFrame`` transformers to convert float columns
 to a new data type."""
 
 from __future__ import annotations
 
-__all__ = ["InplaceNumericCastTransformer", "NumericCastTransformer"]
+__all__ = ["FloatCastTransformer", "InplaceFloatCastTransformer"]
 
 import logging
 from typing import TYPE_CHECKING
@@ -20,8 +20,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class NumericCastTransformer(CastTransformer):
-    r"""Implement a transformer to convert numeric columns to a new data
+class FloatCastTransformer(CastTransformer):
+    r"""Implement a transformer to convert float columns to a new data
     type.
 
     Args:
@@ -56,10 +56,10 @@ class NumericCastTransformer(CastTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import NumericCast
-    >>> transformer = NumericCast(columns=["col1", "col2"], dtype=pl.Float32)
+    >>> from grizz.transformer import FloatCast
+    >>> transformer = FloatCast(columns=["col1", "col2"], dtype=pl.Int32)
     >>> transformer
-    NumericCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Float32)
+    FloatCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Int32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -69,7 +69,7 @@ class NumericCastTransformer(CastTransformer):
     ...     },
     ...     schema={
     ...         "col1": pl.Int64,
-    ...         "col2": pl.Float32,
+    ...         "col2": pl.Float64,
     ...         "col3": pl.Float64,
     ...         "col4": pl.String,
     ...     },
@@ -79,7 +79,7 @@ class NumericCastTransformer(CastTransformer):
     ┌──────┬──────┬──────┬──────┐
     │ col1 ┆ col2 ┆ col3 ┆ col4 │
     │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ f32  ┆ f64  ┆ str  │
+    │ i64  ┆ f64  ┆ f64  ┆ str  │
     ╞══════╪══════╪══════╪══════╡
     │ 1    ┆ 1.0  ┆ 1.0  ┆ a    │
     │ 2    ┆ 2.0  ┆ 2.0  ┆ b    │
@@ -93,24 +93,24 @@ class NumericCastTransformer(CastTransformer):
     ┌──────┬──────┬──────┬──────┐
     │ col1 ┆ col2 ┆ col3 ┆ col4 │
     │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ f32  ┆ f32  ┆ f64  ┆ str  │
+    │ i64  ┆ i32  ┆ f64  ┆ str  │
     ╞══════╪══════╪══════╪══════╡
-    │ 1.0  ┆ 1.0  ┆ 1.0  ┆ a    │
-    │ 2.0  ┆ 2.0  ┆ 2.0  ┆ b    │
-    │ 3.0  ┆ 3.0  ┆ 3.0  ┆ c    │
-    │ 4.0  ┆ 4.0  ┆ 4.0  ┆ d    │
-    │ 5.0  ┆ 5.0  ┆ 5.0  ┆ e    │
+    │ 1    ┆ 1    ┆ 1.0  ┆ a    │
+    │ 2    ┆ 2    ┆ 2.0  ┆ b    │
+    │ 3    ┆ 3    ┆ 3.0  ┆ c    │
+    │ 4    ┆ 4    ┆ 4.0  ┆ d    │
+    │ 5    ┆ 5    ┆ 5.0  ┆ e    │
     └──────┴──────┴──────┴──────┘
 
     ```
     """
 
     def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
-        return frame.select((cs.by_name(columns) & cs.numeric()).cast(self._dtype, **self._kwargs))
+        return frame.select((cs.by_name(columns) & cs.float()).cast(self._dtype, **self._kwargs))
 
 
-class InplaceNumericCastTransformer(InplaceCastTransformer):
-    r"""Implement a transformer to convert numeric columns to a new data
+class InplaceFloatCastTransformer(InplaceCastTransformer):
+    r"""Implement a transformer to convert float columns to a new data
     type.
 
     ``InplaceCastTransformer`` is a specific implementation of
@@ -138,10 +138,10 @@ class InplaceNumericCastTransformer(InplaceCastTransformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import InplaceNumericCast
-    >>> transformer = InplaceNumericCast(columns=["col1", "col3"], dtype=pl.Float32)
+    >>> from grizz.transformer import InplaceFloatCast
+    >>> transformer = InplaceFloatCast(columns=["col1", "col2"], dtype=pl.Int32)
     >>> transformer
-    InplaceNumericCastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Float32)
+    InplaceFloatCastTransformer(columns=('col1', 'col2'), exclude_columns=(), missing_policy='raise', dtype=Int32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -151,7 +151,7 @@ class InplaceNumericCastTransformer(InplaceCastTransformer):
     ...     },
     ...     schema={
     ...         "col1": pl.Int64,
-    ...         "col2": pl.Float32,
+    ...         "col2": pl.Float64,
     ...         "col3": pl.Float64,
     ...         "col4": pl.String,
     ...     },
@@ -161,7 +161,7 @@ class InplaceNumericCastTransformer(InplaceCastTransformer):
     ┌──────┬──────┬──────┬──────┐
     │ col1 ┆ col2 ┆ col3 ┆ col4 │
     │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ f32  ┆ f64  ┆ str  │
+    │ i64  ┆ f64  ┆ f64  ┆ str  │
     ╞══════╪══════╪══════╪══════╡
     │ 1    ┆ 1.0  ┆ 1.0  ┆ a    │
     │ 2    ┆ 2.0  ┆ 2.0  ┆ b    │
@@ -175,17 +175,17 @@ class InplaceNumericCastTransformer(InplaceCastTransformer):
     ┌──────┬──────┬──────┬──────┐
     │ col1 ┆ col2 ┆ col3 ┆ col4 │
     │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ f32  ┆ f32  ┆ f32  ┆ str  │
+    │ i64  ┆ i32  ┆ f64  ┆ str  │
     ╞══════╪══════╪══════╪══════╡
-    │ 1.0  ┆ 1.0  ┆ 1.0  ┆ a    │
-    │ 2.0  ┆ 2.0  ┆ 2.0  ┆ b    │
-    │ 3.0  ┆ 3.0  ┆ 3.0  ┆ c    │
-    │ 4.0  ┆ 4.0  ┆ 4.0  ┆ d    │
-    │ 5.0  ┆ 5.0  ┆ 5.0  ┆ e    │
+    │ 1    ┆ 1    ┆ 1.0  ┆ a    │
+    │ 2    ┆ 2    ┆ 2.0  ┆ b    │
+    │ 3    ┆ 3    ┆ 3.0  ┆ c    │
+    │ 4    ┆ 4    ┆ 4.0  ┆ d    │
+    │ 5    ┆ 5    ┆ 5.0  ┆ e    │
     └──────┴──────┴──────┴──────┘
 
     ```
     """
 
     def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:
-        return frame.select((cs.by_name(columns) & cs.numeric()).cast(self._dtype, **self._kwargs))
+        return frame.select((cs.by_name(columns) & cs.float()).cast(self._dtype, **self._kwargs))
