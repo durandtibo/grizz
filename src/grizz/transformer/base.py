@@ -34,10 +34,10 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import Cast
-    >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+    >>> from grizz.transformer import InplaceCast
+    >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
     >>> transformer
-    CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
+    InplaceCastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
     >>> frame = pl.DataFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
@@ -94,10 +94,10 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer import Cast
-        >>> obj1 = Cast(columns=["col1", "col3"], dtype=pl.Int32)
-        >>> obj2 = Cast(columns=["col1", "col3"], dtype=pl.Int32)
-        >>> obj3 = Cast(columns=["col2", "col3"], dtype=pl.Float32)
+        >>> from grizz.transformer import InplaceCast
+        >>> obj1 = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> obj2 = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> obj3 = InplaceCast(columns=["col2", "col3"], dtype=pl.Float32)
         >>> obj1.equal(obj2)
         True
         >>> obj1.equal(obj3)
@@ -118,8 +118,8 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer import Cast
-        >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> from grizz.transformer import InplaceCast
+        >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
         >>> frame = pl.DataFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
@@ -175,8 +175,8 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer import Cast
-        >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> from grizz.transformer import InplaceCast
+        >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
         >>> frame = pl.DataFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
@@ -231,8 +231,8 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.transformer import Cast
-        >>> transformer = Cast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> from grizz.transformer import InplaceCast
+        >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
         >>> frame = pl.DataFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
@@ -297,7 +297,7 @@ def is_transformer_config(config: dict) -> bool:
     >>> from grizz.transformer import is_transformer_config
     >>> is_transformer_config(
     ...     {
-    ...         "_target_": "grizz.transformer.Cast",
+    ...         "_target_": "grizz.transformer.InplaceCast",
     ...         "columns": ("col1", "col3"),
     ...         "dtype": pl.Int32,
     ...     }
@@ -332,13 +332,13 @@ def setup_transformer(
     >>> from grizz.transformer import setup_transformer
     >>> transformer = setup_transformer(
     ...     {
-    ...         "_target_": "grizz.transformer.Cast",
+    ...         "_target_": "grizz.transformer.InplaceCast",
     ...         "columns": ("col1", "col3"),
     ...         "dtype": pl.Int32,
     ...     }
     ... )
     >>> transformer
-    CastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
+    InplaceCastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
 
     ```
     """
