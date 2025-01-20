@@ -96,6 +96,8 @@ __all__ = [
     "InplaceIntegerCastTransformer",
     "InplaceNumericCast",
     "InplaceNumericCastTransformer",
+    "InplaceStandardScaler",
+    "InplaceStandardScalerTransformer",
     "IntegerCast",
     "IntegerCastTransformer",
     "JsonDecode",
@@ -343,6 +345,10 @@ from grizz.transformer.sorting import SortColumnsTransformer as SortColumns
 from grizz.transformer.sorting import SortTransformer
 from grizz.transformer.sorting import SortTransformer as Sort
 from grizz.transformer.sql import SqlTransformer
+from grizz.transformer.standard_scaler import InplaceStandardScalerTransformer
+from grizz.transformer.standard_scaler import (
+    InplaceStandardScalerTransformer as InplaceStandardScaler,
+)
 from grizz.transformer.standard_scaler import StandardScalerTransformer
 from grizz.transformer.standard_scaler import (
     StandardScalerTransformer as StandardScaler,
