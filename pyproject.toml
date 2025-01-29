@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "grizz"
-version = "0.2.0a21"
+version = "0.2.0a22"
 description = "A light library to preprocess data with polars"
 readme = "README.md"
 authors = ["Thibaut Durand <durand.tibo+gh@gmail.com>"]
@@ -36,7 +36,7 @@ packages = [
 
 [tool.poetry.dependencies]
 # Core dependencies
-coola = ">=0.8.5,<1.0"
+coola = ">=0.8.6,<1.0"
 iden = ">=0.1,<1.0"
 objectory = ">=0.2,<1.0"
 polars = ">=1.0,<2.0"
@@ -63,16 +63,16 @@ mkdocs-material = "^9.5"
 mkdocstrings = { extras = ["python"], version = ">=0.26,<0.28" }
 
 [tool.poetry.group.dev.dependencies]
-black = ">=24.10"
+black = ">=25.1"
 coverage = { extras = ["toml"], version = "^7.6" }
 docformatter = { extras = ["tomli"], version = "^1.7" }
 feu = ">=0.3,<1.0"
-pre-commit = ">=4.0,<5.0"
+pre-commit = ">=4.1,<5.0"
 pygments = "^2.18"
 pytest = "^8.3"
 pytest-cov = ">=6.0,<7.0"
 pytest-timeout = "^2.3"
-ruff = ">=0.8,<1.0"
+ruff = ">=0.9,<1.0"
 xdoctest = "^1.2"
 
 
