@@ -10,10 +10,8 @@ from typing import TYPE_CHECKING, Any
 from coola import objects_are_equal
 from coola.utils import repr_indent, repr_sequence
 from coola.utils.format import repr_mapping, repr_mapping_line
-from iden.utils.time import timeblock
 
-from grizz.ingestor.base import BaseIngestor, setup_ingestor
-from grizz.utils.format import human_byte
+from grizz.lazy.ingestor.base import BaseIngestor, setup_ingestor
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -30,16 +28,16 @@ class JoinIngestor(BaseIngestor):
     Args:
         ingestors: The list of ingestors.
         **kwargs: Additional keyword arguments for
-            ``polars.DataFrame.join``.
+            ``polars.LazyFrame.join``.
 
     Example usage:
 
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.ingestor import JoinIngestor, Ingestor
+    >>> from grizz.lazy.ingestor import JoinIngestor, Ingestor
     >>> ingestor1 = Ingestor(
-    ...     frame=pl.DataFrame(
+    ...     frame=pl.LazyFrame(
     ...         {
     ...             "col": [1, 2, 3, 4, 5],
     ...             "col1": ["1", "2", "3", "4", "5"],
@@ -48,7 +46,7 @@ class JoinIngestor(BaseIngestor):
     ...     )
     ... )
     >>> ingestor2 = Ingestor(
-    ...     frame=pl.DataFrame(
+    ...     frame=pl.LazyFrame(
     ...         {
     ...             "col": [1, 2, 3, 5],
     ...             "col3": [-1, -2, -3, -5],
@@ -56,7 +54,7 @@ class JoinIngestor(BaseIngestor):
     ...     )
     ... )
     >>> ingestor3 = Ingestor(
-    ...     frame=pl.DataFrame(
+    ...     frame=pl.LazyFrame(
     ...         {
     ...             "col": [1, 2, 3, 4, 5],
     ...             "col4": [1.1, 2.2, 3.3, 4.4, 5.5],
@@ -68,13 +66,19 @@ class JoinIngestor(BaseIngestor):
     >>> ingestor
     JoinIngestor(
       (ingestors):
-        (0): Ingestor(shape=(5, 3))
-        (1): Ingestor(shape=(4, 2))
-        (2): Ingestor(shape=(5, 3))
+        (0): Ingestor(
+            (schema): Schema({'col': Int64, 'col1': String, 'col2': String})
+          )
+        (1): Ingestor(
+            (schema): Schema({'col': Int64, 'col3': Int64})
+          )
+        (2): Ingestor(
+            (schema): Schema({'col': Int64, 'col4': Float64, 'col5': String})
+          )
       (kwargs): on='col', how='inner'
     )
     >>> frame = ingestor.ingest()
-    >>> frame
+    >>> frame.collect()
     shape: (4, 6)
     ┌─────┬──────┬──────┬──────┬──────┬──────┐
     │ col ┆ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col5 │
@@ -115,17 +119,13 @@ class JoinIngestor(BaseIngestor):
             self._ingestors, other._ingestors, equal_nan=equal_nan
         ) and objects_are_equal(self._kwargs, other._kwargs, equal_nan=equal_nan)
 
-    def ingest(self) -> pl.DataFrame:
-        logger.info("Joining DataFrames...")
-        with timeblock("join time: {time}"):
-            frame = self._ingest()
-            logger.info(
-                f"DataFrame ingested | shape={frame.shape}  "
-                f"estimated size={human_byte(frame.estimated_size())}"
-            )
+    def ingest(self) -> pl.LazyFrame:
+        logger.info("Joining LazyFrames...")
+        frame = self._ingest()
+        logger.info(f"LazyFrame ingested | schema={frame.collect_schema()}")
         return frame
 
-    def _ingest(self) -> pl.DataFrame:
+    def _ingest(self) -> pl.LazyFrame:
         out = self._ingestors[0].ingest()
         for ingestor in self._ingestors[1:]:
             frame = ingestor.ingest()
