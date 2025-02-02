@@ -7,7 +7,7 @@ import pytest
 from polars.testing import assert_frame_equal
 
 from grizz.exceptions import DataFrameNotFoundError
-from grizz.ingestor import ParquetFileIngestor, ParquetIngestor
+from grizz.lazy.ingestor import ParquetFileIngestor, ParquetIngestor
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -74,7 +74,7 @@ def test_parquet_ingestor_equal_false_different_type(tmp_path: Path) -> None:
 def test_parquet_ingestor_ingest(frame_path: Path) -> None:
     assert_frame_equal(
         ParquetIngestor(frame_path).ingest(),
-        pl.DataFrame(
+        pl.LazyFrame(
             {
                 "col1": [1, 2, 3, 4, 5],
                 "col2": ["a", "b", "c", "d", "e"],
@@ -86,11 +86,12 @@ def test_parquet_ingestor_ingest(frame_path: Path) -> None:
 
 def test_parquet_ingestor_ingest_with_kwargs(frame_path: Path) -> None:
     assert_frame_equal(
-        ParquetIngestor(frame_path, columns=["col1", "col3"]).ingest(),
-        pl.DataFrame(
+        ParquetIngestor(frame_path, n_rows=3).ingest(),
+        pl.LazyFrame(
             {
-                "col1": [1, 2, 3, 4, 5],
-                "col3": [1.2, 2.2, 3.2, 4.2, 5.2],
+                "col1": [1, 2, 3],
+                "col2": ["a", "b", "c"],
+                "col3": [1.2, 2.2, 3.2],
             }
         ),
     )
@@ -146,7 +147,7 @@ def test_parquet_file_ingestor_equal_false_different_type(tmp_path: Path) -> Non
 def test_parquet_file_ingestor_ingest(frame_path: Path) -> None:
     assert_frame_equal(
         ParquetFileIngestor(frame_path).ingest(),
-        pl.DataFrame(
+        pl.LazyFrame(
             {
                 "col1": [1, 2, 3, 4, 5],
                 "col2": ["a", "b", "c", "d", "e"],
@@ -158,11 +159,12 @@ def test_parquet_file_ingestor_ingest(frame_path: Path) -> None:
 
 def test_parquet_file_ingestor_ingest_with_kwargs(frame_path: Path) -> None:
     assert_frame_equal(
-        ParquetFileIngestor(frame_path, columns=["col1", "col3"]).ingest(),
-        pl.DataFrame(
+        ParquetFileIngestor(frame_path, n_rows=3).ingest(),
+        pl.LazyFrame(
             {
-                "col1": [1, 2, 3, 4, 5],
-                "col3": [1.2, 2.2, 3.2, 4.2, 5.2],
+                "col1": [1, 2, 3],
+                "col2": ["a", "b", "c"],
+                "col3": [1.2, 2.2, 3.2],
             }
         ),
     )
