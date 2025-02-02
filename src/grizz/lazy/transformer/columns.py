@@ -161,7 +161,7 @@ class BaseIn1Out1Transformer(BaseArgTransformer):
             frame: The input LazyFrame to check.
         """
         check_missing_column(
-            frame.columns, column=self._in_col, missing_policy=self._missing_policy
+            frame.collect_schema().names(), column=self._in_col, missing_policy=self._missing_policy
         )
 
     def _check_output_column(self, frame: pl.LazyFrame) -> None:
@@ -170,7 +170,9 @@ class BaseIn1Out1Transformer(BaseArgTransformer):
         Args:
             frame: The input LazyFrame to check.
         """
-        check_existing_column(frame.columns, column=self._out_col, exist_policy=self._exist_policy)
+        check_existing_column(
+            frame.collect_schema().names(), column=self._out_col, exist_policy=self._exist_policy
+        )
 
     @abstractmethod
     def _fit(self, frame: pl.LazyFrame) -> pl.LazyFrame:
@@ -331,10 +333,14 @@ class BaseIn2Out1Transformer(BaseArgTransformer):
             frame: The input LazyFrame to check.
         """
         check_missing_column(
-            frame.columns, column=self._in1_col, missing_policy=self._missing_policy
+            frame.collect_schema().names(),
+            column=self._in1_col,
+            missing_policy=self._missing_policy,
         )
         check_missing_column(
-            frame.columns, column=self._in2_col, missing_policy=self._missing_policy
+            frame.collect_schema().names(),
+            column=self._in2_col,
+            missing_policy=self._missing_policy,
         )
 
     def _check_output_column(self, frame: pl.LazyFrame) -> None:
@@ -343,7 +349,9 @@ class BaseIn2Out1Transformer(BaseArgTransformer):
         Args:
             frame: The input LazyFrame to check.
         """
-        check_existing_column(frame.columns, column=self._out_col, exist_policy=self._exist_policy)
+        check_existing_column(
+            frame.collect_schema().names(), column=self._out_col, exist_policy=self._exist_policy
+        )
 
     @abstractmethod
     def _fit(self, frame: pl.LazyFrame) -> pl.LazyFrame:
@@ -492,7 +500,7 @@ class BaseInNTransformer(BaseArgTransformer):
 
         ```
         """
-        cols = list(frame.columns if self._columns is None else self._columns)
+        cols = list(frame.collect_schema().names() if self._columns is None else self._columns)
         [cols.remove(col) for col in self._exclude_columns if col in cols]
         return tuple(cols)
 
@@ -531,7 +539,7 @@ class BaseInNTransformer(BaseArgTransformer):
 
         ```
         """
-        return find_common_columns(frame.columns, self.find_columns(frame))
+        return find_common_columns(frame.collect_schema().names(), self.find_columns(frame))
 
     def find_missing_columns(self, frame: pl.LazyFrame) -> tuple[str, ...]:
         r"""Find the missing columns.
@@ -567,7 +575,7 @@ class BaseInNTransformer(BaseArgTransformer):
 
         ```
         """
-        return find_missing_columns(frame.columns, self.find_columns(frame))
+        return find_missing_columns(frame.collect_schema().names(), self.find_columns(frame))
 
     def _check_input_columns(self, frame: pl.LazyFrame) -> None:
         r"""Check if some input columns are missing.
@@ -576,7 +584,7 @@ class BaseInNTransformer(BaseArgTransformer):
             frame: The input LazyFrame to check.
         """
         check_missing_columns(
-            frame_or_cols=frame.columns,
+            frame_or_cols=frame.collect_schema().names(),
             columns=self.find_columns(frame),
             missing_policy=self._missing_policy,
         )
@@ -845,7 +853,7 @@ class BaseInNOutNTransformer(BaseInNTransformer):
             frame: The input LazyFrame to check.
         """
         check_existing_columns(
-            frame.columns,
+            frame.collect_schema().names(),
             columns=[f"{self._prefix}{col}{self._suffix}" for col in self.find_columns(frame)],
             exist_policy=self._exist_policy,
         )
