@@ -73,7 +73,7 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
             The ingested DataFrame.
 
         Raises:
-            DataFrameNotFoundError: if the DataFrame cannot be ingested.
+            DataNotFoundError: if the DataFrame cannot be ingested.
 
         Example usage:
 

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from coola import objects_are_equal
 
-from grizz.exceptions import DataFrameNotFoundError
+from grizz.exceptions import DataNotFoundError
 from grizz.exporter.base import BaseExporter
 from grizz.ingestor.base import BaseIngestor
 
@@ -85,5 +85,5 @@ class InMemoryExporter(BaseExporter, BaseIngestor):
                 "No DataFrame available for ingestion. You must export a DataFrame "
                 "before to ingest it"
             )
-            raise DataFrameNotFoundError(msg)
+            raise DataNotFoundError(msg)
         return self._frame

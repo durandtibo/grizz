@@ -6,7 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from grizz.exceptions import DataFrameNotFoundError
+from grizz.exceptions import DataNotFoundError
 from grizz.ingestor import ParquetFileIngestor, ParquetIngestor
 
 if TYPE_CHECKING:
@@ -170,5 +170,5 @@ def test_parquet_file_ingestor_ingest_with_kwargs(frame_path: Path) -> None:
 
 def test_parquet_file_ingestor_ingest_missing_path(tmp_path: Path) -> None:
     ingestor = ParquetFileIngestor(tmp_path.joinpath("data.parquet"))
-    with pytest.raises(DataFrameNotFoundError, match="DataFrame file does not exist"):
+    with pytest.raises(DataNotFoundError, match="Data file does not exist"):
         ingestor.ingest()

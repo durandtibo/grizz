@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
 import polars as pl
 from coola import objects_are_equal
 
-from grizz.ingestor.utils import check_dataframe_file
+from grizz.ingestor.utils import check_data_file
 from grizz.lazy.ingestor.base import BaseIngestor
 from grizz.utils.format import str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
@@ -91,6 +91,6 @@ class CsvFileIngestor(CsvIngestor):
         super().__init__(source=sanitize_path(path), **kwargs)
 
     def ingest(self) -> pl.LazyFrame:
-        check_dataframe_file(self._source)
+        check_data_file(self._source)
         logger.info(f"Ingesting CSV file {self._source} | size={human_file_size(self._source)}")
         return super().ingest()

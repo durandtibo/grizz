@@ -7,7 +7,7 @@ __all__ = [
     "ColumnExistsWarning",
     "ColumnNotFoundError",
     "ColumnNotFoundWarning",
-    "DataFrameNotFoundError",
+    "DataNotFoundError",
 ]
 
 
@@ -27,5 +27,5 @@ class ColumnNotFoundWarning(RuntimeWarning):
     r"""Raised when a column is requested but does not exist."""
 
 
-class DataFrameNotFoundError(RuntimeError):
+class DataNotFoundError(RuntimeError):
     r"""Raised when a DataFrame is requested but does not exist."""

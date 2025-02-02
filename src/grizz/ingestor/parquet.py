@@ -13,7 +13,7 @@ from coola import objects_are_equal
 from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
-from grizz.ingestor.utils import check_dataframe_file
+from grizz.ingestor.utils import check_data_file
 from grizz.utils.format import human_byte, str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
 
@@ -102,6 +102,6 @@ class ParquetFileIngestor(ParquetIngestor):
         super().__init__(source=sanitize_path(path), **kwargs)
 
     def ingest(self) -> pl.DataFrame:
-        check_dataframe_file(self._source)
+        check_data_file(self._source)
         logger.info(f"Ingesting parquet file {self._source} | size={human_file_size(self._source)}")
         return super().ingest()
