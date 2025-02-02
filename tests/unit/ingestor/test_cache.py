@@ -6,7 +6,7 @@ import polars as pl
 import pytest
 from polars.testing import assert_frame_equal
 
-from grizz.exceptions import DataFrameNotFoundError
+from grizz.exceptions import DataNotFoundError
 from grizz.exporter import ParquetExporter
 from grizz.ingestor import CacheIngestor, CsvIngestor, ParquetFileIngestor
 
@@ -185,5 +185,5 @@ def test_cache_ingestor_ingest_missing_file(tmp_path: Path) -> None:
         slow_ingestor=CsvIngestor(path),
         exporter=ParquetExporter(path),
     )
-    with pytest.raises(DataFrameNotFoundError, match="DataFrame file does not exist"):
+    with pytest.raises(DataNotFoundError, match="Data file does not exist"):
         ingestor.ingest()

@@ -5,24 +5,24 @@ from typing import TYPE_CHECKING
 import pytest
 from iden.io import save_text
 
-from grizz.exceptions import DataFrameNotFoundError
-from grizz.ingestor.utils import check_dataframe_file
+from grizz.exceptions import DataNotFoundError
+from grizz.ingestor.utils import check_data_file
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-##########################################
-#     Tests for check_dataframe_file     #
-##########################################
+#####################################
+#     Tests for check_data_file     #
+#####################################
 
 
-def test_check_dataframe_file_exists(tmp_path: Path) -> None:
+def test_check_data_file_exists(tmp_path: Path) -> None:
     path = tmp_path.joinpath("data.txt")
     save_text("meow", path)
-    check_dataframe_file(path)
+    check_data_file(path)
 
 
-def test_check_dataframe_file_missing(tmp_path: Path) -> None:
+def test_check_data_file_missing(tmp_path: Path) -> None:
     path = tmp_path.joinpath("data.txt")
-    with pytest.raises(DataFrameNotFoundError, match="DataFrame file does not exist"):
-        check_dataframe_file(path)
+    with pytest.raises(DataNotFoundError, match="Data file does not exist"):
+        check_data_file(path)

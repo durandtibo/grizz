@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from coola.utils import repr_indent, repr_mapping
 
-from grizz.exceptions import DataFrameNotFoundError
+from grizz.exceptions import DataNotFoundError
 from grizz.exporter.base import BaseExporter, setup_exporter
 from grizz.ingestor.base import BaseIngestor, setup_ingestor
 
@@ -25,7 +25,7 @@ class CacheIngestor(BaseIngestor):
     falling back to the slow ingestor if needed.
 
     Internally, this ingestor attempts to load the DataFrame using
-    the fast ingestor. If a ``DataFrameNotFoundError`` is raised,
+    the fast ingestor. If a ``DataNotFoundError`` is raised,
     it falls back to the slow ingestor, then exports the DataFrame
     for ingestion by the fast ingestor during the next cycle.
 
@@ -121,7 +121,7 @@ class CacheIngestor(BaseIngestor):
         try:
             logger.info("Ingesting data with the fast ingestor...")
             frame = self._fast_ingestor.ingest()
-        except DataFrameNotFoundError:
+        except DataNotFoundError:
             logger.info("Ingesting data with the slow ingestor...")
             frame = self._slow_ingestor.ingest()
             logger.info("Exporting the data...")
