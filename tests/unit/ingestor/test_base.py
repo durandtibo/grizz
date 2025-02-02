@@ -34,7 +34,7 @@ def config() -> EqualityConfig:
 
 def test_is_ingestor_config_true() -> None:
     assert is_ingestor_config(
-        {OBJECT_TARGET: "grizz.ingestor.CsvIngestor", "path": "/path/to/data.csv"}
+        {OBJECT_TARGET: "grizz.ingestor.CsvIngestor", "source": "/path/to/data.csv"}
     )
 
 
@@ -48,13 +48,15 @@ def test_is_ingestor_config_false() -> None:
 
 
 def test_setup_ingestor_object() -> None:
-    ingestor = CsvIngestor(path="/path/to/data.csv")
+    ingestor = CsvIngestor("/path/to/data.csv")
     assert setup_ingestor(ingestor) is ingestor
 
 
 def test_setup_ingestor_dict() -> None:
     assert isinstance(
-        setup_ingestor({OBJECT_TARGET: "grizz.ingestor.CsvIngestor", "path": "/path/to/data.csv"}),
+        setup_ingestor(
+            {OBJECT_TARGET: "grizz.ingestor.CsvIngestor", "source": "/path/to/data.csv"}
+        ),
         CsvIngestor,
     )
 

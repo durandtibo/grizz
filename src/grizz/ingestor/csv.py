@@ -1,70 +1,96 @@
 # noqa: A005
-r"""Contain the implementation of a CSV ingestor."""
+r"""Contain the implementation of CSV ingestors."""
 
 from __future__ import annotations
 
-__all__ = ["CsvIngestor"]
+__all__ = ["CsvFileIngestor", "CsvIngestor"]
 
 import logging
 from typing import TYPE_CHECKING, Any
 
 import polars as pl
 from coola import objects_are_equal
-from iden.utils.time import timeblock
 
 from grizz.ingestor.base import BaseIngestor
 from grizz.ingestor.utils import check_data_file
-from grizz.utils.format import human_byte, str_kwargs
+from grizz.utils.format import str_kwargs
 from grizz.utils.path import human_file_size, sanitize_path
 
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from grizz.ingestor.parquet import FileSource
+
 logger = logging.getLogger(__name__)
 
 
 class CsvIngestor(BaseIngestor):
-    r"""Implement a CSV DataFrame ingestor.
+    r"""Implement a CSV ingestor.
 
     Args:
-        path: The path to the CSV file to ingest.
+        source: The source to the CSV data to ingest.
         **kwargs: Additional keyword arguments for
-            ``polars.read_csv``.
+            ``polars.scan_csv``.
 
     Example usage:
 
     ```pycon
 
     >>> from grizz.ingestor import CsvIngestor
-    >>> ingestor = CsvIngestor(path="/path/to/frame.csv")
+    >>> ingestor = CsvIngestor(source="/path/to/frame.csv")
     >>> ingestor
-    CsvIngestor(path=/path/to/frame.csv)
+    CsvIngestor(source=/path/to/frame.csv)
+    >>> frame = ingestor.ingest()  # doctest: +SKIP
+
+    ```
+    """
+
+    def __init__(self, source: FileSource, **kwargs: Any) -> None:
+        self._source = source
+        self._kwargs = kwargs
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__qualname__}(source={self._source}{str_kwargs(self._kwargs)})"
+
+    def equal(self, other: Any, equal_nan: bool = False) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        return self._source == other._source and objects_are_equal(
+            self._kwargs, other._kwargs, equal_nan=equal_nan
+        )
+
+    def ingest(self) -> pl.DataFrame:
+        logger.info(f"Ingesting CSV data from {self._source}...")
+        frame = pl.read_csv(self._source, **self._kwargs)
+        logger.info(f"DataFrame ingested | schema={frame.collect_schema()}")
+        return frame
+
+
+class CsvFileIngestor(CsvIngestor):
+    r"""Implement a CSV file ingestor.
+
+    Args:
+        path: The path to the CSV file to ingest.
+        **kwargs: Additional keyword arguments for
+            ``polars.scan_csv``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> from grizz.ingestor import CsvFileIngestor
+    >>> ingestor = CsvFileIngestor(path="/path/to/frame.csv")
+    >>> ingestor
+    CsvFileIngestor(source=/path/to/frame.csv)
     >>> frame = ingestor.ingest()  # doctest: +SKIP
 
     ```
     """
 
     def __init__(self, path: Path | str, **kwargs: Any) -> None:
-        self._path = sanitize_path(path)
-        self._kwargs = kwargs
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(path={self._path}{str_kwargs(self._kwargs)})"
-
-    def equal(self, other: Any, equal_nan: bool = False) -> bool:
-        if not isinstance(other, self.__class__):
-            return False
-        return self._path == other._path and objects_are_equal(
-            self._kwargs, other._kwargs, equal_nan=equal_nan
-        )
+        super().__init__(source=sanitize_path(path), **kwargs)
 
     def ingest(self) -> pl.DataFrame:
-        check_data_file(self._path)
-        logger.info(f"Ingesting CSV data from {self._path} | size={human_file_size(self._path)}...")
-        with timeblock("DataFrame ingestion time: {time}"):
-            frame = pl.read_csv(self._path, **self._kwargs)
-            logger.info(
-                f"DataFrame ingested | shape={frame.shape}  "
-                f"estimated size={human_byte(frame.estimated_size())}"
-            )
-        return frame
+        check_data_file(self._source)
+        logger.info(f"Ingesting CSV file {self._source} | size={human_file_size(self._source)}")
+        return super().ingest()
