@@ -8,6 +8,7 @@ __all__ = ["Ingestor"]
 from typing import TYPE_CHECKING, Any
 
 from coola import objects_are_equal
+from coola.utils import repr_indent, repr_mapping, str_indent, str_mapping
 
 from grizz.lazy.ingestor.base import BaseIngestor
 
@@ -38,8 +39,12 @@ class Ingestor(BaseIngestor):
     ...     )
     ... )
     >>> ingestor
-    Ingestor(shape=(5, 4))
+    Ingestor(
+      (schema): Schema({'col1': Int64, 'col2': String, 'col3': String, 'col4': String})
+    )
     >>> frame = ingestor.ingest()
+    >>> frame
+    <LazyFrame at 0x...>
 
     ```
     """
@@ -48,12 +53,19 @@ class Ingestor(BaseIngestor):
         self._frame = frame
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}(columns={self._frame.columns})"
+        args = repr_indent(repr_mapping({"schema": self._frame.collect_schema()}))
+        return f"{self.__class__.__qualname__}(\n  {args}\n)"
+
+    def __str__(self) -> str:
+        args = str_indent(str_mapping({"schema": self._frame.collect_schema()}))
+        return f"{self.__class__.__qualname__}(\n  {args}\n)"
 
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         if not isinstance(other, self.__class__):
             return False
-        return objects_are_equal(self._frame, other._frame, equal_nan=equal_nan)
+        return objects_are_equal(
+            self._frame.collect_schema(), other._frame.collect_schema(), equal_nan=equal_nan
+        )
 
     def ingest(self) -> pl.LazyFrame:
         return self._frame
