@@ -28,10 +28,10 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
 
     ```pycon
 
-    >>> from grizz.lazy.ingestor import ParquetFileIngestor
-    >>> ingestor = ParquetFileIngestor(path="/path/to/frame.parquet")
+    >>> from grizz.lazy.ingestor import ParquetIngestor
+    >>> ingestor = ParquetIngestor("/path/to/frame.parquet")
     >>> ingestor
-    ParquetFileIngestor(source=/path/to/frame.parquet)
+    ParquetIngestor(source=/path/to/frame.parquet)
     >>> frame = ingestor.ingest()  # doctest: +SKIP
 
     ```
@@ -54,9 +54,9 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> from grizz.lazy.ingestor import CsvIngestor
-        >>> obj1 = CsvIngestor(path="/path/to/frame.csv")
-        >>> obj2 = CsvIngestor(path="/path/to/frame.csv")
-        >>> obj3 = CsvIngestor(path="/path/to/frame2.csv")
+        >>> obj1 = CsvIngestor("/path/to/frame.csv")
+        >>> obj2 = CsvIngestor("/path/to/frame.csv")
+        >>> obj3 = CsvIngestor("/path/to/frame2.csv")
         >>> obj1.equal(obj2)
         True
         >>> obj1.equal(obj3)
@@ -76,8 +76,8 @@ class BaseIngestor(ABC, metaclass=AbstractFactory):
 
         ```pycon
 
-        >>> from grizz.lazy.ingestor import ParquetFileIngestor
-        >>> ingestor = ParquetFileIngestor(path="/path/to/frame.parquet")
+        >>> from grizz.lazy.ingestor import ParquetIngestor
+        >>> ingestor = ParquetIngestor("/path/to/frame.parquet")
         >>> frame = ingestor.ingest()  # doctest: +SKIP
 
         ```
@@ -106,7 +106,7 @@ def is_ingestor_config(config: dict) -> bool:
 
     >>> from grizz.lazy.ingestor import is_ingestor_config
     >>> is_ingestor_config(
-    ...     {"_target_": "grizz.lazy.ingestor.CsvIngestor", "path": "/path/to/data.csv"}
+    ...     {"_target_": "grizz.lazy.ingestor.CsvIngestor", "source": "/path/to/data.csv"}
     ... )
     True
 
@@ -135,10 +135,10 @@ def setup_ingestor(
 
     >>> from grizz.lazy.ingestor import setup_ingestor
     >>> ingestor = setup_ingestor(
-    ...     {"_target_": "grizz.lazy.ingestor.CsvIngestor", "path": "/path/to/data.csv"}
+    ...     {"_target_": "grizz.lazy.ingestor.CsvIngestor", "source": "/path/to/data.csv"}
     ... )
     >>> ingestor
-    CsvIngestor(path=/path/to/data.csv)
+    CsvIngestor(source=/path/to/data.csv)
 
     ```
     """
