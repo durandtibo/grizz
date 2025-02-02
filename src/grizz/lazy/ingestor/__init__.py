@@ -7,6 +7,7 @@ __all__ = [
     "CsvFileIngestor",
     "CsvIngestor",
     "Ingestor",
+    "JoinIngestor",
     "ParquetFileIngestor",
     "ParquetIngestor",
     "is_ingestor_config",
@@ -15,5 +16,6 @@ __all__ = [
 
 from grizz.lazy.ingestor.base import BaseIngestor, is_ingestor_config, setup_ingestor
 from grizz.lazy.ingestor.csv import CsvFileIngestor, CsvIngestor
+from grizz.lazy.ingestor.join import JoinIngestor
 from grizz.lazy.ingestor.parquet import ParquetFileIngestor, ParquetIngestor
 from grizz.lazy.ingestor.vanilla import Ingestor
