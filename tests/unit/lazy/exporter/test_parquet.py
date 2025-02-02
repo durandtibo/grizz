@@ -77,6 +77,18 @@ def test_parquet_exporter_export(tmp_path: Path, lazyframe: pl.LazyFrame) -> Non
     ParquetExporter(path).export(lazyframe)
     assert path.is_file()
 
+    assert_frame_equal(
+        pl.read_parquet(path),
+        pl.DataFrame(
+            {
+                "col1": [1, 2, 3, 4, 5],
+                "col2": ["a", "b", "c", "d", "e"],
+                "col3": [1.2, 2.2, 3.2, 4.2, 5.2],
+            },
+            schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64},
+        ),
+    )
+
 
 def test_parquet_exporter_export_with_kwargs(tmp_path: Path, lazyframe: pl.LazyFrame) -> None:
     path = tmp_path.joinpath("my_folder/data.parquet")
