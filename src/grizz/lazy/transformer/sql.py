@@ -45,7 +45,7 @@ class SqlTransformer(BaseArgTransformer):
     ...     }
     ... )
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (3, 2)
     ┌──────┬──────┐
     │ col1 ┆ col4 │
