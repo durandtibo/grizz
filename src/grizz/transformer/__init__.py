@@ -178,10 +178,6 @@ from grizz.transformer.cardinality import FilterCardinalityTransformer
 from grizz.transformer.cardinality import (
     FilterCardinalityTransformer as FilterCardinality,
 )
-from grizz.transformer.cast.casting import CastTransformer
-from grizz.transformer.cast.casting import CastTransformer as Cast
-from grizz.transformer.cast.casting import InplaceCastTransformer
-from grizz.transformer.cast.casting import InplaceCastTransformer as InplaceCast
 from grizz.transformer.cast.decimal import DecimalCastTransformer
 from grizz.transformer.cast.decimal import DecimalCastTransformer as DecimalCast
 from grizz.transformer.cast.decimal import InplaceDecimalCastTransformer
@@ -204,6 +200,10 @@ from grizz.transformer.cast.numeric import (
 )
 from grizz.transformer.cast.numeric import NumericCastTransformer
 from grizz.transformer.cast.numeric import NumericCastTransformer as NumericCast
+from grizz.transformer.cast.universal import CastTransformer
+from grizz.transformer.cast.universal import CastTransformer as Cast
+from grizz.transformer.cast.universal import InplaceCastTransformer
+from grizz.transformer.cast.universal import InplaceCastTransformer as InplaceCast
 from grizz.transformer.categorical import CategoricalCastTransformer
 from grizz.transformer.categorical import CategoricalCastTransformer as CategoricalCast
 from grizz.transformer.categorical import InplaceCategoricalCastTransformer
