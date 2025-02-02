@@ -15,7 +15,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer import TimeToSecond, ToTime
+from grizz.transformer import InplaceToTime, TimeToSecond, ToTime
 
 #############################################
 #     Tests for TimeToSecondTransformer     #
@@ -883,5 +883,414 @@ def test_to_time_transformer_transform_missing_policy_warn(
                 "col1_out": pl.Time,
                 "col3_out": pl.Time,
             },
+        ),
+    )
+
+
+##############################################
+#     Tests for InplaceToTimeTransformer     #
+##############################################
+
+
+def test_inplace_to_time_transformer_repr() -> None:
+    assert repr(InplaceToTime(columns=["col1", "col3"])) == (
+        "InplaceToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_inplace_to_time_transformer_repr_with_kwargs() -> None:
+    assert repr(InplaceToTime(columns=["col1", "col3"], format="%H:%M:%S")) == (
+        "InplaceToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format='%H:%M:%S')"
+    )
+
+
+def test_inplace_to_time_transformer_str() -> None:
+    assert str(InplaceToTime(columns=["col1", "col3"])) == (
+        "InplaceToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_inplace_to_time_transformer_str_with_kwargs() -> None:
+    assert str(InplaceToTime(columns=["col1", "col3"], format="%H:%M:%S")) == (
+        "InplaceToTimeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', format='%H:%M:%S')"
+    )
+
+
+def test_inplace_to_time_transformer_equal_true() -> None:
+    assert InplaceToTime(columns=["col1", "col3"]).equal(InplaceToTime(columns=["col1", "col3"]))
+
+
+def test_inplace_to_time_transformer_equal_false_different_columns() -> None:
+    assert not InplaceToTime(columns=["col1", "col3"]).equal(
+        InplaceToTime(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_inplace_to_time_transformer_equal_false_different_exclude_columns() -> None:
+    assert not InplaceToTime(columns=["col1", "col3"]).equal(
+        InplaceToTime(columns=["col1", "col3"], exclude_columns=["col4"])
+    )
+
+
+def test_inplace_to_time_transformer_equal_false_different_missing_policy() -> None:
+    assert not InplaceToTime(columns=["col1", "col3"]).equal(
+        InplaceToTime(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_inplace_to_time_transformer_equal_false_different_propagate_nulls() -> None:
+    assert not InplaceToTime(columns=["col1", "col3"]).equal(
+        InplaceToTime(columns=["col1", "col3"], propagate_nulls=False)
+    )
+
+
+def test_inplace_to_time_transformer_equal_false_different_kwargs() -> None:
+    assert not InplaceToTime(columns=["col1", "col3"]).equal(
+        InplaceToTime(columns=["col1", "col3"], format="%H:%M:%S")
+    )
+
+
+def test_inplace_to_time_transformer_equal_false_different_type() -> None:
+    assert not InplaceToTime(columns=["col1", "col3"]).equal(42)
+
+
+def test_inplace_to_time_transformer_get_args() -> None:
+    assert objects_are_equal(
+        InplaceToTime(columns=["col1", "col3"], format="%H:%M:%S").get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "format": "%H:%M:%S",
+        },
+    )
+
+
+def test_inplace_to_time_transformer_fit(frame_time: pl.DataFrame) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3"])
+    transformer.fit(frame_time)
+
+
+def test_inplace_to_time_transformer_fit_missing_policy_ignore(
+    frame_time: pl.DataFrame,
+) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(frame_time)
+
+
+def test_inplace_to_time_transformer_fit_missing_policy_raise(
+    frame_time: pl.DataFrame,
+) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3", "col5"])
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(frame_time)
+
+
+def test_inplace_to_time_transformer_fit_missing_policy_warn(
+    frame_time: pl.DataFrame,
+) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3", "col5"], missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(frame_time)
+
+
+def test_inplace_to_time_transformer_fit_transform(frame_time: pl.DataFrame) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3"])
+    out = transformer.fit_transform(frame_time)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_inplace_to_time_transformer_transform(frame_time: pl.DataFrame) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3"])
+    out = transformer.transform(frame_time)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_inplace_to_time_transformer_transform_format(frame_time: pl.DataFrame) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3"], format="%H:%M:%S")
+    out = transformer.transform(frame_time)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_inplace_to_time_transformer_transform_exclude_columns(frame_time: pl.DataFrame) -> None:
+    transformer = InplaceToTime(columns=None, exclude_columns=["col4", "col2"])
+    out = transformer.transform(frame_time)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_inplace_to_time_transformer_transform_nulls() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": ["01:01:01", "02:02:02", None, "18:18:18", "23:59:59"],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": [None, "12:12:12", "13:13:13", "08:08:08", None],
+            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+        },
+        schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+    )
+    transformer = InplaceToTime(columns=["col1", "col3"])
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    None,
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    None,
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    None,
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_inplace_to_time_transformer_transform_time() -> None:
+    transformer = InplaceToTime(columns=["col1", "col3"])
+    frame = pl.DataFrame(
+        {
+            "col1": [
+                datetime.time(1, 1, 1),
+                datetime.time(2, 2, 2),
+                datetime.time(12, 0, 1),
+                datetime.time(18, 18, 18),
+                datetime.time(23, 59, 59),
+            ],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
+            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+        },
+        schema={"col1": pl.Time, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+    )
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_inplace_to_time_transformer_transform_incompatible_columns() -> None:
+    transformer = InplaceToTime(columns=None)
+    frame = pl.DataFrame(
+        {
+            "col1": [
+                datetime.time(1, 1, 1),
+                datetime.time(2, 2, 2),
+                datetime.time(12, 0, 1),
+                datetime.time(18, 18, 18),
+                datetime.time(23, 59, 59),
+            ],
+            "col2": [1, 2, 3, 4, 5],
+            "col3": ["11:11:11", "12:12:12", "13:13:13", "08:08:08", "23:59:59"],
+            "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+        },
+        schema={"col1": pl.Time, "col2": pl.Int32, "col3": pl.String, "col4": pl.String},
+    )
+    with pytest.raises(pl.exceptions.SchemaError):
+        transformer.transform(frame)
+
+
+def test_inplace_to_time_transformer_transform_missing_policy_ignore(
+    frame_time: pl.DataFrame,
+) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(frame_time)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
+        ),
+    )
+
+
+def test_inplace_to_time_transformer_transform_missing_policy_raise(
+    frame_time: pl.DataFrame,
+) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3", "col5"])
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(frame_time)
+
+
+def test_inplace_to_time_transformer_transform_missing_policy_warn(
+    frame_time: pl.DataFrame,
+) -> None:
+    transformer = InplaceToTime(columns=["col1", "col3", "col5"], missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(frame_time)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [
+                    datetime.time(1, 1, 1),
+                    datetime.time(2, 2, 2),
+                    datetime.time(12, 0, 1),
+                    datetime.time(18, 18, 18),
+                    datetime.time(23, 59, 59),
+                ],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [
+                    datetime.time(hour=11, minute=11, second=11),
+                    datetime.time(hour=12, minute=12, second=12),
+                    datetime.time(hour=13, minute=13, second=13),
+                    datetime.time(hour=8, minute=8, second=8),
+                    datetime.time(hour=23, minute=59, second=59),
+                ],
+                "col4": ["01:01:01", "02:02:02", "12:00:01", "18:18:18", "23:59:59"],
+            },
+            schema={"col1": pl.Time, "col2": pl.String, "col3": pl.Time, "col4": pl.String},
         ),
     )

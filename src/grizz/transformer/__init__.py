@@ -100,6 +100,8 @@ __all__ = [
     "InplaceStandardScalerTransformer",
     "InplaceStripChars",
     "InplaceStripCharsTransformer",
+    "InplaceToTime",
+    "InplaceToTimeTransformer",
     "IntegerCast",
     "IntegerCastTransformer",
     "JsonDecode",
@@ -361,6 +363,8 @@ from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
 from grizz.transformer.sum import SumHorizontalTransformer
 from grizz.transformer.sum import SumHorizontalTransformer as SumHorizontal
+from grizz.transformer.time import InplaceToTimeTransformer
+from grizz.transformer.time import InplaceToTimeTransformer as InplaceToTime
 from grizz.transformer.time import TimeToSecondTransformer
 from grizz.transformer.time import TimeToSecondTransformer as TimeToSecond
 from grizz.transformer.time import ToTimeTransformer
