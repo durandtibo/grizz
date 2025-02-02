@@ -1,1 +1,4 @@
-r"""Contain logic for LazyFrame."""
+r"""Contain logic for LazyFrame.
+
+This package is experimental.
+"""
