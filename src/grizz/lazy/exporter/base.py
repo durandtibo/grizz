@@ -1,4 +1,4 @@
-r"""Contain the base class to implement a DataFrame exporter."""
+r"""Contain the base class to implement a LazyFrame exporter."""
 
 from __future__ import annotations
 
@@ -22,18 +22,18 @@ logger = logging.getLogger(__name__)
 
 
 class BaseExporter(ABC, metaclass=AbstractFactory):
-    r"""Define the base class to implement a DataFrame exporter.
+    r"""Define the base class to implement a LazyFrame exporter.
 
     Example usage:
 
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.exporter import ParquetExporter
+    >>> from grizz.lazy.exporter import ParquetExporter
     >>> exporter = ParquetExporter("/path/to/frame.parquet")
     >>> exporter
     ParquetExporter(path=/path/to/frame.parquet)
-    >>> frame = pl.DataFrame(
+    >>> frame = pl.LazyFrame(
     ...     {
     ...         "col1": [1, 2, 3, 4, 5],
     ...         "col2": ["1", "2", "3", "4", "5"],
@@ -62,7 +62,7 @@ class BaseExporter(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import numpy as np
-        >>> from grizz.exporter import CsvExporter
+        >>> from grizz.lazy.exporter import CsvExporter
         >>> obj1 = CsvExporter("/path/to/frame.csv")
         >>> obj2 = CsvExporter("/path/to/frame.csv")
         >>> obj3 = CsvExporter("/path/to/frame2.csv")
@@ -75,20 +75,20 @@ class BaseExporter(ABC, metaclass=AbstractFactory):
         """
 
     @abstractmethod
-    def export(self, frame: pl.DataFrame) -> None:
-        r"""Export a DataFrame.
+    def export(self, frame: pl.LazyFrame) -> None:
+        r"""Export a LazyFrame.
 
         Args:
-            frame: The DataFrame to export.
+            frame: The LazyFrame to export.
 
         Example usage:
 
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.exporter import ParquetExporter
+        >>> from grizz.lazy.exporter import ParquetExporter
         >>> exporter = ParquetExporter("/path/to/frame.parquet")
-        >>> frame = pl.DataFrame(
+        >>> frame = pl.LazyFrame(
         ...     {
         ...         "col1": [1, 2, 3, 4, 5],
         ...         "col2": ["1", "2", "3", "4", "5"],
@@ -121,9 +121,9 @@ def is_exporter_config(config: dict) -> bool:
 
     ```pycon
 
-    >>> from grizz.exporter import is_exporter_config
+    >>> from grizz.lazy.exporter import is_exporter_config
     >>> is_exporter_config(
-    ...     {"_target_": "grizz.exporter.ParquetExporter", "path": "/path/to/data.parquet"}
+    ...     {"_target_": "grizz.lazy.exporter.ParquetExporter", "path": "/path/to/data.parquet"}
     ... )
     True
 
@@ -150,9 +150,9 @@ def setup_exporter(
 
     ```pycon
 
-    >>> from grizz.exporter import setup_exporter
+    >>> from grizz.lazy.exporter import setup_exporter
     >>> exporter = setup_exporter(
-    ...     {"_target_": "grizz.exporter.ParquetExporter", "path": "/path/to/data.parquet"}
+    ...     {"_target_": "grizz.lazy.exporter.ParquetExporter", "path": "/path/to/data.parquet"}
     ... )
     >>> exporter
     ParquetExporter(path=/path/to/data.parquet)
