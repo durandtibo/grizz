@@ -96,6 +96,8 @@ __all__ = [
     "InplaceIntegerCastTransformer",
     "InplaceNumericCast",
     "InplaceNumericCastTransformer",
+    "InplaceRobustScaler",
+    "InplaceRobustScalerTransformer",
     "InplaceStandardScaler",
     "InplaceStandardScalerTransformer",
     "InplaceStripChars",
@@ -338,6 +340,10 @@ from grizz.transformer.replace import ReplaceStrictTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
 from grizz.transformer.replace import ReplaceTransformer
 from grizz.transformer.replace import ReplaceTransformer as Replace
+from grizz.transformer.robust_scaler import InplaceRobustScalerTransformer
+from grizz.transformer.robust_scaler import (
+    InplaceRobustScalerTransformer as InplaceRobustScaler,
+)
 from grizz.transformer.robust_scaler import RobustScalerTransformer
 from grizz.transformer.robust_scaler import RobustScalerTransformer as RobustScaler
 from grizz.transformer.row import FirstRowTransformer
