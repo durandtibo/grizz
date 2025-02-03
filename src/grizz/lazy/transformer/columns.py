@@ -219,52 +219,6 @@ class BaseIn2Out1Transformer(BaseArgTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
-
-    Example usage:
-
-    ```pycon
-
-    >>> import polars as pl
-    >>> from grizz.lazy.transformer import AbsDiffHorizontal
-    >>> transformer = AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="diff")
-    >>> transformer
-    AbsDiffHorizontalTransformer(in1_col='col1', in2_col='col2', out_col='diff', exist_policy='raise', missing_policy='raise')
-    >>> frame = pl.LazyFrame(
-    ...     {
-    ...         "col1": [1, 2, 3, 4, 5],
-    ...         "col2": [5, 4, 3, 2, 1],
-    ...         "col3": ["a", "b", "c", "d", "e"],
-    ...     }
-    ... )
-    >>> frame
-    shape: (5, 3)
-    ┌──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 │
-    │ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ i64  ┆ str  │
-    ╞══════╪══════╪══════╡
-    │ 1    ┆ 5    ┆ a    │
-    │ 2    ┆ 4    ┆ b    │
-    │ 3    ┆ 3    ┆ c    │
-    │ 4    ┆ 2    ┆ d    │
-    │ 5    ┆ 1    ┆ e    │
-    └──────┴──────┴──────┘
-    >>> out = transformer.transform(frame)
-    >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 ┆ diff │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ i64  ┆ str  ┆ i64  │
-    ╞══════╪══════╪══════╪══════╡
-    │ 1    ┆ 5    ┆ a    ┆ 4    │
-    │ 2    ┆ 4    ┆ b    ┆ 2    │
-    │ 3    ┆ 3    ┆ c    ┆ 0    │
-    │ 4    ┆ 2    ┆ d    ┆ 2    │
-    │ 5    ┆ 1    ┆ e    ┆ 4    │
-    └──────┴──────┴──────┴──────┘
-
-    ```
     """
 
     def __init__(
@@ -409,7 +363,7 @@ class BaseInNTransformer(BaseArgTransformer):
     ...         "col3": [None, None, None, None, None],
     ...     }
     ... )
-    >>> frame
+    >>> frame.collect()
     shape: (5, 3)
     ┌────────────┬──────┬──────┐
     │ col1       ┆ col2 ┆ col3 │
@@ -423,7 +377,7 @@ class BaseInNTransformer(BaseArgTransformer):
     │ null       ┆ null ┆ null │
     └────────────┴──────┴──────┘
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (4, 3)
     ┌────────────┬──────┬──────┐
     │ col1       ┆ col2 ┆ col3 │
@@ -637,54 +591,6 @@ class BaseInNOut1Transformer(BaseInNTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
-
-    Example usage:
-
-    ```pycon
-
-    >>> import polars as pl
-    >>> from grizz.lazy.transformer import ConcatColumns
-    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="col")
-    >>> transformer
-    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
-    >>> frame = pl.LazyFrame(
-    ...     {
-    ...         "col1": [11, 12, 13, 14, 15],
-    ...         "col2": [21, 22, 23, 24, 25],
-    ...         "col3": [31, 32, 33, 34, 35],
-    ...         "col4": ["a", "b", "c", "d", "e"],
-    ...     }
-    ... )
-    >>> frame
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ i64  ┆ i64  ┆ str  │
-    ╞══════╪══════╪══════╪══════╡
-    │ 11   ┆ 21   ┆ 31   ┆ a    │
-    │ 12   ┆ 22   ┆ 32   ┆ b    │
-    │ 13   ┆ 23   ┆ 33   ┆ c    │
-    │ 14   ┆ 24   ┆ 34   ┆ d    │
-    │ 15   ┆ 25   ┆ 35   ┆ e    │
-    └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
-    >>> out
-    shape: (5, 5)
-    ┌──────┬──────┬──────┬──────┬──────────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col          │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---          │
-    │ i64  ┆ i64  ┆ i64  ┆ str  ┆ list[i64]    │
-    ╞══════╪══════╪══════╪══════╪══════════════╡
-    │ 11   ┆ 21   ┆ 31   ┆ a    ┆ [11, 21, 31] │
-    │ 12   ┆ 22   ┆ 32   ┆ b    ┆ [12, 22, 32] │
-    │ 13   ┆ 23   ┆ 33   ┆ c    ┆ [13, 23, 33] │
-    │ 14   ┆ 24   ┆ 34   ┆ d    ┆ [14, 24, 34] │
-    │ 15   ┆ 25   ┆ 35   ┆ e    ┆ [15, 25, 35] │
-    └──────┴──────┴──────┴──────┴──────────────┘
-
-
-    ```
     """
 
     def __init__(
@@ -758,54 +664,6 @@ class BaseInNOutNTransformer(BaseInNTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
-
-    Example usage:
-
-    ```pycon
-
-    >>> import polars as pl
-    >>> from grizz.lazy.transformer import ConcatColumns
-    >>> transformer = ConcatColumns(columns=["col1", "col2", "col3"], out_col="col")
-    >>> transformer
-    ConcatColumnsTransformer(columns=('col1', 'col2', 'col3'), out_col='col', exclude_columns=(), exist_policy='raise', missing_policy='raise')
-    >>> frame = pl.LazyFrame(
-    ...     {
-    ...         "col1": [11, 12, 13, 14, 15],
-    ...         "col2": [21, 22, 23, 24, 25],
-    ...         "col3": [31, 32, 33, 34, 35],
-    ...         "col4": ["a", "b", "c", "d", "e"],
-    ...     }
-    ... )
-    >>> frame
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ i64  ┆ i64  ┆ str  │
-    ╞══════╪══════╪══════╪══════╡
-    │ 11   ┆ 21   ┆ 31   ┆ a    │
-    │ 12   ┆ 22   ┆ 32   ┆ b    │
-    │ 13   ┆ 23   ┆ 33   ┆ c    │
-    │ 14   ┆ 24   ┆ 34   ┆ d    │
-    │ 15   ┆ 25   ┆ 35   ┆ e    │
-    └──────┴──────┴──────┴──────┘
-    >>> out = transformer.fit_transform(frame)
-    >>> out
-    shape: (5, 5)
-    ┌──────┬──────┬──────┬──────┬──────────────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 ┆ col          │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  ┆ ---          │
-    │ i64  ┆ i64  ┆ i64  ┆ str  ┆ list[i64]    │
-    ╞══════╪══════╪══════╪══════╪══════════════╡
-    │ 11   ┆ 21   ┆ 31   ┆ a    ┆ [11, 21, 31] │
-    │ 12   ┆ 22   ┆ 32   ┆ b    ┆ [12, 22, 32] │
-    │ 13   ┆ 23   ┆ 33   ┆ c    ┆ [13, 23, 33] │
-    │ 14   ┆ 24   ┆ 34   ┆ d    ┆ [14, 24, 34] │
-    │ 15   ┆ 25   ┆ 35   ┆ e    ┆ [15, 25, 35] │
-    └──────┴──────┴──────┴──────┴──────────────┘
-
-
-    ```
     """
 
     def __init__(
