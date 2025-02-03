@@ -34,45 +34,43 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.lazy.transformer import InplaceCast
-    >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
+    >>> from grizz.lazy.transformer import DropNullRow
+    >>> transformer = DropNullRow()
     >>> transformer
-    InplaceCastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
+    DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
     >>> frame = pl.LazyFrame(
     ...     {
-    ...         "col1": [1, 2, 3, 4, 5],
-    ...         "col2": ["1", "2", "3", "4", "5"],
-    ...         "col3": ["1", "2", "3", "4", "5"],
-    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+    ...         "col2": [1, None, 3, None, None],
+    ...         "col3": [None, None, None, None, None],
     ...     }
     ... )
-    >>> frame
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i64  ┆ str  ┆ str  ┆ str  │
-    ╞══════╪══════╪══════╪══════╡
-    │ 1    ┆ 1    ┆ 1    ┆ a    │
-    │ 2    ┆ 2    ┆ 2    ┆ b    │
-    │ 3    ┆ 3    ┆ 3    ┆ c    │
-    │ 4    ┆ 4    ┆ 4    ┆ d    │
-    │ 5    ┆ 5    ┆ 5    ┆ e    │
-    └──────┴──────┴──────┴──────┘
+    >>> frame.collect()
+    shape: (5, 3)
+    ┌────────────┬──────┬──────┐
+    │ col1       ┆ col2 ┆ col3 │
+    │ ---        ┆ ---  ┆ ---  │
+    │ str        ┆ i64  ┆ null │
+    ╞════════════╪══════╪══════╡
+    │ 2020-1-1   ┆ 1    ┆ null │
+    │ 2020-1-2   ┆ null ┆ null │
+    │ 2020-1-31  ┆ 3    ┆ null │
+    │ 2020-12-31 ┆ null ┆ null │
+    │ null       ┆ null ┆ null │
+    └────────────┴──────┴──────┘
     >>> out = transformer.transform(frame)
-    >>> out
-    shape: (5, 4)
-    ┌──────┬──────┬──────┬──────┐
-    │ col1 ┆ col2 ┆ col3 ┆ col4 │
-    │ ---  ┆ ---  ┆ ---  ┆ ---  │
-    │ i32  ┆ str  ┆ i32  ┆ str  │
-    ╞══════╪══════╪══════╪══════╡
-    │ 1    ┆ 1    ┆ 1    ┆ a    │
-    │ 2    ┆ 2    ┆ 2    ┆ b    │
-    │ 3    ┆ 3    ┆ 3    ┆ c    │
-    │ 4    ┆ 4    ┆ 4    ┆ d    │
-    │ 5    ┆ 5    ┆ 5    ┆ e    │
-    └──────┴──────┴──────┴──────┘
+    >>> out.collect()
+    shape: (4, 3)
+    ┌────────────┬──────┬──────┐
+    │ col1       ┆ col2 ┆ col3 │
+    │ ---        ┆ ---  ┆ ---  │
+    │ str        ┆ i64  ┆ null │
+    ╞════════════╪══════╪══════╡
+    │ 2020-1-1   ┆ 1    ┆ null │
+    │ 2020-1-2   ┆ null ┆ null │
+    │ 2020-1-31  ┆ 3    ┆ null │
+    │ 2020-12-31 ┆ null ┆ null │
+    └────────────┴──────┴──────┘
 
     ```
     """
@@ -94,10 +92,10 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.lazy.transformer import InplaceCast
-        >>> obj1 = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
-        >>> obj2 = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
-        >>> obj3 = InplaceCast(columns=["col2", "col3"], dtype=pl.Float32)
+        >>> from grizz.lazy.transformer import DropNullRow
+        >>> obj1 = DropNullRow(columns=["col1", "col3"])
+        >>> obj2 = DropNullRow(columns=["col1", "col3"])
+        >>> obj3 = DropNullRow(columns=["col2", "col3"])
         >>> obj1.equal(obj2)
         True
         >>> obj1.equal(obj3)
@@ -118,44 +116,31 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.lazy.transformer import InplaceCast
-        >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> from grizz.lazy.transformer import DropNullRow
+        >>> transformer = DropNullRow()
+        >>> transformer
+        DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
         >>> frame = pl.LazyFrame(
         ...     {
-        ...         "col1": [1, 2, 3, 4, 5],
-        ...         "col2": ["1", "2", "3", "4", "5"],
-        ...         "col3": ["1", "2", "3", "4", "5"],
-        ...         "col4": ["a", "b", "c", "d", "e"],
+        ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+        ...         "col2": [1, None, 3, None, None],
+        ...         "col3": [None, None, None, None, None],
         ...     }
         ... )
-        >>> frame
-        shape: (5, 4)
-        ┌──────┬──────┬──────┬──────┐
-        │ col1 ┆ col2 ┆ col3 ┆ col4 │
-        │ ---  ┆ ---  ┆ ---  ┆ ---  │
-        │ i64  ┆ str  ┆ str  ┆ str  │
-        ╞══════╪══════╪══════╪══════╡
-        │ 1    ┆ 1    ┆ 1    ┆ a    │
-        │ 2    ┆ 2    ┆ 2    ┆ b    │
-        │ 3    ┆ 3    ┆ 3    ┆ c    │
-        │ 4    ┆ 4    ┆ 4    ┆ d    │
-        │ 5    ┆ 5    ┆ 5    ┆ e    │
-        └──────┴──────┴──────┴──────┘
+        >>> frame.collect()
+        shape: (5, 3)
+        ┌────────────┬──────┬──────┐
+        │ col1       ┆ col2 ┆ col3 │
+        │ ---        ┆ ---  ┆ ---  │
+        │ str        ┆ i64  ┆ null │
+        ╞════════════╪══════╪══════╡
+        │ 2020-1-1   ┆ 1    ┆ null │
+        │ 2020-1-2   ┆ null ┆ null │
+        │ 2020-1-31  ┆ 3    ┆ null │
+        │ 2020-12-31 ┆ null ┆ null │
+        │ null       ┆ null ┆ null │
+        └────────────┴──────┴──────┘
         >>> transformer.fit(frame)
-        >>> out = transformer.transform(frame)
-        >>> out
-        shape: (5, 4)
-        ┌──────┬──────┬──────┬──────┐
-        │ col1 ┆ col2 ┆ col3 ┆ col4 │
-        │ ---  ┆ ---  ┆ ---  ┆ ---  │
-        │ i32  ┆ str  ┆ i32  ┆ str  │
-        ╞══════╪══════╪══════╪══════╡
-        │ 1    ┆ 1    ┆ 1    ┆ a    │
-        │ 2    ┆ 2    ┆ 2    ┆ b    │
-        │ 3    ┆ 3    ┆ 3    ┆ c    │
-        │ 4    ┆ 4    ┆ 4    ┆ d    │
-        │ 5    ┆ 5    ┆ 5    ┆ e    │
-        └──────┴──────┴──────┴──────┘
 
         ```
         """
@@ -175,43 +160,43 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.lazy.transformer import InplaceCast
-        >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> from grizz.lazy.transformer import DropNullRow
+        >>> transformer = DropNullRow()
+        >>> transformer
+        DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
         >>> frame = pl.LazyFrame(
         ...     {
-        ...         "col1": [1, 2, 3, 4, 5],
-        ...         "col2": ["1", "2", "3", "4", "5"],
-        ...         "col3": ["1", "2", "3", "4", "5"],
-        ...         "col4": ["a", "b", "c", "d", "e"],
+        ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+        ...         "col2": [1, None, 3, None, None],
+        ...         "col3": [None, None, None, None, None],
         ...     }
         ... )
-        >>> frame
-        shape: (5, 4)
-        ┌──────┬──────┬──────┬──────┐
-        │ col1 ┆ col2 ┆ col3 ┆ col4 │
-        │ ---  ┆ ---  ┆ ---  ┆ ---  │
-        │ i64  ┆ str  ┆ str  ┆ str  │
-        ╞══════╪══════╪══════╪══════╡
-        │ 1    ┆ 1    ┆ 1    ┆ a    │
-        │ 2    ┆ 2    ┆ 2    ┆ b    │
-        │ 3    ┆ 3    ┆ 3    ┆ c    │
-        │ 4    ┆ 4    ┆ 4    ┆ d    │
-        │ 5    ┆ 5    ┆ 5    ┆ e    │
-        └──────┴──────┴──────┴──────┘
+        >>> frame.collect()
+        shape: (5, 3)
+        ┌────────────┬──────┬──────┐
+        │ col1       ┆ col2 ┆ col3 │
+        │ ---        ┆ ---  ┆ ---  │
+        │ str        ┆ i64  ┆ null │
+        ╞════════════╪══════╪══════╡
+        │ 2020-1-1   ┆ 1    ┆ null │
+        │ 2020-1-2   ┆ null ┆ null │
+        │ 2020-1-31  ┆ 3    ┆ null │
+        │ 2020-12-31 ┆ null ┆ null │
+        │ null       ┆ null ┆ null │
+        └────────────┴──────┴──────┘
         >>> out = transformer.fit_transform(frame)
-        >>> out
-        shape: (5, 4)
-        ┌──────┬──────┬──────┬──────┐
-        │ col1 ┆ col2 ┆ col3 ┆ col4 │
-        │ ---  ┆ ---  ┆ ---  ┆ ---  │
-        │ i32  ┆ str  ┆ i32  ┆ str  │
-        ╞══════╪══════╪══════╪══════╡
-        │ 1    ┆ 1    ┆ 1    ┆ a    │
-        │ 2    ┆ 2    ┆ 2    ┆ b    │
-        │ 3    ┆ 3    ┆ 3    ┆ c    │
-        │ 4    ┆ 4    ┆ 4    ┆ d    │
-        │ 5    ┆ 5    ┆ 5    ┆ e    │
-        └──────┴──────┴──────┴──────┘
+        >>> out.collect()
+        shape: (4, 3)
+        ┌────────────┬──────┬──────┐
+        │ col1       ┆ col2 ┆ col3 │
+        │ ---        ┆ ---  ┆ ---  │
+        │ str        ┆ i64  ┆ null │
+        ╞════════════╪══════╪══════╡
+        │ 2020-1-1   ┆ 1    ┆ null │
+        │ 2020-1-2   ┆ null ┆ null │
+        │ 2020-1-31  ┆ 3    ┆ null │
+        │ 2020-12-31 ┆ null ┆ null │
+        └────────────┴──────┴──────┘
 
         ```
         """
@@ -231,43 +216,43 @@ class BaseTransformer(ABC, metaclass=AbstractFactory):
         ```pycon
 
         >>> import polars as pl
-        >>> from grizz.lazy.transformer import InplaceCast
-        >>> transformer = InplaceCast(columns=["col1", "col3"], dtype=pl.Int32)
+        >>> from grizz.lazy.transformer import DropNullRow
+        >>> transformer = DropNullRow()
+        >>> transformer
+        DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
         >>> frame = pl.LazyFrame(
         ...     {
-        ...         "col1": [1, 2, 3, 4, 5],
-        ...         "col2": ["1", "2", "3", "4", "5"],
-        ...         "col3": ["1", "2", "3", "4", "5"],
-        ...         "col4": ["a", "b", "c", "d", "e"],
+        ...         "col1": ["2020-1-1", "2020-1-2", "2020-1-31", "2020-12-31", None],
+        ...         "col2": [1, None, 3, None, None],
+        ...         "col3": [None, None, None, None, None],
         ...     }
         ... )
-        >>> frame
-        shape: (5, 4)
-        ┌──────┬──────┬──────┬──────┐
-        │ col1 ┆ col2 ┆ col3 ┆ col4 │
-        │ ---  ┆ ---  ┆ ---  ┆ ---  │
-        │ i64  ┆ str  ┆ str  ┆ str  │
-        ╞══════╪══════╪══════╪══════╡
-        │ 1    ┆ 1    ┆ 1    ┆ a    │
-        │ 2    ┆ 2    ┆ 2    ┆ b    │
-        │ 3    ┆ 3    ┆ 3    ┆ c    │
-        │ 4    ┆ 4    ┆ 4    ┆ d    │
-        │ 5    ┆ 5    ┆ 5    ┆ e    │
-        └──────┴──────┴──────┴──────┘
+        >>> frame.collect()
+        shape: (5, 3)
+        ┌────────────┬──────┬──────┐
+        │ col1       ┆ col2 ┆ col3 │
+        │ ---        ┆ ---  ┆ ---  │
+        │ str        ┆ i64  ┆ null │
+        ╞════════════╪══════╪══════╡
+        │ 2020-1-1   ┆ 1    ┆ null │
+        │ 2020-1-2   ┆ null ┆ null │
+        │ 2020-1-31  ┆ 3    ┆ null │
+        │ 2020-12-31 ┆ null ┆ null │
+        │ null       ┆ null ┆ null │
+        └────────────┴──────┴──────┘
         >>> out = transformer.transform(frame)
-        >>> out
-        shape: (5, 4)
-        ┌──────┬──────┬──────┬──────┐
-        │ col1 ┆ col2 ┆ col3 ┆ col4 │
-        │ ---  ┆ ---  ┆ ---  ┆ ---  │
-        │ i32  ┆ str  ┆ i32  ┆ str  │
-        ╞══════╪══════╪══════╪══════╡
-        │ 1    ┆ 1    ┆ 1    ┆ a    │
-        │ 2    ┆ 2    ┆ 2    ┆ b    │
-        │ 3    ┆ 3    ┆ 3    ┆ c    │
-        │ 4    ┆ 4    ┆ 4    ┆ d    │
-        │ 5    ┆ 5    ┆ 5    ┆ e    │
-        └──────┴──────┴──────┴──────┘
+        >>> out.collect()
+        shape: (4, 3)
+        ┌────────────┬──────┬──────┐
+        │ col1       ┆ col2 ┆ col3 │
+        │ ---        ┆ ---  ┆ ---  │
+        │ str        ┆ i64  ┆ null │
+        ╞════════════╪══════╪══════╡
+        │ 2020-1-1   ┆ 1    ┆ null │
+        │ 2020-1-2   ┆ null ┆ null │
+        │ 2020-1-31  ┆ 3    ┆ null │
+        │ 2020-12-31 ┆ null ┆ null │
+        └────────────┴──────┴──────┘
 
         ```
         """
@@ -293,15 +278,8 @@ def is_transformer_config(config: dict) -> bool:
 
     ```pycon
 
-    >>> import polars as pl
     >>> from grizz.lazy.transformer import is_transformer_config
-    >>> is_transformer_config(
-    ...     {
-    ...         "_target_": "grizz.lazy.transformer.InplaceCast",
-    ...         "columns": ("col1", "col3"),
-    ...         "dtype": pl.Int32,
-    ...     }
-    ... )
+    >>> is_transformer_config({"_target_": "grizz.lazy.transformer.DropNullRow"})
     True
 
     ```
@@ -332,13 +310,11 @@ def setup_transformer(
     >>> from grizz.lazy.transformer import setup_transformer
     >>> transformer = setup_transformer(
     ...     {
-    ...         "_target_": "grizz.lazy.transformer.InplaceCast",
-    ...         "columns": ("col1", "col3"),
-    ...         "dtype": pl.Int32,
+    ...         "_target_": "grizz.lazy.transformer.DropNullRow",
     ...     }
     ... )
     >>> transformer
-    InplaceCastTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', dtype=Int32)
+    DropNullRowTransformer(columns=None, exclude_columns=(), missing_policy='raise')
 
     ```
     """
