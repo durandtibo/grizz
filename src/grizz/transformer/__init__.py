@@ -202,6 +202,10 @@ from grizz.transformer.cast.numeric import (
 )
 from grizz.transformer.cast.numeric import NumericCastTransformer
 from grizz.transformer.cast.numeric import NumericCastTransformer as NumericCast
+from grizz.transformer.cast.time import InplaceToTimeTransformer
+from grizz.transformer.cast.time import InplaceToTimeTransformer as InplaceToTime
+from grizz.transformer.cast.time import ToTimeTransformer
+from grizz.transformer.cast.time import ToTimeTransformer as ToTime
 from grizz.transformer.cast.universal import CastTransformer
 from grizz.transformer.cast.universal import CastTransformer as Cast
 from grizz.transformer.cast.universal import InplaceCastTransformer
@@ -363,9 +367,5 @@ from grizz.transformer.string import StripCharsTransformer
 from grizz.transformer.string import StripCharsTransformer as StripChars
 from grizz.transformer.sum import SumHorizontalTransformer
 from grizz.transformer.sum import SumHorizontalTransformer as SumHorizontal
-from grizz.transformer.time import InplaceToTimeTransformer
-from grizz.transformer.time import InplaceToTimeTransformer as InplaceToTime
 from grizz.transformer.time import TimeToSecondTransformer
 from grizz.transformer.time import TimeToSecondTransformer as TimeToSecond
-from grizz.transformer.time import ToTimeTransformer
-from grizz.transformer.time import ToTimeTransformer as ToTime
