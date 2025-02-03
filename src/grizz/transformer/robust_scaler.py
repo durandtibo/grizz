@@ -3,7 +3,7 @@ statistics that are robust to outliers."""
 
 from __future__ import annotations
 
-__all__ = ["RobustScalerTransformer"]
+__all__ = ["InplaceRobustScalerTransformer", "RobustScalerTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -156,3 +156,103 @@ class RobustScalerTransformer(BaseInNOutNTransformer):
         if self._propagate_nulls:
             out = propagate_nulls(out, data)
         return out
+
+
+class InplaceRobustScalerTransformer(RobustScalerTransformer):
+    r"""Implement a transformer to scale each column using statistics
+    that are robust to outliers.
+
+    Args:
+        columns: The columns to scale. ``None`` means all the
+            columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        propagate_nulls: If set to ``True``, the ``None`` values are
+            propagated after the transformation. If ``False``, the
+            ``None`` values are replaced by NaNs.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: Additional arguments passed to
+            ``sklearn.preprocessing.RobustScaler``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceRobustScaler
+    >>> transformer = InplaceRobustScaler(columns=["col1", "col3"])
+    >>> transformer
+    InplaceRobustScalerTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise', propagate_nulls=True)
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [0, 1, 2, 3, 4, 5],
+    ...         "col2": ["0", "1", "2", "3", "4", "5"],
+    ...         "col3": [0, 10, 20, 30, 40, 50],
+    ...         "col4": ["a", "b", "c", "d", "e", "f"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (6, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ i64  ┆ str  ┆ i64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ 0    ┆ 0    ┆ 0    ┆ a    │
+    │ 1    ┆ 1    ┆ 10   ┆ b    │
+    │ 2    ┆ 2    ┆ 20   ┆ c    │
+    │ 3    ┆ 3    ┆ 30   ┆ d    │
+    │ 4    ┆ 4    ┆ 40   ┆ e    │
+    │ 5    ┆ 5    ┆ 50   ┆ f    │
+    └──────┴──────┴──────┴──────┘
+    >>> out = transformer.fit_transform(frame)
+    >>> out
+    shape: (6, 4)
+    ┌──────┬──────┬──────┬──────┐
+    │ col1 ┆ col2 ┆ col3 ┆ col4 │
+    │ ---  ┆ ---  ┆ ---  ┆ ---  │
+    │ f64  ┆ str  ┆ f64  ┆ str  │
+    ╞══════╪══════╪══════╪══════╡
+    │ -1.0 ┆ 0    ┆ -1.0 ┆ a    │
+    │ -0.6 ┆ 1    ┆ -0.6 ┆ b    │
+    │ -0.2 ┆ 2    ┆ -0.2 ┆ c    │
+    │ 0.2  ┆ 3    ┆ 0.2  ┆ d    │
+    │ 0.6  ┆ 4    ┆ 0.6  ┆ e    │
+    │ 1.0  ┆ 5    ┆ 1.0  ┆ f    │
+    └──────┴──────┴──────┴──────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str] | None,
+        exclude_columns: Sequence[str] = (),
+        propagate_nulls: bool = True,
+        missing_policy: str = "raise",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            columns=columns,
+            prefix="",
+            suffix="",
+            exclude_columns=exclude_columns,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+            propagate_nulls=propagate_nulls,
+            **kwargs,
+        )
+
+    def get_args(self) -> dict:
+        args = super().get_args()
+        for key in ["prefix", "suffix", "exist_policy"]:
+            args.pop(key)
+        return args
