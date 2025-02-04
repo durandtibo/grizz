@@ -96,6 +96,7 @@ __all__ = [
     "InplaceIntegerCastTransformer",
     "InplaceNumericCast",
     "InplaceNumericCastTransformer",
+    "InplaceQuantileTransformer",
     "InplaceReplace",
     "InplaceReplaceStrict",
     "InplaceReplaceStrictTransformer",
@@ -339,7 +340,7 @@ from grizz.transformer.ordinal_encoder import (
     OrdinalEncoderTransformer as OrdinalEncoder,
 )
 from grizz.transformer.power import PowerTransformer
-from grizz.transformer.quantile import QuantileTransformer
+from grizz.transformer.quantile import InplaceQuantileTransformer, QuantileTransformer
 from grizz.transformer.replace import InplaceReplaceStrictTransformer
 from grizz.transformer.replace import (
     InplaceReplaceStrictTransformer as InplaceReplaceStrict,
