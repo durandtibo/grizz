@@ -60,7 +60,7 @@ optional = true
 [tool.poetry.group.docs.dependencies]
 mike = "^2.1"
 mkdocs-material = "^9.5"
-mkdocstrings = { extras = ["python"], version = ">=0.26,<0.28" }
+mkdocstrings = { extras = ["python"], version = ">=0.26,<0.29" }
 
 [tool.poetry.group.dev.dependencies]
 black = ">=25.1"
