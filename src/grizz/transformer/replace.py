@@ -2,7 +2,12 @@ r"""Contain transformers to replace values."""
 
 from __future__ import annotations
 
-__all__ = ["ReplaceStrictTransformer", "ReplaceTransformer"]
+__all__ = [
+    "InplaceReplaceStrictTransformer",
+    "InplaceReplaceTransformer",
+    "ReplaceStrictTransformer",
+    "ReplaceTransformer",
+]
 
 import logging
 from typing import Any
@@ -132,6 +137,93 @@ class ReplaceTransformer(BaseIn1Out1Transformer):
         return frame.with_columns(pl.col(self._in_col).replace(**self._kwargs).alias(self._out_col))
 
 
+class InplaceReplaceTransformer(ReplaceTransformer):
+    r"""Replace the values in a column by the values in a mapping.
+
+    Args:
+        col: The column name.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: The keyword arguments to pass to ``replace``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceReplace
+    >>> transformer = InplaceReplace(col="col", old={"a": 1, "b": 2, "c": 3, "d": 4, "e": 5})
+    >>> transformer
+    InplaceReplaceTransformer(col='col', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
+    >>> frame = pl.DataFrame({"col": ["a", "b", "c", "d", "e"]})
+    >>> frame
+    shape: (5, 1)
+    ┌─────┐
+    │ col │
+    │ --- │
+    │ str │
+    ╞═════╡
+    │ a   │
+    │ b   │
+    │ c   │
+    │ d   │
+    │ e   │
+    └─────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 1)
+    ┌─────┐
+    │ col │
+    │ --- │
+    │ str │
+    ╞═════╡
+    │ 1   │
+    │ 2   │
+    │ 3   │
+    │ 4   │
+    │ 5   │
+    └─────┘
+    >>> transformer = InplaceReplace(col="col", old={"a": 1, "b": 2, "c": 3}, default=None)
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 1)
+    ┌──────┐
+    │ col  │
+    │ ---  │
+    │ i64  │
+    ╞══════╡
+    │ 1    │
+    │ 2    │
+    │ 3    │
+    │ null │
+    │ null │
+    └──────┘
+
+    ```
+    """
+
+    def __init__(self, col: str, missing_policy: str = "raise", **kwargs: Any) -> None:
+        super().__init__(
+            in_col=col,
+            out_col=col,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+            **kwargs,
+        )
+
+    def get_args(self) -> dict:
+        args = {"col": self._in_col} | super().get_args()
+        for key in ["in_col", "out_col", "exist_policy"]:
+            args.pop(key)
+        return args
+
+
 class ReplaceStrictTransformer(BaseIn1Out1Transformer):
     r"""Replace the values in a column by the values in a mapping.
 
@@ -252,3 +344,94 @@ class ReplaceStrictTransformer(BaseIn1Out1Transformer):
         return frame.with_columns(
             pl.col(self._in_col).replace_strict(**self._kwargs).alias(self._out_col)
         )
+
+
+class InplaceReplaceStrictTransformer(ReplaceStrictTransformer):
+    r"""Replace the values in a column by the values in a mapping.
+
+    Args:
+        col: The column name.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: The keyword arguments to pass to ``replace``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceReplaceStrict
+    >>> transformer = InplaceReplaceStrict(
+    ...     col="col", old={"a": 1, "b": 2, "c": 3, "d": 4, "e": 5}
+    ... )
+    >>> transformer
+    InplaceReplaceStrictTransformer(col='col', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
+    >>> frame = pl.DataFrame({"col": ["a", "b", "c", "d", "e"]})
+    >>> frame
+    shape: (5, 1)
+    ┌─────┐
+    │ col │
+    │ --- │
+    │ str │
+    ╞═════╡
+    │ a   │
+    │ b   │
+    │ c   │
+    │ d   │
+    │ e   │
+    └─────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 1)
+    ┌─────┐
+    │ col │
+    │ --- │
+    │ i64 │
+    ╞═════╡
+    │ 1   │
+    │ 2   │
+    │ 3   │
+    │ 4   │
+    │ 5   │
+    └─────┘
+    >>> transformer = InplaceReplaceStrict(
+    ...     col="col", old={"a": 1, "b": 2, "c": 3}, default=None
+    ... )
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 1)
+    ┌──────┐
+    │ col  │
+    │ ---  │
+    │ i64  │
+    ╞══════╡
+    │ 1    │
+    │ 2    │
+    │ 3    │
+    │ null │
+    │ null │
+    └──────┘
+
+    ```
+    """
+
+    def __init__(self, col: str, missing_policy: str = "raise", **kwargs: Any) -> None:
+        super().__init__(
+            in_col=col,
+            out_col=col,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+            **kwargs,
+        )
+
+    def get_args(self) -> dict:
+        args = {"col": self._in_col} | super().get_args()
+        for key in ["in_col", "out_col", "exist_policy"]:
+            args.pop(key)
+        return args
