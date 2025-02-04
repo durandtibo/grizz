@@ -182,8 +182,6 @@ from grizz.transformer.base import (
     is_transformer_config,
     setup_transformer,
 )
-from grizz.transformer.binarizer import BinarizerTransformer
-from grizz.transformer.binarizer import BinarizerTransformer as Binarizer
 from grizz.transformer.cardinality import FilterCardinalityTransformer
 from grizz.transformer.cardinality import (
     FilterCardinalityTransformer as FilterCardinality,
@@ -218,12 +216,6 @@ from grizz.transformer.cast.universal import CastTransformer
 from grizz.transformer.cast.universal import CastTransformer as Cast
 from grizz.transformer.cast.universal import InplaceCastTransformer
 from grizz.transformer.cast.universal import InplaceCastTransformer as InplaceCast
-from grizz.transformer.categorical import CategoricalCastTransformer
-from grizz.transformer.categorical import CategoricalCastTransformer as CategoricalCast
-from grizz.transformer.categorical import InplaceCategoricalCastTransformer
-from grizz.transformer.categorical import (
-    InplaceCategoricalCastTransformer as InplaceCategoricalCast,
-)
 from grizz.transformer.close import ColumnCloseTransformer
 from grizz.transformer.close import ColumnCloseTransformer as ColumnClose
 from grizz.transformer.column_comparison import ColumnEqualMissingTransformer
@@ -310,38 +302,22 @@ from grizz.transformer.fill import InplaceFillNullTransformer
 from grizz.transformer.fill import InplaceFillNullTransformer as InplaceFillNull
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
-from grizz.transformer.impute import SimpleImputerTransformer
-from grizz.transformer.impute import SimpleImputerTransformer as SimpleImputer
 from grizz.transformer.json import JsonDecodeTransformer
 from grizz.transformer.json import JsonDecodeTransformer as JsonDecode
-from grizz.transformer.label_encoder import LabelEncoderTransformer
-from grizz.transformer.label_encoder import LabelEncoderTransformer as LabelEncoder
 from grizz.transformer.max import MaxHorizontalTransformer
 from grizz.transformer.max import MaxHorizontalTransformer as MaxHorizontal
-from grizz.transformer.max_scaler import MaxAbsScalerTransformer
-from grizz.transformer.max_scaler import MaxAbsScalerTransformer as MaxAbsScaler
 from grizz.transformer.mean import MeanHorizontalTransformer
 from grizz.transformer.mean import MeanHorizontalTransformer as MeanHorizontal
 from grizz.transformer.min import MinHorizontalTransformer
 from grizz.transformer.min import MinHorizontalTransformer as MinHorizontal
-from grizz.transformer.min_max_scaler import MinMaxScalerTransformer
-from grizz.transformer.min_max_scaler import MinMaxScalerTransformer as MinMaxScaler
 from grizz.transformer.nan import DropNanColumnTransformer
 from grizz.transformer.nan import DropNanColumnTransformer as DropNanColumn
 from grizz.transformer.nan import DropNanRowTransformer
 from grizz.transformer.nan import DropNanRowTransformer as DropNanRow
-from grizz.transformer.normalizer import NormalizerTransformer
-from grizz.transformer.normalizer import NormalizerTransformer as Normalizer
 from grizz.transformer.null import DropNullColumnTransformer
 from grizz.transformer.null import DropNullColumnTransformer as DropNullColumn
 from grizz.transformer.null import DropNullRowTransformer
 from grizz.transformer.null import DropNullRowTransformer as DropNullRow
-from grizz.transformer.ordinal_encoder import OrdinalEncoderTransformer
-from grizz.transformer.ordinal_encoder import (
-    OrdinalEncoderTransformer as OrdinalEncoder,
-)
-from grizz.transformer.power import InplacePowerTransformer, PowerTransformer
-from grizz.transformer.quantile import InplaceQuantileTransformer, QuantileTransformer
 from grizz.transformer.replace import InplaceReplaceStrictTransformer
 from grizz.transformer.replace import (
     InplaceReplaceStrictTransformer as InplaceReplaceStrict,
@@ -352,12 +328,6 @@ from grizz.transformer.replace import ReplaceStrictTransformer
 from grizz.transformer.replace import ReplaceStrictTransformer as ReplaceStrict
 from grizz.transformer.replace import ReplaceTransformer
 from grizz.transformer.replace import ReplaceTransformer as Replace
-from grizz.transformer.robust_scaler import InplaceRobustScalerTransformer
-from grizz.transformer.robust_scaler import (
-    InplaceRobustScalerTransformer as InplaceRobustScaler,
-)
-from grizz.transformer.robust_scaler import RobustScalerTransformer
-from grizz.transformer.robust_scaler import RobustScalerTransformer as RobustScaler
 from grizz.transformer.row import FirstRowTransformer
 from grizz.transformer.row import FirstRowTransformer as FirstRow
 from grizz.transformer.selection import ColumnSelectionTransformer
@@ -366,19 +336,60 @@ from grizz.transformer.sequential import SequentialTransformer
 from grizz.transformer.sequential import SequentialTransformer as Sequential
 from grizz.transformer.shrink import ShrinkMemoryTransformer
 from grizz.transformer.shrink import ShrinkMemoryTransformer as ShrinkMemory
+from grizz.transformer.sklearn.binarizer import BinarizerTransformer
+from grizz.transformer.sklearn.binarizer import BinarizerTransformer as Binarizer
+from grizz.transformer.sklearn.categorical import CategoricalCastTransformer
+from grizz.transformer.sklearn.categorical import (
+    CategoricalCastTransformer as CategoricalCast,
+)
+from grizz.transformer.sklearn.categorical import InplaceCategoricalCastTransformer
+from grizz.transformer.sklearn.categorical import (
+    InplaceCategoricalCastTransformer as InplaceCategoricalCast,
+)
+from grizz.transformer.sklearn.impute import SimpleImputerTransformer
+from grizz.transformer.sklearn.impute import SimpleImputerTransformer as SimpleImputer
+from grizz.transformer.sklearn.label_encoder import LabelEncoderTransformer
+from grizz.transformer.sklearn.label_encoder import (
+    LabelEncoderTransformer as LabelEncoder,
+)
+from grizz.transformer.sklearn.max_scaler import MaxAbsScalerTransformer
+from grizz.transformer.sklearn.max_scaler import MaxAbsScalerTransformer as MaxAbsScaler
+from grizz.transformer.sklearn.min_max_scaler import MinMaxScalerTransformer
+from grizz.transformer.sklearn.min_max_scaler import (
+    MinMaxScalerTransformer as MinMaxScaler,
+)
+from grizz.transformer.sklearn.normalizer import NormalizerTransformer
+from grizz.transformer.sklearn.normalizer import NormalizerTransformer as Normalizer
+from grizz.transformer.sklearn.ordinal_encoder import OrdinalEncoderTransformer
+from grizz.transformer.sklearn.ordinal_encoder import (
+    OrdinalEncoderTransformer as OrdinalEncoder,
+)
+from grizz.transformer.sklearn.power import InplacePowerTransformer, PowerTransformer
+from grizz.transformer.sklearn.quantile import (
+    InplaceQuantileTransformer,
+    QuantileTransformer,
+)
+from grizz.transformer.sklearn.robust_scaler import InplaceRobustScalerTransformer
+from grizz.transformer.sklearn.robust_scaler import (
+    InplaceRobustScalerTransformer as InplaceRobustScaler,
+)
+from grizz.transformer.sklearn.robust_scaler import RobustScalerTransformer
+from grizz.transformer.sklearn.robust_scaler import (
+    RobustScalerTransformer as RobustScaler,
+)
+from grizz.transformer.sklearn.standard_scaler import InplaceStandardScalerTransformer
+from grizz.transformer.sklearn.standard_scaler import (
+    InplaceStandardScalerTransformer as InplaceStandardScaler,
+)
+from grizz.transformer.sklearn.standard_scaler import StandardScalerTransformer
+from grizz.transformer.sklearn.standard_scaler import (
+    StandardScalerTransformer as StandardScaler,
+)
 from grizz.transformer.sorting import SortColumnsTransformer
 from grizz.transformer.sorting import SortColumnsTransformer as SortColumns
 from grizz.transformer.sorting import SortTransformer
 from grizz.transformer.sorting import SortTransformer as Sort
 from grizz.transformer.sql import SqlTransformer
-from grizz.transformer.standard_scaler import InplaceStandardScalerTransformer
-from grizz.transformer.standard_scaler import (
-    InplaceStandardScalerTransformer as InplaceStandardScaler,
-)
-from grizz.transformer.standard_scaler import StandardScalerTransformer
-from grizz.transformer.standard_scaler import (
-    StandardScalerTransformer as StandardScaler,
-)
 from grizz.transformer.string import InplaceStripCharsTransformer
 from grizz.transformer.string import InplaceStripCharsTransformer as InplaceStripChars
 from grizz.transformer.string import StripCharsTransformer
