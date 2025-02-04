@@ -94,6 +94,8 @@ __all__ = [
     "InplaceFloatCastTransformer",
     "InplaceIntegerCast",
     "InplaceIntegerCastTransformer",
+    "InplaceLabelEncoder",
+    "InplaceLabelEncoderTransformer",
     "InplaceNumericCast",
     "InplaceNumericCastTransformer",
     "InplacePowerTransformer",
@@ -185,6 +187,14 @@ from grizz.transformer.base import (
 from grizz.transformer.cardinality import FilterCardinalityTransformer
 from grizz.transformer.cardinality import (
     FilterCardinalityTransformer as FilterCardinality,
+)
+from grizz.transformer.cast.categorical import CategoricalCastTransformer
+from grizz.transformer.cast.categorical import (
+    CategoricalCastTransformer as CategoricalCast,
+)
+from grizz.transformer.cast.categorical import InplaceCategoricalCastTransformer
+from grizz.transformer.cast.categorical import (
+    InplaceCategoricalCastTransformer as InplaceCategoricalCast,
 )
 from grizz.transformer.cast.decimal import DecimalCastTransformer
 from grizz.transformer.cast.decimal import DecimalCastTransformer as DecimalCast
@@ -338,16 +348,12 @@ from grizz.transformer.shrink import ShrinkMemoryTransformer
 from grizz.transformer.shrink import ShrinkMemoryTransformer as ShrinkMemory
 from grizz.transformer.sklearn.binarizer import BinarizerTransformer
 from grizz.transformer.sklearn.binarizer import BinarizerTransformer as Binarizer
-from grizz.transformer.sklearn.categorical import CategoricalCastTransformer
-from grizz.transformer.sklearn.categorical import (
-    CategoricalCastTransformer as CategoricalCast,
-)
-from grizz.transformer.sklearn.categorical import InplaceCategoricalCastTransformer
-from grizz.transformer.sklearn.categorical import (
-    InplaceCategoricalCastTransformer as InplaceCategoricalCast,
-)
 from grizz.transformer.sklearn.impute import SimpleImputerTransformer
 from grizz.transformer.sklearn.impute import SimpleImputerTransformer as SimpleImputer
+from grizz.transformer.sklearn.label_encoder import InplaceLabelEncoderTransformer
+from grizz.transformer.sklearn.label_encoder import (
+    InplaceLabelEncoderTransformer as InplaceLabelEncoder,
+)
 from grizz.transformer.sklearn.label_encoder import LabelEncoderTransformer
 from grizz.transformer.sklearn.label_encoder import (
     LabelEncoderTransformer as LabelEncoder,
