@@ -158,8 +158,7 @@ class QuantileTransformer(BaseInNOutNTransformer):
 
 
 class InplaceQuantileTransformer(QuantileTransformer):
-    r"""Implement a transformer to scale each column using statistics
-    that are robust to outliers.
+    r"""Implement a transformer to apply the quantile transformation.
 
     Args:
         columns: The columns to scale. ``None`` means all the
