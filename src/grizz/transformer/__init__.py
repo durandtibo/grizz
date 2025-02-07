@@ -110,6 +110,8 @@ __all__ = [
     "InplaceRobustScalerTransformer",
     "InplaceStandardScaler",
     "InplaceStandardScalerTransformer",
+    "InplaceStringToDatetime",
+    "InplaceStringToDatetimeTransformer",
     "InplaceStringToTime",
     "InplaceStringToTimeTransformer",
     "InplaceStripChars",
@@ -169,6 +171,8 @@ __all__ = [
     "SqlTransformer",
     "StandardScaler",
     "StandardScalerTransformer",
+    "StringToDatetime",
+    "StringToDatetimeTransformer",
     "StringToTime",
     "StringToTimeTransformer",
     "StripChars",
@@ -232,6 +236,14 @@ from grizz.transformer.cast.numeric import (
 )
 from grizz.transformer.cast.numeric import NumericCastTransformer
 from grizz.transformer.cast.numeric import NumericCastTransformer as NumericCast
+from grizz.transformer.cast.str_datetime import InplaceStringToDatetimeTransformer
+from grizz.transformer.cast.str_datetime import (
+    InplaceStringToDatetimeTransformer as InplaceStringToDatetime,
+)
+from grizz.transformer.cast.str_datetime import StringToDatetimeTransformer
+from grizz.transformer.cast.str_datetime import (
+    StringToDatetimeTransformer as StringToDatetime,
+)
 from grizz.transformer.cast.str_time import InplaceStringToTimeTransformer
 from grizz.transformer.cast.str_time import (
     InplaceStringToTimeTransformer as InplaceStringToTime,
