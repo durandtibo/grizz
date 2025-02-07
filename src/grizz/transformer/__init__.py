@@ -110,6 +110,8 @@ __all__ = [
     "InplaceStandardScalerTransformer",
     "InplaceStripChars",
     "InplaceStripCharsTransformer",
+    "InplaceToDatetime",
+    "InplaceToDatetimeTransformer",
     "InplaceToTime",
     "InplaceToTimeTransformer",
     "IntegerCast",
@@ -284,6 +286,8 @@ from grizz.transformer.copy import CopyColumnsTransformer
 from grizz.transformer.copy import CopyColumnsTransformer as CopyColumns
 from grizz.transformer.copy import CopyColumnTransformer
 from grizz.transformer.copy import CopyColumnTransformer as CopyColumn
+from grizz.transformer.datetime import InplaceToDatetimeTransformer
+from grizz.transformer.datetime import InplaceToDatetimeTransformer as InplaceToDatetime
 from grizz.transformer.datetime import ToDatetimeTransformer
 from grizz.transformer.datetime import ToDatetimeTransformer as ToDatetime
 from grizz.transformer.diff import DiffTransformer
