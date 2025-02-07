@@ -77,5 +77,5 @@ class SqlTransformer(BaseArgTransformer):
         )
 
     def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Executing the following SQL query:\n{self._query}")
+        logger.info(f"Executing the SQL query:\n{self._query}")
         return frame.sql(self._query)

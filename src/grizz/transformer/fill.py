@@ -133,8 +133,8 @@ class FillNanTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Filling NaN values of {len(columns):,} columns...")
         return frame.select((cs.by_name(columns) & cs.float()).fill_nan(**self._kwargs))
 
 
@@ -340,8 +340,8 @@ class FillNullTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Filling NaN values of {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Filling NaN values of {len(columns):,} columns...")
         return frame.select(cs.by_name(columns).fill_null(**self._kwargs))
 
 

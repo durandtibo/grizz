@@ -206,9 +206,9 @@ class DropNanRowTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
         logger.info(
             f"Dropping all rows that contain only NaN values in "
-            f"{len(self.find_columns(frame)):,} columns...."
+            f"{len(columns):,} columns...."
         )
-        columns = self.find_common_columns(frame)
         return frame.filter(~pl.all_horizontal((cs.float() & cs.by_name(columns)).is_nan()))

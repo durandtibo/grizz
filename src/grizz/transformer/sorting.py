@@ -99,11 +99,10 @@ class SortTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        cols = self.find_columns(frame)
-        logger.info(f"Sorting rows based on {len(cols):,} columns: {cols}")
+        columns = self._find_existing_columns(frame)
+        logger.info(f"Sorting rows based on {len(columns):,} columns: {columns}")
         # Note: it is not possible to use find_common_columns because find_common_columns
         # may change the order of the columns.
-        columns = self._find_existing_columns(frame)
         return frame.sort(columns, **self._kwargs)
 
     def _find_existing_columns(self, frame: pl.DataFrame) -> list[str]:
