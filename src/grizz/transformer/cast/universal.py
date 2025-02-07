@@ -131,8 +131,8 @@ class CastTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Casting {len(self.find_columns(frame)):,} columns to {self._dtype}...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Casting {len(columns):,} columns to {self._dtype}...")
         return self._cast(frame, columns)
 
     def _cast(self, frame: pl.DataFrame, columns: Sequence[str]) -> pl.DataFrame:

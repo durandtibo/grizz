@@ -119,7 +119,6 @@ class JsonDecodeTransformer(BaseInNOutNTransformer):
             exist_policy=exist_policy,
             missing_policy=missing_policy,
         )
-
         self._kwargs = kwargs
 
     def get_args(self) -> dict:

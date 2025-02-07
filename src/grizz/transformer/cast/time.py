@@ -128,8 +128,8 @@ class ToTimeTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Converting {len(self.find_columns(frame)):,} columns to time columns...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Converting {len(columns):,} columns to time columns...")
         frame = frame.select(cs.by_name(columns))
         return frame.select(cs.time()).with_columns(
             frame.select((~cs.time()).str.to_time(**self._kwargs))
