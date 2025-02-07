@@ -4,7 +4,7 @@ a new data type."""
 
 from __future__ import annotations
 
-__all__ = ["JsonDecodeTransformer"]
+__all__ = ["InplaceJsonDecodeTransformer", "JsonDecodeTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any, Union
@@ -50,9 +50,8 @@ class JsonDecodeTransformer(BaseInNOutNTransformer):
             is missing and the missing columns are ignored.
             If ``'ignore'``, the missing columns are ignored and
             no warning message appears.
-        dtype: The dtype to cast the extracted value to.
-            If ``None``, the dtype will be inferred from the JSON
-            value.
+        **kwargs: Additional arguments passed to
+            ``polars.Expr.str.json_decode``.
 
     Example usage:
 
@@ -140,3 +139,95 @@ class JsonDecodeTransformer(BaseInNOutNTransformer):
             .str.replace_all("'", '"')
             .str.json_decode(**self._kwargs)
         )
+
+
+class InplaceJsonDecodeTransformer(JsonDecodeTransformer):
+    r"""Implement a transformer to parse string values as JSON.
+
+    Args:
+        columns: The columns to parse. ``None`` means all the
+            columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: Additional arguments passed to
+            ``polars.Expr.str.json_decode``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceJsonDecode
+    >>> transformer = InplaceJsonDecode(columns=["col1", "col3"])
+    >>> transformer
+    InplaceJsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": ["['1', '2']", "['2']", "['1', '2', '3']", "['4', '5']", "['5', '4']"],
+    ...         "col4": ["a", "b", "c", "d", "e"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 4)
+    ┌───────────┬──────┬─────────────────┬──────┐
+    │ col1      ┆ col2 ┆ col3            ┆ col4 │
+    │ ---       ┆ ---  ┆ ---             ┆ ---  │
+    │ str       ┆ str  ┆ str             ┆ str  │
+    ╞═══════════╪══════╪═════════════════╪══════╡
+    │ [1, 2]    ┆ 1    ┆ ['1', '2']      ┆ a    │
+    │ [2]       ┆ 2    ┆ ['2']           ┆ b    │
+    │ [1, 2, 3] ┆ 3    ┆ ['1', '2', '3'] ┆ c    │
+    │ [4, 5]    ┆ 4    ┆ ['4', '5']      ┆ d    │
+    │ [5, 4]    ┆ 5    ┆ ['5', '4']      ┆ e    │
+    └───────────┴──────┴─────────────────┴──────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 4)
+    ┌───────────┬──────┬─────────────────┬──────┐
+    │ col1      ┆ col2 ┆ col3            ┆ col4 │
+    │ ---       ┆ ---  ┆ ---             ┆ ---  │
+    │ list[i64] ┆ str  ┆ list[str]       ┆ str  │
+    ╞═══════════╪══════╪═════════════════╪══════╡
+    │ [1, 2]    ┆ 1    ┆ ["1", "2"]      ┆ a    │
+    │ [2]       ┆ 2    ┆ ["2"]           ┆ b    │
+    │ [1, 2, 3] ┆ 3    ┆ ["1", "2", "3"] ┆ c    │
+    │ [4, 5]    ┆ 4    ┆ ["4", "5"]      ┆ d    │
+    │ [5, 4]    ┆ 5    ┆ ["5", "4"]      ┆ e    │
+    └───────────┴──────┴─────────────────┴──────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str] | None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            columns=columns,
+            prefix="",
+            suffix="",
+            exclude_columns=exclude_columns,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+            **kwargs,
+        )
+
+    def get_args(self) -> dict:
+        args = super().get_args()
+        for key in ["prefix", "suffix", "exist_policy"]:
+            args.pop(key)
+        return args

@@ -94,6 +94,8 @@ __all__ = [
     "InplaceFloatCastTransformer",
     "InplaceIntegerCast",
     "InplaceIntegerCastTransformer",
+    "InplaceJsonDecode",
+    "InplaceJsonDecodeTransformer",
     "InplaceLabelEncoder",
     "InplaceLabelEncoderTransformer",
     "InplaceNumericCast",
@@ -314,6 +316,8 @@ from grizz.transformer.fill import InplaceFillNullTransformer
 from grizz.transformer.fill import InplaceFillNullTransformer as InplaceFillNull
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
+from grizz.transformer.json import InplaceJsonDecodeTransformer
+from grizz.transformer.json import InplaceJsonDecodeTransformer as InplaceJsonDecode
 from grizz.transformer.json import JsonDecodeTransformer
 from grizz.transformer.json import JsonDecodeTransformer as JsonDecode
 from grizz.transformer.max import MaxHorizontalTransformer

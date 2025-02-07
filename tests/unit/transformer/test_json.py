@@ -14,7 +14,7 @@ from grizz.exceptions import (
     ColumnNotFoundError,
     ColumnNotFoundWarning,
 )
-from grizz.transformer import JsonDecode
+from grizz.transformer import InplaceJsonDecode, JsonDecode
 
 
 @pytest.fixture
@@ -575,6 +575,387 @@ def test_json_decode_transformer_transform_missing_policy_warn(
                 "col4": pl.String,
                 "col1_out": pl.List(pl.Int64),
                 "col3_out": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+            },
+        ),
+    )
+
+
+##################################################
+#     Tests for InplaceJsonDecodeTransformer     #
+##################################################
+
+
+def test_inplace_json_decode_transformer_repr() -> None:
+    assert repr(InplaceJsonDecode(columns=["col1", "col3"])) == (
+        "InplaceJsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_inplace_json_decode_transformer_repr_with_kwargs() -> None:
+    assert repr(InplaceJsonDecode(columns=["col1", "col3"], dtype=None)) == (
+        "InplaceJsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=None)"
+    )
+
+
+def test_inplace_json_decode_transformer_str() -> None:
+    assert str(InplaceJsonDecode(columns=["col1", "col3"])) == (
+        "InplaceJsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise')"
+    )
+
+
+def test_inplace_json_decode_transformer_str_with_kwargs() -> None:
+    assert str(InplaceJsonDecode(columns=["col1", "col3"], dtype=None)) == (
+        "InplaceJsonDecodeTransformer(columns=('col1', 'col3'), exclude_columns=(), "
+        "missing_policy='raise', dtype=None)"
+    )
+
+
+def test_inplace_json_decode_transformer_equal_true() -> None:
+    assert InplaceJsonDecode(columns=["col1", "col3"]).equal(
+        InplaceJsonDecode(columns=["col1", "col3"])
+    )
+
+
+def test_inplace_json_decode_transformer_equal_false_different_columns() -> None:
+    assert not InplaceJsonDecode(columns=["col1", "col3"]).equal(
+        InplaceJsonDecode(columns=["col1", "col2", "col3"])
+    )
+
+
+def test_inplace_json_decode_transformer_equal_false_different_exclude_columns() -> None:
+    assert not InplaceJsonDecode(columns=["col1", "col3"]).equal(
+        InplaceJsonDecode(columns=["col1", "col3"], exclude_columns=["col4"])
+    )
+
+
+def test_inplace_json_decode_transformer_equal_false_different_missing_policy() -> None:
+    assert not InplaceJsonDecode(columns=["col1", "col3"]).equal(
+        InplaceJsonDecode(columns=["col1", "col3"], missing_policy="warn")
+    )
+
+
+def test_inplace_json_decode_transformer_equal_false_different_kwargs() -> None:
+    assert not InplaceJsonDecode(columns=["col1", "col3"]).equal(
+        InplaceJsonDecode(columns=["col1", "col3"], dtype=None)
+    )
+
+
+def test_inplace_json_decode_transformer_equal_false_different_type() -> None:
+    assert not InplaceJsonDecode(columns=["col1", "col3"]).equal(42)
+
+
+def test_inplace_json_decode_transformer_get_args() -> None:
+    assert objects_are_equal(
+        InplaceJsonDecode(columns=["col1", "col3"], dtype=None).get_args(),
+        {
+            "columns": ("col1", "col3"),
+            "exclude_columns": (),
+            "missing_policy": "raise",
+            "dtype": None,
+        },
+    )
+
+
+def test_inplace_json_decode_transformer_fit(
+    dataframe: pl.DataFrame, caplog: pytest.LogCaptureFixture
+) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3"])
+    with caplog.at_level(logging.INFO):
+        transformer.fit(dataframe)
+    assert caplog.messages[0].startswith(
+        "Skipping 'InplaceJsonDecodeTransformer.fit' as there are no parameters available to fit"
+    )
+
+
+def test_inplace_json_decode_transformer_fit_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        transformer.fit(dataframe)
+
+
+def test_inplace_json_decode_transformer_fit_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3", "col5"])
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.fit(dataframe)
+
+
+def test_inplace_json_decode_transformer_fit_missing_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3", "col5"], missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        transformer.fit(dataframe)
+
+
+def test_inplace_json_decode_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3"])
+    out = transformer.fit_transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[], [1], [1, 2], [1, 2, 3], [1, 2, 3, 4]],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [
+                    {"a": 1, "b": "abc"},
+                    {"a": 2, "b": "def"},
+                    {"a": 0, "b": ""},
+                    {"a": 1, "b": "meow"},
+                    {"a": 0, "b": ""},
+                ],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.List(pl.Int64),
+                "col2": pl.Float32,
+                "col3": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[], [1], [1, 2], [1, 2, 3], [1, 2, 3, 4]],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [
+                    {"a": 1, "b": "abc"},
+                    {"a": 2, "b": "def"},
+                    {"a": 0, "b": ""},
+                    {"a": 1, "b": "meow"},
+                    {"a": 0, "b": ""},
+                ],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.List(pl.Int64),
+                "col2": pl.Float32,
+                "col3": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform_one_col() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": ["['1', '2']", "['2']", "['1', '2', '3']", "['4', '5']", "['5', '4']"],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+    )
+    transformer = InplaceJsonDecode(columns=["col1"])
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[1, 2], [2], [1, 2, 3], [4, 5], [5, 4]],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": ["['1', '2']", "['2']", "['1', '2', '3']", "['4', '5']", "['5', '4']"],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.List(pl.Int64),
+                "col2": pl.String,
+                "col3": pl.String,
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform_two_cols() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
+            "col2": ["1", "2", "3", "4", "5"],
+            "col3": [r"['1', '2']", r"['2']", r"['1', '2', '3']", r"['4', '5']", r"['5', '4']"],
+            "col4": ["a", "b", "c", "d", "e"],
+        },
+        schema={"col1": pl.String, "col2": pl.String, "col3": pl.String, "col4": pl.String},
+    )
+    transformer = InplaceJsonDecode(columns=["col1", "col3"])
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[1, 2], [2], [1, 2, 3], [4, 5], [5, 4]],
+                "col2": ["1", "2", "3", "4", "5"],
+                "col3": [["1", "2"], ["2"], ["1", "2", "3"], ["4", "5"], ["5", "4"]],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.List(pl.Int64),
+                "col2": pl.String,
+                "col3": pl.List(pl.String),
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform_dtype() -> None:
+    frame = pl.DataFrame(
+        {
+            "col1": ["[1, 2]", "[2]", "[1, 2, 3]", "[4, 5]", "[5, 4]"],
+            "col2": ["1", "2", "3", "4", "5"],
+        },
+        schema={"col1": pl.String, "col2": pl.String},
+    )
+    transformer = InplaceJsonDecode(columns=["col1"], dtype=pl.List(pl.Int32))
+    out = transformer.transform(frame)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[1, 2], [2], [1, 2, 3], [4, 5], [5, 4]],
+                "col2": ["1", "2", "3", "4", "5"],
+            },
+            schema={
+                "col1": pl.List(pl.Int32),
+                "col2": pl.String,
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform_columns_none() -> None:
+    transformer = InplaceJsonDecode(columns=None)
+    out = transformer.transform(
+        pl.DataFrame(
+            {"list": ["[]", "[1]"], "dict": ["{'a': 1, 'b': 'abc'}", "{'a': 2, 'b': 'def'}"]},
+            schema={"list": pl.String, "dict": pl.String},
+        )
+    )
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {"list": [[], [1]], "dict": [{"a": 1, "b": "abc"}, {"a": 2, "b": "def"}]},
+            schema={
+                "list": pl.List(pl.Int64),
+                "dict": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform_exclude_columns(dataframe: pl.DataFrame) -> None:
+    transformer = InplaceJsonDecode(columns=None, exclude_columns=["col2", "col4"])
+    out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[], [1], [1, 2], [1, 2, 3], [1, 2, 3, 4]],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [
+                    {"a": 1, "b": "abc"},
+                    {"a": 2, "b": "def"},
+                    {"a": 0, "b": ""},
+                    {"a": 1, "b": "meow"},
+                    {"a": 0, "b": ""},
+                ],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.List(pl.Int64),
+                "col2": pl.Float32,
+                "col3": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform_missing_policy_ignore(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3", "col5"], missing_policy="ignore")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[], [1], [1, 2], [1, 2, 3], [1, 2, 3, 4]],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [
+                    {"a": 1, "b": "abc"},
+                    {"a": 2, "b": "def"},
+                    {"a": 0, "b": ""},
+                    {"a": 1, "b": "meow"},
+                    {"a": 0, "b": ""},
+                ],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.List(pl.Int64),
+                "col2": pl.Float32,
+                "col3": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+                "col4": pl.String,
+            },
+        ),
+    )
+
+
+def test_inplace_json_decode_transformer_transform_missing_policy_raise(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3", "col5"])
+    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+        transformer.transform(dataframe)
+
+
+def test_inplace_json_decode_transformer_transform_missing_policy_warn(
+    dataframe: pl.DataFrame,
+) -> None:
+    transformer = InplaceJsonDecode(columns=["col1", "col3", "col5"], missing_policy="warn")
+    with pytest.warns(
+        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+    ):
+        out = transformer.transform(dataframe)
+    assert_frame_equal(
+        out,
+        pl.DataFrame(
+            {
+                "col1": [[], [1], [1, 2], [1, 2, 3], [1, 2, 3, 4]],
+                "col2": [-1.0, -2.0, -3.0, -4.0, -5.0],
+                "col3": [
+                    {"a": 1, "b": "abc"},
+                    {"a": 2, "b": "def"},
+                    {"a": 0, "b": ""},
+                    {"a": 1, "b": "meow"},
+                    {"a": 0, "b": ""},
+                ],
+                "col4": ["a", "b", "c", "d", "e"],
+            },
+            schema={
+                "col1": pl.List(pl.Int64),
+                "col2": pl.Float32,
+                "col3": pl.Struct([pl.Field("a", pl.Int64), pl.Field("b", pl.String)]),
+                "col4": pl.String,
             },
         ),
     )
