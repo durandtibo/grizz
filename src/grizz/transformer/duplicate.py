@@ -109,7 +109,5 @@ class DropDuplicateTransformer(BaseInNTransformer):
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)
-        logger.info(
-            f"Dropping duplicate rows by checking {len(columns):,} columns...."
-        )
+        logger.info(f"Dropping duplicate rows by checking {len(columns):,} columns....")
         return frame.unique(subset=cs.by_name(columns), **self._kwargs)
