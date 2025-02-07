@@ -210,7 +210,6 @@ class InplaceToTimeTransformer(ToTimeTransformer):
     │ 23:59:59 ┆ 5    ┆ 23:59:59 │
     └──────────┴──────┴──────────┘
 
-
     ```
     """
 

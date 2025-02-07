@@ -4,7 +4,7 @@ a new data type."""
 
 from __future__ import annotations
 
-__all__ = ["ToDatetimeTransformer"]
+__all__ = ["InplaceToDatetimeTransformer", "ToDatetimeTransformer"]
 
 import logging
 from typing import TYPE_CHECKING, Any
@@ -146,3 +146,106 @@ class ToDatetimeTransformer(BaseInNOutNTransformer):
         return frame.select(cs.datetime()).with_columns(
             frame.select((~cs.datetime()).str.to_datetime(**self._kwargs))
         )
+
+
+class InplaceToDatetimeTransformer(ToDatetimeTransformer):
+    r"""Implement a transformer to convert some columns to a
+    ``polars.Datetime`` type.
+
+    Args:
+        columns: The columns to convert to ``polars.Datetime``.
+            ``None`` means all the columns.
+        exclude_columns: The columns to exclude from the input
+            ``columns``. If any column is not found, it will be ignored
+            during the filtering process.
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+        **kwargs: The keyword arguments for ``to_time``.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceToDatetime
+    >>> transformer = InplaceToDatetime(columns=["col1"])
+    >>> transformer
+    InplaceToDatetimeTransformer(columns=('col1',), exclude_columns=(), missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": [
+    ...             "2020-01-01 01:01:01",
+    ...             "2020-01-01 02:02:02",
+    ...             "2020-01-01 12:00:01",
+    ...             "2020-01-01 18:18:18",
+    ...             "2020-01-01 23:59:59",
+    ...         ],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...         "col3": [
+    ...             "2020-01-01 11:11:11",
+    ...             "2020-02-01 12:12:12",
+    ...             "2020-03-01 13:13:13",
+    ...             "2020-04-01 08:08:08",
+    ...             "2020-05-01 23:59:59",
+    ...         ],
+    ...     },
+    ... )
+    >>> frame
+    shape: (5, 3)
+    ┌─────────────────────┬──────┬─────────────────────┐
+    │ col1                ┆ col2 ┆ col3                │
+    │ ---                 ┆ ---  ┆ ---                 │
+    │ str                 ┆ str  ┆ str                 │
+    ╞═════════════════════╪══════╪═════════════════════╡
+    │ 2020-01-01 01:01:01 ┆ 1    ┆ 2020-01-01 11:11:11 │
+    │ 2020-01-01 02:02:02 ┆ 2    ┆ 2020-02-01 12:12:12 │
+    │ 2020-01-01 12:00:01 ┆ 3    ┆ 2020-03-01 13:13:13 │
+    │ 2020-01-01 18:18:18 ┆ 4    ┆ 2020-04-01 08:08:08 │
+    │ 2020-01-01 23:59:59 ┆ 5    ┆ 2020-05-01 23:59:59 │
+    └─────────────────────┴──────┴─────────────────────┘
+    >>> out = transformer.transform(frame)
+    >>> out
+    shape: (5, 3)
+    ┌─────────────────────┬──────┬─────────────────────┐
+    │ col1                ┆ col2 ┆ col3                │
+    │ ---                 ┆ ---  ┆ ---                 │
+    │ datetime[μs]        ┆ str  ┆ str                 │
+    ╞═════════════════════╪══════╪═════════════════════╡
+    │ 2020-01-01 01:01:01 ┆ 1    ┆ 2020-01-01 11:11:11 │
+    │ 2020-01-01 02:02:02 ┆ 2    ┆ 2020-02-01 12:12:12 │
+    │ 2020-01-01 12:00:01 ┆ 3    ┆ 2020-03-01 13:13:13 │
+    │ 2020-01-01 18:18:18 ┆ 4    ┆ 2020-04-01 08:08:08 │
+    │ 2020-01-01 23:59:59 ┆ 5    ┆ 2020-05-01 23:59:59 │
+    └─────────────────────┴──────┴─────────────────────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        columns: Sequence[str] | None,
+        exclude_columns: Sequence[str] = (),
+        missing_policy: str = "raise",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            columns=columns,
+            prefix="",
+            suffix="",
+            exclude_columns=exclude_columns,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+            **kwargs,
+        )
+
+    def get_args(self) -> dict:
+        args = super().get_args()
+        for key in ["prefix", "suffix", "exist_policy"]:
+            args.pop(key)
+        return args

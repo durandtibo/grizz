@@ -94,6 +94,8 @@ __all__ = [
     "InplaceFloatCastTransformer",
     "InplaceIntegerCast",
     "InplaceIntegerCastTransformer",
+    "InplaceJsonDecode",
+    "InplaceJsonDecodeTransformer",
     "InplaceLabelEncoder",
     "InplaceLabelEncoderTransformer",
     "InplaceNumericCast",
@@ -110,6 +112,8 @@ __all__ = [
     "InplaceStandardScalerTransformer",
     "InplaceStripChars",
     "InplaceStripCharsTransformer",
+    "InplaceToDatetime",
+    "InplaceToDatetimeTransformer",
     "InplaceToTime",
     "InplaceToTimeTransformer",
     "IntegerCast",
@@ -284,6 +288,8 @@ from grizz.transformer.copy import CopyColumnsTransformer
 from grizz.transformer.copy import CopyColumnsTransformer as CopyColumns
 from grizz.transformer.copy import CopyColumnTransformer
 from grizz.transformer.copy import CopyColumnTransformer as CopyColumn
+from grizz.transformer.datetime import InplaceToDatetimeTransformer
+from grizz.transformer.datetime import InplaceToDatetimeTransformer as InplaceToDatetime
 from grizz.transformer.datetime import ToDatetimeTransformer
 from grizz.transformer.datetime import ToDatetimeTransformer as ToDatetime
 from grizz.transformer.diff import DiffTransformer
@@ -310,6 +316,8 @@ from grizz.transformer.fill import InplaceFillNullTransformer
 from grizz.transformer.fill import InplaceFillNullTransformer as InplaceFillNull
 from grizz.transformer.function import FunctionTransformer
 from grizz.transformer.function import FunctionTransformer as Function
+from grizz.transformer.json import InplaceJsonDecodeTransformer
+from grizz.transformer.json import InplaceJsonDecodeTransformer as InplaceJsonDecode
 from grizz.transformer.json import JsonDecodeTransformer
 from grizz.transformer.json import JsonDecodeTransformer as JsonDecode
 from grizz.transformer.max import MaxHorizontalTransformer
