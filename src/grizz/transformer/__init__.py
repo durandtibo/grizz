@@ -226,36 +226,6 @@ from grizz.transformer.cast.universal import CastTransformer
 from grizz.transformer.cast.universal import CastTransformer as Cast
 from grizz.transformer.cast.universal import InplaceCastTransformer
 from grizz.transformer.cast.universal import InplaceCastTransformer as InplaceCast
-from grizz.transformer.close import ColumnCloseTransformer
-from grizz.transformer.close import ColumnCloseTransformer as ColumnClose
-from grizz.transformer.column_comparison import ColumnEqualMissingTransformer
-from grizz.transformer.column_comparison import (
-    ColumnEqualMissingTransformer as ColumnEqualMissing,
-)
-from grizz.transformer.column_comparison import ColumnEqualTransformer
-from grizz.transformer.column_comparison import ColumnEqualTransformer as ColumnEqual
-from grizz.transformer.column_comparison import ColumnGreaterEqualTransformer
-from grizz.transformer.column_comparison import (
-    ColumnGreaterEqualTransformer as ColumnGreaterEqual,
-)
-from grizz.transformer.column_comparison import ColumnGreaterTransformer
-from grizz.transformer.column_comparison import (
-    ColumnGreaterTransformer as ColumnGreater,
-)
-from grizz.transformer.column_comparison import ColumnLowerEqualTransformer
-from grizz.transformer.column_comparison import (
-    ColumnLowerEqualTransformer as ColumnLowerEqual,
-)
-from grizz.transformer.column_comparison import ColumnLowerTransformer
-from grizz.transformer.column_comparison import ColumnLowerTransformer as ColumnLower
-from grizz.transformer.column_comparison import ColumnNotEqualMissingTransformer
-from grizz.transformer.column_comparison import (
-    ColumnNotEqualMissingTransformer as ColumnNotEqualMissing,
-)
-from grizz.transformer.column_comparison import ColumnNotEqualTransformer
-from grizz.transformer.column_comparison import (
-    ColumnNotEqualTransformer as ColumnNotEqual,
-)
 from grizz.transformer.columns import (
     BaseArgTransformer,
     BaseIn1Out1Transformer,
@@ -264,22 +234,50 @@ from grizz.transformer.columns import (
     BaseInNOutNTransformer,
     BaseInNTransformer,
 )
-from grizz.transformer.comparison import EqualMissingTransformer
-from grizz.transformer.comparison import EqualMissingTransformer as EqualMissing
-from grizz.transformer.comparison import EqualTransformer
-from grizz.transformer.comparison import EqualTransformer as Equal
-from grizz.transformer.comparison import GreaterEqualTransformer
-from grizz.transformer.comparison import GreaterEqualTransformer as GreaterEqual
-from grizz.transformer.comparison import GreaterTransformer
-from grizz.transformer.comparison import GreaterTransformer as Greater
-from grizz.transformer.comparison import LowerEqualTransformer
-from grizz.transformer.comparison import LowerEqualTransformer as LowerEqual
-from grizz.transformer.comparison import LowerTransformer
-from grizz.transformer.comparison import LowerTransformer as Lower
-from grizz.transformer.comparison import NotEqualMissingTransformer
-from grizz.transformer.comparison import NotEqualMissingTransformer as NotEqualMissing
-from grizz.transformer.comparison import NotEqualTransformer
-from grizz.transformer.comparison import NotEqualTransformer as NotEqual
+from grizz.transformer.comp.close import ColumnCloseTransformer
+from grizz.transformer.comp.close import ColumnCloseTransformer as ColumnClose
+from grizz.transformer.comp.column import ColumnEqualMissingTransformer
+from grizz.transformer.comp.column import (
+    ColumnEqualMissingTransformer as ColumnEqualMissing,
+)
+from grizz.transformer.comp.column import ColumnEqualTransformer
+from grizz.transformer.comp.column import ColumnEqualTransformer as ColumnEqual
+from grizz.transformer.comp.column import ColumnGreaterEqualTransformer
+from grizz.transformer.comp.column import (
+    ColumnGreaterEqualTransformer as ColumnGreaterEqual,
+)
+from grizz.transformer.comp.column import ColumnGreaterTransformer
+from grizz.transformer.comp.column import ColumnGreaterTransformer as ColumnGreater
+from grizz.transformer.comp.column import ColumnLowerEqualTransformer
+from grizz.transformer.comp.column import (
+    ColumnLowerEqualTransformer as ColumnLowerEqual,
+)
+from grizz.transformer.comp.column import ColumnLowerTransformer
+from grizz.transformer.comp.column import ColumnLowerTransformer as ColumnLower
+from grizz.transformer.comp.column import ColumnNotEqualMissingTransformer
+from grizz.transformer.comp.column import (
+    ColumnNotEqualMissingTransformer as ColumnNotEqualMissing,
+)
+from grizz.transformer.comp.column import ColumnNotEqualTransformer
+from grizz.transformer.comp.column import ColumnNotEqualTransformer as ColumnNotEqual
+from grizz.transformer.comp.comparison import EqualMissingTransformer
+from grizz.transformer.comp.comparison import EqualMissingTransformer as EqualMissing
+from grizz.transformer.comp.comparison import EqualTransformer
+from grizz.transformer.comp.comparison import EqualTransformer as Equal
+from grizz.transformer.comp.comparison import GreaterEqualTransformer
+from grizz.transformer.comp.comparison import GreaterEqualTransformer as GreaterEqual
+from grizz.transformer.comp.comparison import GreaterTransformer
+from grizz.transformer.comp.comparison import GreaterTransformer as Greater
+from grizz.transformer.comp.comparison import LowerEqualTransformer
+from grizz.transformer.comp.comparison import LowerEqualTransformer as LowerEqual
+from grizz.transformer.comp.comparison import LowerTransformer
+from grizz.transformer.comp.comparison import LowerTransformer as Lower
+from grizz.transformer.comp.comparison import NotEqualMissingTransformer
+from grizz.transformer.comp.comparison import (
+    NotEqualMissingTransformer as NotEqualMissing,
+)
+from grizz.transformer.comp.comparison import NotEqualTransformer
+from grizz.transformer.comp.comparison import NotEqualTransformer as NotEqual
 from grizz.transformer.concat import ConcatColumnsTransformer
 from grizz.transformer.concat import ConcatColumnsTransformer as ConcatColumns
 from grizz.transformer.copy import CopyColumnsTransformer
