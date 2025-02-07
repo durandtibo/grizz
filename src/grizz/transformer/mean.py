@@ -125,12 +125,11 @@ class MeanHorizontalTransformer(BaseInNOut1Transformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        cols = self.find_columns(frame)
+        columns = self.find_common_columns(frame)
         logger.info(
-            f"Getting the mean value across {len(cols):,} columns: {cols} "
+            f"Getting the mean value across {len(columns):,} columns: {columns} "
             f"| out_col={self._out_col!r}"
         )
-        columns = self.find_common_columns(frame)
         if not columns:
             return frame.with_columns(pl.lit(None, dtype=pl.Float64).alias(self._out_col))
         return frame.with_columns(pl.mean_horizontal(columns, **self._kwargs).alias(self._out_col))

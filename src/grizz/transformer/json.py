@@ -132,8 +132,8 @@ class JsonDecodeTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Converting {len(self.find_columns(frame)):,} columns to JSON...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Converting {len(columns):,} columns to JSON...")
         return frame.select(
             (cs.by_name(columns) & cs.string())
             .str.replace_all("'", '"')

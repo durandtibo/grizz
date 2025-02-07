@@ -97,10 +97,9 @@ class MaxHorizontalTransformer(BaseInNOut1Transformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        cols = self.find_columns(frame)
+        columns = self.find_common_columns(frame)
         logger.info(
-            f"Getting the maximum value across {len(cols):,} columns: {self.find_columns(frame)} "
+            f"Getting the maximum value across {len(columns):,} columns: {columns} "
             f"| out_col={self._out_col!r}"
         )
-        columns = self.find_common_columns(frame)
         return frame.with_columns(pl.max_horizontal(columns).alias(self._out_col))

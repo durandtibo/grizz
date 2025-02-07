@@ -115,11 +115,11 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
         logger.info(
-            f"Filtering {len(self.find_columns(frame)):,} columns based on their "
+            f"Filtering {len(columns):,} columns based on their "
             f"cardinality [{self._n_min}, {self._n_max})..."
         )
-        columns = self.find_common_columns(frame)
         valid = frame.select(
             pl.n_unique(*columns).is_between(self._n_min, self._n_max, closed="left")
         )

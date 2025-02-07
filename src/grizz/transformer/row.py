@@ -79,5 +79,5 @@ class FirstRowTransformer(BaseArgTransformer):
         )
 
     def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Select {self._n} rows...")
+        logger.info(f"Select {self._n:,} rows...")
         return frame.limit(self._n)

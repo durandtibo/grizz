@@ -131,8 +131,8 @@ class StripCharsTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Stripping characters of {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Stripping characters of {len(columns):,} columns...")
         return frame.select((cs.by_name(columns) & cs.string()).str.strip_chars(**self._kwargs))
 
 

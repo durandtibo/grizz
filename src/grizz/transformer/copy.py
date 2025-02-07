@@ -179,9 +179,9 @@ class CopyColumnsTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
         logger.info(
-            f"Copying {len(self.find_columns(frame)):,} columns | prefix={self._prefix!r} | "
+            f"Copying {len(columns):,} columns | prefix={self._prefix!r} | "
             f"suffix={self._suffix!r} ..."
         )
-        columns = self.find_common_columns(frame)
         return frame.select(columns)

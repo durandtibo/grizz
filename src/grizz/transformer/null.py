@@ -208,9 +208,8 @@ class DropNullRowTransformer(BaseInNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(
-            f"Dropping all rows that contain only null values in "
-            f"{len(self.find_columns(frame)):,} columns...."
-        )
         columns = self.find_common_columns(frame)
+        logger.info(
+            f"Dropping all rows that contain only null values in {len(columns):,} columns...."
+        )
         return frame.filter(~pl.all_horizontal(cs.by_name(columns).is_null()))
