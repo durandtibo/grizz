@@ -3,7 +3,7 @@ given column."""
 
 from __future__ import annotations
 
-__all__ = ["LabelEncoderTransformer"]
+__all__ = ["InplaceLabelEncoderTransformer", "LabelEncoderTransformer"]
 
 import logging
 
@@ -49,8 +49,8 @@ class LabelEncoderTransformer(BaseIn1Out1Transformer):
     ```pycon
 
     >>> import polars as pl
-    >>> from grizz.transformer import LabelEncoderTransformer
-    >>> transformer = LabelEncoderTransformer(in_col="col1", out_col="out")
+    >>> from grizz.transformer import LabelEncoder
+    >>> transformer = LabelEncoder(in_col="col1", out_col="out")
     >>> transformer
     LabelEncoderTransformer(in_col='col1', out_col='out', exist_policy='raise', missing_policy='raise')
     >>> frame = pl.DataFrame(
@@ -117,3 +117,80 @@ class LabelEncoderTransformer(BaseIn1Out1Transformer):
         )
         y = self._encoder.transform(frame[self._in_col].to_numpy())
         return frame.with_columns(pl.from_numpy(y, schema=[self._out_col]))
+
+
+class InplaceLabelEncoderTransformer(LabelEncoderTransformer):
+    r"""Implement a ``polars.DataFrame`` to encode the labels in a given
+    column.
+
+    Args:
+        col: The column name to transform
+        missing_policy: The policy on how to handle missing columns.
+            The following options are available: ``'ignore'``,
+            ``'warn'``, and ``'raise'``. If ``'raise'``, an exception
+            is raised if at least one column is missing.
+            If ``'warn'``, a warning is raised if at least one column
+            is missing and the missing columns are ignored.
+            If ``'ignore'``, the missing columns are ignored and
+            no warning message appears.
+
+    Example usage:
+
+    ```pycon
+
+    >>> import polars as pl
+    >>> from grizz.transformer import InplaceLabelEncoder
+    >>> transformer = InplaceLabelEncoder(col="col1")
+    >>> transformer
+    InplaceLabelEncoderTransformer(col='col1', missing_policy='raise')
+    >>> frame = pl.DataFrame(
+    ...     {
+    ...         "col1": ["a", "b", "c", "d", "e"],
+    ...         "col2": ["1", "2", "3", "4", "5"],
+    ...     }
+    ... )
+    >>> frame
+    shape: (5, 2)
+    ┌──────┬──────┐
+    │ col1 ┆ col2 │
+    │ ---  ┆ ---  │
+    │ str  ┆ str  │
+    ╞══════╪══════╡
+    │ a    ┆ 1    │
+    │ b    ┆ 2    │
+    │ c    ┆ 3    │
+    │ d    ┆ 4    │
+    │ e    ┆ 5    │
+    └──────┴──────┘
+    >>> out = transformer.fit_transform(frame)
+    >>> out
+    shape: (5, 2)
+    ┌──────┬──────┐
+    │ col1 ┆ col2 │
+    │ ---  ┆ ---  │
+    │ i64  ┆ str  │
+    ╞══════╪══════╡
+    │ 0    ┆ 1    │
+    │ 1    ┆ 2    │
+    │ 2    ┆ 3    │
+    │ 3    ┆ 4    │
+    │ 4    ┆ 5    │
+    └──────┴──────┘
+
+    ```
+    """
+
+    def __init__(
+        self,
+        col: str,
+        missing_policy: str = "raise",
+    ) -> None:
+        super().__init__(
+            in_col=col,
+            out_col=col,
+            exist_policy="ignore",
+            missing_policy=missing_policy,
+        )
+
+    def get_args(self) -> dict:
+        return {"col": self._in_col, "missing_policy": self._missing_policy}
