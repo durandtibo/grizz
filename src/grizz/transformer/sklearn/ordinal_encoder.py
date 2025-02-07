@@ -134,16 +134,16 @@ class OrdinalEncoderTransformer(BaseInNOutNTransformer):
         return super().get_args() | {"propagate_nulls": self._propagate_nulls} | self._kwargs
 
     def _fit(self, frame: pl.DataFrame) -> None:
-        logger.info(f"Fitting the ordinal encoder on {len(self.find_columns(frame)):,} columns...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Fitting the ordinal encoder on {len(columns):,} columns...")
         self._encoder.fit(frame.select(columns).to_numpy())
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
         logger.info(
-            f"Applying the ordinal encoding on {len(self.find_columns(frame)):,} columns | "
+            f"Applying the ordinal encoding on {len(columns):,} columns | "
             f"prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
-        columns = self.find_common_columns(frame)
         data = frame.select(columns)
 
         x = self._encoder.transform(data.to_numpy())

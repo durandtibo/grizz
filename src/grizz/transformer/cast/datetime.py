@@ -140,8 +140,8 @@ class ToDatetimeTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
-        logger.info(f"Converting {len(self.find_columns(frame)):,} columns to time columns...")
         columns = self.find_common_columns(frame)
+        logger.info(f"Converting {len(columns):,} columns to time columns...")
         frame = frame.select(cs.by_name(columns))
         return frame.select(cs.datetime()).with_columns(
             frame.select((~cs.datetime()).str.to_datetime(**self._kwargs))

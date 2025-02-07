@@ -137,11 +137,11 @@ class NormalizerTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
         logger.info(
-            f"Binarize the data of {len(self.find_columns(frame)):,} columns | "
+            f"Binarize the data of {len(columns):,} columns | "
             f"prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
-        columns = self.find_common_columns(frame)
         data = frame.select(columns).fill_nan(None)
 
         x = self._scaler.transform(data.fill_null(0).to_numpy())

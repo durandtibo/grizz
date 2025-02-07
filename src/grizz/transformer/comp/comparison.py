@@ -90,12 +90,11 @@ class BaseComparatorTransformer(BaseInNOutNTransformer):
         )
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
+        columns = self.find_common_columns(frame)
         logger.info(
             f"Applying the {self._get_operation_name()} operation on "
-            f"{len(self.find_columns(frame)):,} columns | "
-            f"prefix={self._prefix!r} | suffix={self._suffix!r}"
+            f"{len(columns):,} columns | prefix={self._prefix!r} | suffix={self._suffix!r}"
         )
-        columns = self.find_common_columns(frame)
         return self._compare(frame.select(columns))
 
     @abstractmethod
