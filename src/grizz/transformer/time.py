@@ -11,6 +11,7 @@ import logging
 import polars as pl
 
 from grizz.transformer.columns import BaseIn1Out1Transformer
+from grizz.transformer.utils import get_classname, message_skip_fit
 
 logger = logging.getLogger(__name__)
 
@@ -94,10 +95,7 @@ class TimeToSecondTransformer(BaseIn1Out1Transformer):
     """
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Converting time column {self._in_col!r} to seconds {self._out_col!r} ...")
