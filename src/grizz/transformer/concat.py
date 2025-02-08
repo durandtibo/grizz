@@ -10,6 +10,7 @@ import polars as pl
 import polars.selectors as cs
 
 from grizz.transformer.columns import BaseInNOut1Transformer
+from grizz.transformer.utils import get_classname, message_skip_fit
 
 logger = logging.getLogger(__name__)
 
@@ -92,10 +93,7 @@ class ConcatColumnsTransformer(BaseInNOut1Transformer):
     """
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)

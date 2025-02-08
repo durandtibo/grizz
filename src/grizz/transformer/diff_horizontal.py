@@ -10,6 +10,7 @@ import logging
 import polars as pl
 
 from grizz.transformer.columns import BaseIn2Out1Transformer
+from grizz.transformer.utils import get_classname, message_skip_fit
 
 logger = logging.getLogger(__name__)
 
@@ -89,10 +90,7 @@ class AbsDiffHorizontalTransformer(BaseIn2Out1Transformer):
     """
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
@@ -179,10 +177,7 @@ class DiffHorizontalTransformer(BaseIn2Out1Transformer):
     """
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(

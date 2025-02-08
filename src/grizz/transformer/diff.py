@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 
 from grizz.transformer.columns import BaseArgTransformer, BaseIn1Out1Transformer
+from grizz.transformer.utils import get_classname, message_skip_fit
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -103,10 +104,7 @@ class DiffTransformer(BaseIn1Out1Transformer):
         return super().get_args() | {"shift": self._shift}
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(
@@ -187,10 +185,7 @@ class TimeDiffTransformer(BaseArgTransformer):
         }
 
     def _fit_dataframe(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(

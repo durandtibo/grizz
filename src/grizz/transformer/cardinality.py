@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 import polars as pl
 
 from grizz.transformer.columns import BaseInNTransformer
+from grizz.transformer.utils import get_classname, message_skip_fit
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -109,10 +110,7 @@ class FilterCardinalityTransformer(BaseInNTransformer):
         return super().get_args() | {"n_min": self._n_min, "n_max": self._n_max}
 
     def _fit(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         columns = self.find_common_columns(frame)

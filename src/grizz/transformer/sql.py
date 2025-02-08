@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from coola.utils import repr_indent, repr_mapping
 
 from grizz.transformer.columns import BaseArgTransformer
+from grizz.transformer.utils import get_classname, message_skip_fit
 
 if TYPE_CHECKING:
     import polars as pl
@@ -71,10 +72,7 @@ class SqlTransformer(BaseArgTransformer):
         return {"query": self._query}
 
     def _fit_dataframe(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
-        logger.info(
-            f"Skipping '{self.__class__.__qualname__}.fit' as there are no parameters "
-            f"available to fit"
-        )
+        logger.info(message_skip_fit(get_classname(self)))
 
     def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Executing the SQL query:\n{self._query}")
