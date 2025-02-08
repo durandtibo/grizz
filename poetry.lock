@@ -417,18 +417,18 @@ development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
 name = "coola"
-version = "0.8.6"
+version = "0.8.7"
 description = "Library to check equality between two complex/nested objects"
 optional = false
 python-versions = "<3.14,>=3.9"
 groups = ["main"]
 files = [
-    {file = "coola-0.8.6-py3-none-any.whl", hash = "sha256:f0f77cc76e09524990ea3f5f3db608a925080fefb55645da5c58736e3dac46cd"},
-    {file = "coola-0.8.6.tar.gz", hash = "sha256:42968e5bcb8781a6cf6a628265882e2972d7a38db0c9fe4f37850fc8e284173e"},
+    {file = "coola-0.8.7-py3-none-any.whl", hash = "sha256:29a4ce7d0e19b1491c449f45fd1d4ff7da4a660329f27796c1e5ef5675541207"},
+    {file = "coola-0.8.7.tar.gz", hash = "sha256:19835f1244be9a68e359ef9c65bb3dc2e5174ce61cfa20e67fe207488bf1c9ea"},
 ]
 
 [package.extras]
-all = ["jax (>=0.4.17,<0.5)", "jax (>=0.4.17,<1.0)", "jax (>=0.4.34,<0.5)", "jax (>=0.4.34,<1.0)", "jax (>=0.4.6,<0.4.31)", "jax (>=0.4.6,<0.5)", "jax (>=0.4.6,<1.0)", "jaxlib (>=0.4.17,<0.5)", "jaxlib (>=0.4.17,<1.0)", "jaxlib (>=0.4.34,<0.5)", "jaxlib (>=0.4.34,<1.0)", "jaxlib (>=0.4.6,<0.4.31)", "jaxlib (>=0.4.6,<0.5)", "jaxlib (>=0.4.6,<1.0)", "numpy (>=1.21,<3.0)", "packaging (>=21.0,<25.0)", "pandas (>=1.3,<3.0)", "polars (>=0.18.3,<2.0)", "pyarrow (>=10.0,<20.0)", "torch (>=1.11,<2.3)", "torch (>=1.11,<3.0)", "xarray (>=2023.1)"]
+all = ["jax (>=0.4.17,<0.5)", "jax (>=0.4.17,<1.0)", "jax (>=0.4.34,<0.5)", "jax (>=0.4.34,<1.0)", "jax (>=0.4.6,<0.4.31)", "jax (>=0.4.6,<0.5)", "jax (>=0.4.6,<1.0)", "jaxlib (>=0.4.17,<0.5)", "jaxlib (>=0.4.17,<1.0)", "jaxlib (>=0.4.34,<0.5)", "jaxlib (>=0.4.34,<1.0)", "jaxlib (>=0.4.6,<0.4.31)", "jaxlib (>=0.4.6,<0.5)", "jaxlib (>=0.4.6,<1.0)", "numpy (>=1.22,<3.0)", "packaging (>=21.0,<25.0)", "pandas (>=1.5,<3.0)", "polars (>=1.0,<2.0)", "pyarrow (>=10.0,<20.0)", "torch (>=1.11,<2.3)", "torch (>=1.11,<3.0)", "xarray (>=2023.1)"]
 
 [[package]]
 name = "coverage"
@@ -1008,14 +1008,14 @@ pyyaml = ">=5.1"
 
 [[package]]
 name = "mkdocs-material"
-version = "9.6.2"
+version = "9.6.3"
 description = "Documentation that simply works"
 optional = false
 python-versions = ">=3.8"
 groups = ["docs"]
 files = [
-    {file = "mkdocs_material-9.6.2-py3-none-any.whl", hash = "sha256:71d90dbd63b393ad11a4d90151dfe3dcbfcd802c0f29ce80bebd9bbac6abc753"},
-    {file = "mkdocs_material-9.6.2.tar.gz", hash = "sha256:a3de1c5d4c745f10afa78b1a02f917b9dce0808fb206adc0f5bb48b58c1ca21f"},
+    {file = "mkdocs_material-9.6.3-py3-none-any.whl", hash = "sha256:1125622067e26940806701219303b27c0933e04533560725d97ec26fd16a39cf"},
+    {file = "mkdocs_material-9.6.3.tar.gz", hash = "sha256:c87f7d1c39ce6326da5e10e232aed51bae46252e646755900f4b0fc9192fa832"},
 ]
 
 [package.dependencies]
@@ -1079,14 +1079,14 @@ python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
 
 [[package]]
 name = "mkdocstrings-python"
-version = "1.14.5"
+version = "1.14.6"
 description = "A Python handler for mkdocstrings."
 optional = false
 python-versions = ">=3.9"
 groups = ["docs"]
 files = [
-    {file = "mkdocstrings_python-1.14.5-py3-none-any.whl", hash = "sha256:ac394f273ae298aeaa6be4506768f05e61bd7c8119437ea98553354b1185c469"},
-    {file = "mkdocstrings_python-1.14.5.tar.gz", hash = "sha256:8582eeac8cce952f395d76ec636fc814757cba7d8458aa75ba0529a3aa10d98c"},
+    {file = "mkdocstrings_python-1.14.6-py3-none-any.whl", hash = "sha256:e0ca11b49ac0f23070afb566245f4ff80ea1700e03c9dbc143d70dbf1cae074e"},
+    {file = "mkdocstrings_python-1.14.6.tar.gz", hash = "sha256:3fb6589491614422d781dacca085c0c5a53a7063af37a2fea5864e24e378b03e"},
 ]
 
 [package.dependencies]
@@ -2262,4 +2262,4 @@ all = ["clickhouse-connect", "colorlog", "numpy", "pyarrow", "scikit-learn", "tq
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.14"
-content-hash = "2d6755171b0bb5cbefdfbfdce188db19f9ca24359749369b5ca8400377e0a206"
+content-hash = "9bd47b0722f131d67f0189faf770a4666c32a5a494be2df725e735e0ddfa05e9"

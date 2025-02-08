@@ -36,7 +36,7 @@ packages = [
 
 [tool.poetry.dependencies]
 # Core dependencies
-coola = ">=0.8.6,<1.0"
+coola = ">=0.8.7,<1.0"
 iden = ">=0.1,<1.0"
 objectory = ">=0.2,<1.0"
 polars = ">=1.0,<2.0"
