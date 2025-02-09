@@ -54,7 +54,7 @@ class ReplaceTransformer(BaseIn1Out1Transformer):
     >>> transformer
     ReplaceTransformer(in_col='old', out_col='new', exist_policy='raise', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3})
     >>> frame = pl.LazyFrame({"old": ["a", "b", "c", "d", "e"]})
-    >>> frame
+    >>> frame.collect()
     shape: (5, 1)
     ┌─────┐
     │ old │
@@ -68,7 +68,7 @@ class ReplaceTransformer(BaseIn1Out1Transformer):
     │ e   │
     └─────┘
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 2)
     ┌─────┬─────┐
     │ old ┆ new │
@@ -88,7 +88,7 @@ class ReplaceTransformer(BaseIn1Out1Transformer):
     ...     default=None,
     ... )
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 2)
     ┌─────┬──────┐
     │ old ┆ new  │
@@ -160,7 +160,7 @@ class InplaceReplaceTransformer(ReplaceTransformer):
     >>> transformer
     InplaceReplaceTransformer(col='col', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
     >>> frame = pl.LazyFrame({"col": ["a", "b", "c", "d", "e"]})
-    >>> frame
+    >>> frame.collect()
     shape: (5, 1)
     ┌─────┐
     │ col │
@@ -174,7 +174,7 @@ class InplaceReplaceTransformer(ReplaceTransformer):
     │ e   │
     └─────┘
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 1)
     ┌─────┐
     │ col │
@@ -189,7 +189,7 @@ class InplaceReplaceTransformer(ReplaceTransformer):
     └─────┘
     >>> transformer = InplaceReplace(col="col", old={"a": 1, "b": 2, "c": 3}, default=None)
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 1)
     ┌──────┐
     │ col  │
@@ -258,7 +258,7 @@ class ReplaceStrictTransformer(BaseIn1Out1Transformer):
     >>> transformer
     ReplaceStrictTransformer(in_col='old', out_col='new', exist_policy='raise', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
     >>> frame = pl.LazyFrame({"old": ["a", "b", "c", "d", "e"]})
-    >>> frame
+    >>> frame.collect()
     shape: (5, 1)
     ┌─────┐
     │ old │
@@ -272,7 +272,7 @@ class ReplaceStrictTransformer(BaseIn1Out1Transformer):
     │ e   │
     └─────┘
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 2)
     ┌─────┬─────┐
     │ old ┆ new │
@@ -292,7 +292,7 @@ class ReplaceStrictTransformer(BaseIn1Out1Transformer):
     ...     default=None,
     ... )
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 2)
     ┌─────┬──────┐
     │ old ┆ new  │
@@ -368,7 +368,7 @@ class InplaceReplaceStrictTransformer(ReplaceStrictTransformer):
     >>> transformer
     InplaceReplaceStrictTransformer(col='col', missing_policy='raise', old={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
     >>> frame = pl.LazyFrame({"col": ["a", "b", "c", "d", "e"]})
-    >>> frame
+    >>> frame.collect()
     shape: (5, 1)
     ┌─────┐
     │ col │
@@ -382,7 +382,7 @@ class InplaceReplaceStrictTransformer(ReplaceStrictTransformer):
     │ e   │
     └─────┘
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 1)
     ┌─────┐
     │ col │
@@ -399,7 +399,7 @@ class InplaceReplaceStrictTransformer(ReplaceStrictTransformer):
     ...     col="col", old={"a": 1, "b": 2, "c": 3}, default=None
     ... )
     >>> out = transformer.transform(frame)
-    >>> out
+    >>> out.collect()
     shape: (5, 1)
     ┌──────┐
     │ col  │
