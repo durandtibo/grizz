@@ -6,6 +6,8 @@ __all__ = [
     "BaseTransformer",
     "ConcatColumns",
     "ConcatColumnsTransformer",
+    "DropNanRow",
+    "DropNanRowTransformer",
     "DropNullRow",
     "DropNullRowTransformer",
     "InplaceReplace",
@@ -28,6 +30,8 @@ from grizz.lazy.transformer.base import (
 )
 from grizz.lazy.transformer.concat import ConcatColumnsTransformer
 from grizz.lazy.transformer.concat import ConcatColumnsTransformer as ConcatColumns
+from grizz.lazy.transformer.nan import DropNanRowTransformer
+from grizz.lazy.transformer.nan import DropNanRowTransformer as DropNanRow
 from grizz.lazy.transformer.null import DropNullRowTransformer
 from grizz.lazy.transformer.null import DropNullRowTransformer as DropNullRow
 from grizz.lazy.transformer.replace import InplaceReplaceStrictTransformer
