@@ -100,11 +100,9 @@ class TimeToSecondTransformer(BaseIn1Out1Transformer):
     def _transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Converting time column {self._in_col!r} to seconds {self._out_col!r} ...")
         return frame.with_columns(
-            frame.select(
-                pl.col(self._in_col)
-                .cast(pl.Duration)
-                .dt.total_microseconds()
-                .truediv(1e6)
-                .alias(self._out_col)
-            )
+            pl.col(self._in_col)
+            .cast(pl.Duration)
+            .dt.total_microseconds()
+            .truediv(1e6)
+            .alias(self._out_col)
         )
