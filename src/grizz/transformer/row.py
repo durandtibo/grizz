@@ -73,9 +73,9 @@ class FirstRowTransformer(BaseArgTransformer):
     def get_args(self) -> dict:
         return {"n": self._n}
 
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit_data(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(message_skip_fit(get_classname(self)))
 
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info(f"Select {self._n:,} rows...")
         return frame.limit(self._n)
