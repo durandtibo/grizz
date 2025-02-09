@@ -70,9 +70,9 @@ class ShrinkMemoryTransformer(BaseArgTransformer):
     def get_args(self) -> dict:
         return {}
 
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
+    def _fit_data(self, frame: pl.DataFrame) -> None:  # noqa: ARG002
         logger.info(message_skip_fit(get_classname(self)))
 
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         logger.info("Shrinking DataFrame memory usage...")
         return frame.shrink_to_fit()

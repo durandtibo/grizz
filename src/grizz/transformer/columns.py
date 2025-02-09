@@ -56,7 +56,7 @@ class BaseArgTransformer(BaseTransformer):
 
     def fit(self, frame: pl.DataFrame) -> None:
         with timeblock(f"{self.__class__.__qualname__}.fit - " + "time: {time}"):
-            self._fit_dataframe(frame)
+            self._fit_data(frame)
 
     def fit_transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         self.fit(frame)
@@ -64,7 +64,7 @@ class BaseArgTransformer(BaseTransformer):
 
     def transform(self, frame: pl.DataFrame) -> pl.DataFrame:
         with timeblock(f"{self.__class__.__qualname__}.transform - " + "time: {time}"):
-            out = self._transform_dataframe(frame)
+            out = self._transform_data(frame)
         logger.info(str_dataframe_diff(orig=frame, final=out))
         return out
 
@@ -77,7 +77,7 @@ class BaseArgTransformer(BaseTransformer):
         """
 
     @abstractmethod
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:
+    def _fit_data(self, frame: pl.DataFrame) -> None:
         r"""Fit to the data in the ``polars.DataFrame``.
 
         Args:
@@ -85,7 +85,7 @@ class BaseArgTransformer(BaseTransformer):
         """
 
     @abstractmethod
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         r"""Transform the data in the ``polars.DataFrame``.
 
         Args:
@@ -137,7 +137,7 @@ class BaseIn1Out1Transformer(BaseArgTransformer):
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
 
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:
+    def _fit_data(self, frame: pl.DataFrame) -> None:
         self._check_input_column(frame)
         if self._in_col not in frame:
             logger.info(
@@ -147,7 +147,7 @@ class BaseIn1Out1Transformer(BaseArgTransformer):
             return
         self._fit(frame)
 
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_column(frame)
         if self._in_col not in frame:
             logger.info(
@@ -292,7 +292,7 @@ class BaseIn2Out1Transformer(BaseArgTransformer):
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
 
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:
+    def _fit_data(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         if self._in1_col not in frame:
             logger.info(
@@ -308,7 +308,7 @@ class BaseIn2Out1Transformer(BaseArgTransformer):
             return
         self._fit(frame)
 
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
         if self._in1_col not in frame:
             logger.info(
@@ -449,11 +449,11 @@ class BaseInNTransformer(BaseArgTransformer):
         check_column_missing_policy(missing_policy)
         self._missing_policy = missing_policy
 
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:
+    def _fit_data(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         self._fit(frame)
 
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
         return self._transform(frame)
 
@@ -701,11 +701,11 @@ class BaseInNOut1Transformer(BaseInNTransformer):
         check_column_exist_policy(exist_policy)
         self._exist_policy = exist_policy
 
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:
+    def _fit_data(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         self._fit(frame)
 
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
         self._check_output_column(frame)
         return self._transform(frame)
@@ -802,7 +802,6 @@ class BaseInNOutNTransformer(BaseInNTransformer):
     │ 15   ┆ 25   ┆ 35   ┆ e    ┆ [15, 25, 35] │
     └──────┴──────┴──────┴──────┴──────────────┘
 
-
     ```
     """
 
@@ -824,11 +823,11 @@ class BaseInNOutNTransformer(BaseInNTransformer):
         check_column_exist_policy(exist_policy)
         self._exist_policy = exist_policy
 
-    def _fit_dataframe(self, frame: pl.DataFrame) -> None:
+    def _fit_data(self, frame: pl.DataFrame) -> None:
         self._check_input_columns(frame)
         self._fit(frame)
 
-    def _transform_dataframe(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _transform_data(self, frame: pl.DataFrame) -> pl.DataFrame:
         self._check_input_columns(frame)
         self._check_output_column(frame)
         out = self._transform(frame)
