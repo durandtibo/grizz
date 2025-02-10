@@ -7,7 +7,7 @@ __all__ = ["BaseArgTransformer"]
 
 import logging
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 from coola import objects_are_equal
 from coola.utils.format import repr_mapping_line, str_mapping_line
@@ -19,6 +19,8 @@ from grizz.utils.format import str_dataframe_diff
 
 if TYPE_CHECKING:
     import polars as pl
+
+    from grizz.types import Self
 
 logger = logging.getLogger(__name__)
 
