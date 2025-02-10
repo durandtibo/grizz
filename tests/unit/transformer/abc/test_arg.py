@@ -30,9 +30,16 @@ def dataframe() -> pl.DataFrame:
 class MyArgTransformer(BaseArgTransformer):
 
     def __init__(self, col: str, value: Any, requires_fit: bool = False) -> None:
-        super().__init__(requires_fit=requires_fit)
+        super().__init__()
         self._col = col
         self._value = value
+
+        self._requires_fit = requires_fit
+
+    def check_is_fitted(self) -> None:
+        if self._requires_fit and not self._is_fitted:
+            msg = "This transformer instance is not fitted yet"
+            raise TransformerNotFittedError(msg)
 
     def get_args(self) -> dict:
         return {"col": self._col, "value": self._value}
