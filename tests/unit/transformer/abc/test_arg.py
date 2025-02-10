@@ -7,6 +7,7 @@ import pytest
 from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import TransformerNotFittedError
 from grizz.transformer.abc import BaseArgTransformer
 
 
@@ -28,7 +29,8 @@ def dataframe() -> pl.DataFrame:
 
 class MyArgTransformer(BaseArgTransformer):
 
-    def __init__(self, col: str, value: Any) -> None:
+    def __init__(self, col: str, value: Any, requires_fit: bool = False) -> None:
+        super().__init__(requires_fit=requires_fit)
         self._col = col
         self._value = value
 
@@ -72,6 +74,18 @@ def test_base_arg_transformer_get_args() -> None:
     )
 
 
+def test_base_arg_transformer_check_is_fitted_requires_fit_false() -> None:
+    MyArgTransformer(col="col2", value=-1).check_is_fitted()
+
+
+def test_base_arg_transformer_check_is_fitted_requires_fit_true() -> None:
+    transformer = MyArgTransformer(col="col2", value=-1, requires_fit=True)
+    with pytest.raises(
+        TransformerNotFittedError, match="This transformer instance is not fitted yet"
+    ):
+        transformer.check_is_fitted()
+
+
 def test_base_arg_transformer_fit(dataframe: pl.DataFrame) -> None:
     MyArgTransformer(col="col", value=-1).fit(dataframe)
 
@@ -93,7 +107,7 @@ def test_base_arg_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
 
 def test_base_arg_transformer_transform(dataframe: pl.DataFrame) -> None:
     transformer = MyArgTransformer(col="col2", value=-1)
-    out = transformer.fit_transform(dataframe)
+    out = transformer.transform(dataframe)
     assert_frame_equal(
         out,
         pl.DataFrame(
@@ -104,3 +118,11 @@ def test_base_arg_transformer_transform(dataframe: pl.DataFrame) -> None:
             }
         ),
     )
+
+
+def test_base_arg_transformer_transform_requires_fit(dataframe: pl.DataFrame) -> None:
+    transformer = MyArgTransformer(col="col2", value=-1, requires_fit=True)
+    with pytest.raises(
+        TransformerNotFittedError, match="This transformer instance is not fitted yet"
+    ):
+        transformer.transform(dataframe)
