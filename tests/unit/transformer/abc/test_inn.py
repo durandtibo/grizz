@@ -7,6 +7,7 @@ import pytest
 from coola import objects_are_equal
 from polars.testing import assert_frame_equal
 
+from grizz.exceptions import TransformerNotFittedError
 from grizz.transformer.abc import BaseInNTransformer
 
 if TYPE_CHECKING:
@@ -39,11 +40,17 @@ class MyInNTransformer(BaseInNTransformer):
         value: Any,
         exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
+        requires_fit: bool = False,
     ) -> None:
         super().__init__(
             columns=columns, exclude_columns=exclude_columns, missing_policy=missing_policy
         )
         self._value = value
+        self._requires_fit = requires_fit
+
+    @property
+    def requires_fit(self) -> bool:
+        return self._requires_fit
 
     def get_args(self) -> dict:
         return super().get_args() | {"value": self._value}
@@ -117,6 +124,20 @@ def test_base_arg_transformer_get_args() -> None:
     )
 
 
+def test_base_arg_transformer_get_input_columns() -> None:
+    transformer = MyInNTransformer(columns=["col1", "col4"], value=-1)
+    assert transformer.get_input_columns() == ("col1", "col4")
+
+
+def test_base_arg_transformer_get_input_columns_columns_none() -> None:
+    transformer = MyInNTransformer(columns=None, value=-1)
+    with pytest.raises(
+        TransformerNotFittedError,
+        match="Input columns are unknown. Call 'fit' to initialize the columns",
+    ):
+        transformer.get_input_columns()
+
+
 def test_base_arg_transformer_fit(dataframe: pl.DataFrame) -> None:
     transformer = MyInNTransformer(columns=["col1", "col4"], value=-1)
     transformer.fit(dataframe)
@@ -136,10 +157,12 @@ def test_base_arg_transformer_fit_transform(dataframe: pl.DataFrame) -> None:
         out,
         pl.DataFrame(
             {
-                "col1": ["2020-1-1", None, "2020-1-31", "2020-12-31", None],
-                "col2": [1, -1, 3, -1, -1],
-                "col3": [None, None, None, None, None],
-            }
+                "col1": [1, 2, 3, 4, -1],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, float("nan"), 3.2, -1.0, 5.2],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float64, "col3": pl.String, "col4": pl.Float64},
         ),
     )
 
@@ -151,9 +174,11 @@ def test_base_arg_transformer_transform(dataframe: pl.DataFrame) -> None:
         out,
         pl.DataFrame(
             {
-                "col1": ["2020-1-1", None, "2020-1-31", "2020-12-31", None],
-                "col2": [1, -1, 3, -1, -1],
-                "col3": [None, None, None, None, None],
-            }
+                "col1": [1, 2, 3, 4, -1],
+                "col2": [1.2, 2.2, 3.2, 4.2, float("nan")],
+                "col3": ["a", "b", "c", "d", None],
+                "col4": [1.2, float("nan"), 3.2, -1.0, 5.2],
+            },
+            schema={"col1": pl.Int64, "col2": pl.Float64, "col3": pl.String, "col4": pl.Float64},
         ),
     )

@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
     import polars as pl
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -97,6 +98,7 @@ class BaseInNTransformer(BaseArgTransformer):
         exclude_columns: Sequence[str] = (),
         missing_policy: str = "raise",
     ) -> None:
+        super().__init__()
         self._columns = tuple(columns) if columns is not None else None
         self._exclude_columns = exclude_columns
 
@@ -222,6 +224,12 @@ class BaseInNTransformer(BaseArgTransformer):
         return find_missing_columns(frame, self._columns)
 
     def get_input_columns(self) -> tuple[str, ...]:
+        if self._columns is None:
+            msg = (
+                "Input columns are unknown. Call 'fit' to initialize the columns "
+                "before to call 'get_input_columns'"
+            )
+            raise TransformerNotFittedError(msg)
         return self._columns
 
     def _check_input_columns(self, frame: pl.DataFrame) -> None:
@@ -244,13 +252,8 @@ class BaseInNTransformer(BaseArgTransformer):
         self._check_input_columns(frame)
         return self._transform_data(frame)
 
-    def _verify_is_fitted(self) -> None:
-        if not self.is_fitted():
-            msg = "This transformer instance is not fitted yet."
-            raise TransformerNotFittedError(msg)
-
     @abstractmethod
-    def _fit_data(self, frame: pl.DataFrame) -> pl.DataFrame:
+    def _fit_data(self, frame: pl.DataFrame) -> None:
         r"""Fit to the data in the ``polars.DataFrame``.
 
         Args:
