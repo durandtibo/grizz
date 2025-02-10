@@ -8,6 +8,7 @@ __all__ = [
     "ColumnNotFoundError",
     "ColumnNotFoundWarning",
     "DataNotFoundError",
+    "TransformerNotFittedError",
 ]
 
 
@@ -29,3 +30,7 @@ class ColumnNotFoundWarning(RuntimeWarning):
 
 class DataNotFoundError(RuntimeError):
     r"""Raised when a DataFrame is requested but does not exist."""
+
+
+class TransformerNotFittedError(RuntimeError):
+    r"""Raised when a transformer is used before to fitting."""
