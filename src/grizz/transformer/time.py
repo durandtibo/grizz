@@ -1,4 +1,3 @@
-# noqa: A005
 r"""Contain ``polars.DataFrame`` transformers to process columns with
 time values."""
 

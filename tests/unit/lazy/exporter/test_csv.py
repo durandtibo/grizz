@@ -19,7 +19,8 @@ def lazyframe() -> pl.LazyFrame:
             "col1": [1, 2, 3, 4, 5],
             "col2": ["a", "b", "c", "d", "e"],
             "col3": [1.2, 2.2, 3.2, 4.2, 5.2],
-        }
+        },
+        schema={"col1": pl.Int64, "col2": pl.String, "col3": pl.Float64},
     )
 
 
@@ -90,13 +91,14 @@ def test_csv_exporter_export(tmp_path: Path, lazyframe: pl.LazyFrame) -> None:
 
 
 def test_csv_exporter_export_with_kwargs(tmp_path: Path, lazyframe: pl.LazyFrame) -> None:
+    separator = ","
     path = tmp_path.joinpath("my_folder/data.csv")
     assert not path.is_file()
-    CsvExporter(path, separator=";").export(lazyframe)
+    CsvExporter(path, separator=separator).export(lazyframe)
     assert path.is_file()
 
     assert_frame_equal(
-        pl.read_csv(path, separator=";"),
+        pl.read_csv(path, separator=separator),
         pl.DataFrame(
             {
                 "col1": [1, 2, 3, 4, 5],
