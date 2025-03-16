@@ -60,7 +60,7 @@ optional = true
 [tool.poetry.group.docs.dependencies]
 mike = "^2.1"
 mkdocs-material = "^9.6"
-mkdocstrings = { extras = ["python"], version = ">=0.28,<1.0" }
+mkdocstrings = { extras = ["python"], version = ">=0.29,<1.0" }
 
 [tool.poetry.group.dev.dependencies]
 black = ">=25.1"
@@ -72,7 +72,7 @@ pygments = "^2.19"
 pytest = "^8.3"
 pytest-cov = ">=6.0,<7.0"
 pytest-timeout = "^2.3"
-ruff = ">=0.9,<1.0"
+ruff = ">=0.11,<1.0"
 xdoctest = "^1.2"
 
 

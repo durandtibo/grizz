@@ -1,4 +1,3 @@
-# noqa: A005
 r"""Contain utility functions to configure the standard logging
 library."""
 

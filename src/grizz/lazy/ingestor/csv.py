@@ -1,4 +1,3 @@
-# noqa: A005
 r"""Contain the implementation of CSV ingestors."""
 
 from __future__ import annotations

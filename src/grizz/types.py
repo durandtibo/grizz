@@ -1,4 +1,3 @@
-# noqa: A005
 r"""Contain types."""
 
 from __future__ import annotations
