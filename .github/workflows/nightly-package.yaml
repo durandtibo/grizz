@@ -4,6 +4,10 @@ on:
     - cron: '40 12 * * *' # run at 12:40 AM UTC
   workflow_dispatch:  # to trigger manually
 
+permissions:
+  contents: read
+
+
 jobs:
   cyclic-imports:
     uses: ./.github/workflows/cyclic-imports.yaml
@@ -15,7 +19,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -43,7 +47,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -71,7 +75,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -99,7 +103,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-latest, macos-15, macos-14, macos-13 ]
+        os: [ ubuntu-latest, ubuntu-24.04, ubuntu-22.04, macos-latest, macos-15, macos-14, macos-13 ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
     steps:
@@ -150,7 +154,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'coola'
           package-version: ${{ matrix.coola-version }}
@@ -186,7 +190,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'iden'
           package-version: ${{ matrix.iden-version }}
@@ -222,7 +226,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'objectory'
           package-version: ${{ matrix.objectory-version }}
@@ -258,7 +262,7 @@ jobs:
           pip install grizz polars==${{ matrix.polars-version }}
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'polars'
           package-version: ${{ matrix.polars-version }}
@@ -299,7 +303,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'clickhouse-connect'
           package-version: ${{ matrix.clickhouse-connect-version }}
@@ -335,7 +339,7 @@ jobs:
           pip install arkas
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'colorlog'
           package-version: ${{ matrix.colorlog-version }}
@@ -380,7 +384,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'numpy'
           package-version: ${{ matrix.numpy-version }}
@@ -427,7 +431,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'pyarrow'
           package-version: ${{ matrix.pyarrow-version }}
@@ -463,7 +467,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'scikit-learn'
           package-version: ${{ matrix.scikit-learn-version }}
@@ -499,7 +503,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'scipy'
           package-version: ${{ matrix.scipy-version }}
@@ -535,7 +539,7 @@ jobs:
           pip install grizz
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'tqdm'
           package-version: ${{ matrix.tqdm-version }}

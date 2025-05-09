@@ -647,14 +647,14 @@ colorama = ">=0.4"
 
 [[package]]
 name = "iden"
-version = "0.1.0"
+version = "0.2.0"
 description = "simple library to manage a dataset of shards to train machine learning models"
 optional = false
 python-versions = "<3.14,>=3.9"
 groups = ["main"]
 files = [
-    {file = "iden-0.1.0-py3-none-any.whl", hash = "sha256:6d73a774b381f08cf50c72982d10dd30ba20fc4146cb40f7894e23fef47b4192"},
-    {file = "iden-0.1.0.tar.gz", hash = "sha256:bddbd2ea82e983937e87837c33adcb848355ab999609e6c1f0d8750e0589f0fe"},
+    {file = "iden-0.2.0-py3-none-any.whl", hash = "sha256:cd154a58d4f624bcabf94be598fd797e295f101ec0b7fbdb8cf785c5b76a491f"},
+    {file = "iden-0.2.0.tar.gz", hash = "sha256:caa304ad89e7e26caf34d7f83bf005b47a5a9ea76f8a4c7afc30ac77e43d7197"},
 ]
 
 [package.dependencies]
@@ -662,7 +662,7 @@ coola = ">=0.8.4,<1.0"
 objectory = ">=0.2,<1.0"
 
 [package.extras]
-all = ["numpy (>=1.22,<3.0)", "pyyaml (>=6.0,<7.0)", "safetensors (>=0.4,<1.0)", "torch (>=1.11,<2.3) ; sys_platform == \"darwin\" and platform_machine != \"arm64\" and python_version >= \"3.9\" and python_version < \"3.13\"", "torch (>=1.11,<3.0) ; python_version >= \"3.9\" and python_version < \"3.13\""]
+all = ["cloudpickle (>=3.0,<4.0)", "joblib (>=1.3,<2.0)", "numpy (>=1.22,<3.0)", "pyyaml (>=6.0,<7.0)", "safetensors (>=0.4,<1.0)", "torch (>=1.11,<2.3) ; sys_platform == \"darwin\" and platform_machine != \"arm64\" and python_version >= \"3.9\" and python_version < \"3.13\"", "torch (>=1.11,<3.0) ; python_version >= \"3.9\" and python_version < \"3.13\""]
 
 [[package]]
 name = "identify"
@@ -1283,19 +1283,19 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polars"
-version = "1.28.1"
+version = "1.29.0"
 description = "Blazingly fast DataFrame library"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "polars-1.28.1-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:8f88d2ba73a4e831eb39433fcf9c84619f8c21a3d83ce9db465b822b4321bb95"},
-    {file = "polars-1.28.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:36a199344e2b6b9d5fa30d2835830965f8c7677b38a9e96b1f9be482c31c18c6"},
-    {file = "polars-1.28.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f37a14458a7336351ae32f199a566e784bd0b25895d0f83c6c02bd0f0c25c57d"},
-    {file = "polars-1.28.1-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:c0d209295627fbca45ebb2fa3279df291b1360685ce3f12e24f8327a79b3d384"},
-    {file = "polars-1.28.1-cp39-abi3-win_amd64.whl", hash = "sha256:b1a17108e0ed3844a2e55da3a674414523aaab29299a2956cb691cdfc0db6246"},
-    {file = "polars-1.28.1-cp39-abi3-win_arm64.whl", hash = "sha256:35ca8ab1937e5c72496789968a53e138796e1f5156c832d52f846ef7332149d7"},
-    {file = "polars-1.28.1.tar.gz", hash = "sha256:cdc0a62a1452e2daf1777e36fcf9351424cba2a588827cc32550fe0fa79dec82"},
+    {file = "polars-1.29.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:d053ee3217df31468caf2f5ddb9fd0f3a94fd42afdf7d9abe23d9d424adca02b"},
+    {file = "polars-1.29.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:14131078e365eae5ccda3e67383cd43c0c0598d7f760bdf1cb4082566c5494ce"},
+    {file = "polars-1.29.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:54f6902da333f99208b8d27765d580ba0299b412787c0564275912122c228e40"},
+    {file = "polars-1.29.0-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:7a0ac6a11088279af4d715f4b58068835f551fa5368504a53401743006115e78"},
+    {file = "polars-1.29.0-cp39-abi3-win_amd64.whl", hash = "sha256:f5aac4656e58b1e12f9481950981ef68b5b0e53dd4903bd72472efd2d09a74c8"},
+    {file = "polars-1.29.0-cp39-abi3-win_arm64.whl", hash = "sha256:0c105b07b980b77fe88c3200b015bf4695e53185385f0f244c13e2d1027c7bbf"},
+    {file = "polars-1.29.0.tar.gz", hash = "sha256:d2acb71fce1ff0ea76db5f648abd91a7a6c460fafabce9a2e8175184efa00d02"},
 ]
 
 [package.extras]

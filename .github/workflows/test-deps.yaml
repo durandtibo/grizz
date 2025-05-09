@@ -3,6 +3,9 @@ on:
   workflow_call:
   workflow_dispatch:  # to trigger manually
 
+permissions:
+  contents: read
+
 jobs:
   coola:
     runs-on: ${{ matrix.os }}
@@ -36,7 +39,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'coola'
           package-version: ${{ matrix.coola-version }}
@@ -84,7 +87,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'iden'
           package-version: ${{ matrix.iden-version }}
@@ -132,7 +135,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'objectory'
           package-version: ${{ matrix.objectory-version }}
@@ -180,7 +183,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'polars'
           package-version: ${{ matrix.polars-version }}
@@ -233,7 +236,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'clickhouse-connect'
           package-version: ${{ matrix.clickhouse-connect-version }}
@@ -281,7 +284,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'colorlog'
           package-version: ${{ matrix.colorlog-version }}
@@ -338,7 +341,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'numpy'
           package-version: ${{ matrix.numpy-version }}
@@ -397,7 +400,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'pyarrow'
           package-version: ${{ matrix.pyarrow-version }}
@@ -445,7 +448,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'scikit-learn'
           package-version: ${{ matrix.scikit-learn-version }}
@@ -493,7 +496,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'scipy'
           package-version: ${{ matrix.scipy-version }}
@@ -541,7 +544,7 @@ jobs:
           make install
 
       - name: Install valid package version
-        uses: durandtibo/pip-install-package-action@v0.3.1
+        uses: durandtibo/pip-install-package-action@v0.3.2
         with:
           package-name: 'tqdm'
           package-version: ${{ matrix.tqdm-version }}
