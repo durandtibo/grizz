@@ -167,7 +167,7 @@ def setup_exporter(
     return exporter
 
 
-class ExporterEqualityComparator(BaseEqualityComparator[BaseExporter]):
+class ExporterEqualityComparator(BaseEqualityComparator[BaseExporter]):  # noqa: PLW1641
     r"""Implement an equality comparator for ``BaseExporter``
     objects."""
 

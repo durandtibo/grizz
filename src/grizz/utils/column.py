@@ -182,8 +182,7 @@ def check_existing_columns(
         raise ColumnExistsError(msg)
     if exist_policy == "warn":
         msg = (
-            f"{len(existing_cols):,} {m} in the DataFrame "
-            f"and will be overwritten: {existing_cols}"
+            f"{len(existing_cols):,} {m} in the DataFrame and will be overwritten: {existing_cols}"
         )
         warnings.warn(msg, ColumnExistsWarning, stacklevel=2)
 

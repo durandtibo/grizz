@@ -150,7 +150,7 @@ def setup_ingestor(
     return ingestor
 
 
-class IngestorEqualityComparator(BaseEqualityComparator[BaseIngestor]):
+class IngestorEqualityComparator(BaseEqualityComparator[BaseIngestor]):  # noqa: PLW1641
     r"""Implement an equality comparator for ``BaseIngestor``
     objects."""
 
