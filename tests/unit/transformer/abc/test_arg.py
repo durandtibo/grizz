@@ -28,7 +28,6 @@ def dataframe() -> pl.DataFrame:
 
 
 class MyArgTransformer(BaseArgTransformer):
-
     def __init__(self, col: str, value: Any, requires_fit: bool = False) -> None:
         super().__init__()
         self._col = col

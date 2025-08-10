@@ -24,7 +24,6 @@ def dataframe() -> pl.DataFrame:
 
 
 class MyColumnsTransformer(BaseInNTransformer):
-
     def _fit(self, frame: pl.DataFrame) -> None:
         pass
 

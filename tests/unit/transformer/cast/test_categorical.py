@@ -365,8 +365,7 @@ def test_inplace_categorical_cast_transformer_repr() -> None:
 
 def test_inplace_categorical_cast_transformer_repr_with_kwargs() -> None:
     assert repr(InplaceCategoricalCast(col="col4", ordering="lexical")) == (
-        "InplaceCategoricalCastTransformer(col='col4', missing_policy='raise', "
-        "ordering='lexical')"
+        "InplaceCategoricalCastTransformer(col='col4', missing_policy='raise', ordering='lexical')"
     )
 
 
@@ -378,8 +377,7 @@ def test_inplace_categorical_cast_transformer_str() -> None:
 
 def test_inplace_categorical_cast_transformer_str_with_kwargs() -> None:
     assert str(InplaceCategoricalCast(col="col4", ordering="lexical")) == (
-        "InplaceCategoricalCastTransformer(col='col4', missing_policy='raise', "
-        "ordering='lexical')"
+        "InplaceCategoricalCastTransformer(col='col4', missing_policy='raise', ordering='lexical')"
     )
 
 

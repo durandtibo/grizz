@@ -326,7 +326,7 @@ def setup_transformer(
     return transformer
 
 
-class TransformerEqualityComparator(BaseEqualityComparator[BaseTransformer]):
+class TransformerEqualityComparator(BaseEqualityComparator[BaseTransformer]):  # noqa: PLW1641
     r"""Implement an equality comparator for ``BaseTransformer``
     objects."""
 
