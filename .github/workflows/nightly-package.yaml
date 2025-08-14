@@ -327,7 +327,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
-        clickhouse-connect-version: [ 0.8.13, 0.7.19, 0.7.0 ]
+        clickhouse-connect-version: [ 0.8.18, 0.7.19, 0.7.0 ]
 
     steps:
       - name: Checkout
