@@ -83,7 +83,7 @@ def test_lownan_ge(value: float) -> None:
 
 def test_lownan_ge_incorrect_type() -> None:
     with pytest.raises(
-        TypeError, match="'>=' not supported between instances of 'float' and 'str'"
+        TypeError, match=r"'>=' not supported between instances of 'float' and 'str'"
     ):
         LowNaN().__ge__("abc")
 
@@ -94,7 +94,9 @@ def test_lownan_gt(value: float) -> None:
 
 
 def test_lownan_gt_incorrect_type() -> None:
-    with pytest.raises(TypeError, match="'>' not supported between instances of 'float' and 'str'"):
+    with pytest.raises(
+        TypeError, match=r"'>' not supported between instances of 'float' and 'str'"
+    ):
         LowNaN().__gt__("abc")
 
 
@@ -105,7 +107,7 @@ def test_lownan_le(value: float) -> None:
 
 def test_lownan_le_incorrect_type() -> None:
     with pytest.raises(
-        TypeError, match="'<=' not supported between instances of 'float' and 'str'"
+        TypeError, match=r"'<=' not supported between instances of 'float' and 'str'"
     ):
         LowNaN().__le__("abc")
 
@@ -116,5 +118,7 @@ def test_lownan_lt(value: float) -> None:
 
 
 def test_lownan_lt_incorrect_type() -> None:
-    with pytest.raises(TypeError, match="'<' not supported between instances of 'float' and 'str'"):
+    with pytest.raises(
+        TypeError, match=r"'<' not supported between instances of 'float' and 'str'"
+    ):
         LowNaN().__lt__("abc")

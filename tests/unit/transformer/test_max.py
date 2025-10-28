@@ -128,7 +128,7 @@ def test_max_horizontal_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxHorizontal(columns=["col1", "col3", "col5"], out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -137,7 +137,7 @@ def test_max_horizontal_transformer_fit_missing_policy_warn(dataframe: pl.DataFr
         columns=["col1", "col3", "col5"], out_col="out", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -290,7 +290,7 @@ def test_max_horizontal_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxHorizontal(columns=["col1", "col3"], out_col="col2")
-    with pytest.raises(ColumnExistsError, match="column 'col2' already exists in the DataFrame"):
+    with pytest.raises(ColumnExistsError, match=r"column 'col2' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -298,7 +298,7 @@ def test_max_horizontal_transformer_transform_exist_policy_warn(dataframe: pl.Da
     transformer = MaxHorizontal(columns=["col1", "col3"], out_col="col2", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
-        match="column 'col2' already exists in the DataFrame and will be overwritten",
+        match=r"column 'col2' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -354,7 +354,7 @@ def test_max_horizontal_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = MaxHorizontal(columns=["col1", "col3", "col5"], out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -363,7 +363,7 @@ def test_max_horizontal_transformer_transform_missing_policy_warn(dataframe: pl.
         columns=["col1", "col3", "col5"], out_col="out", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

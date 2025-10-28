@@ -132,7 +132,7 @@ def test_label_encoder_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = LabelEncoder(in_col="in", out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'in' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
@@ -142,7 +142,7 @@ def test_label_encoder_transformer_fit_missing_policy_warn(
 ) -> None:
     transformer = LabelEncoder(in_col="in", out_col="out", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'in' is missing in the DataFrame and will be ignored"
     ):
         transformer.fit(dataframe)
     assert not hasattr(transformer._encoder, "classes_")
@@ -199,7 +199,7 @@ def test_label_encoder_transformer_transform() -> None:
 def test_label_encoder_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> None:
     transformer = LabelEncoder(in_col="col1", out_col="out")
     with pytest.raises(
-        sklearn.exceptions.NotFittedError, match="This LabelEncoder instance is not fitted yet."
+        sklearn.exceptions.NotFittedError, match=r"This LabelEncoder instance is not fitted yet."
     ):
         transformer.transform(dataframe)
 
@@ -238,7 +238,7 @@ def test_label_encoder_transformer_transform_exist_policy_raise(
 ) -> None:
     transformer = LabelEncoder(in_col="col1", out_col="col2")
     transformer._encoder.fit(["tokyo", "amsterdam", "paris", "tokyo"])
-    with pytest.raises(ColumnExistsError, match="column 'col2' already exists in the DataFrame"):
+    with pytest.raises(ColumnExistsError, match=r"column 'col2' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -250,7 +250,7 @@ def test_label_encoder_transformer_transform_exist_policy_warn(
     transformer._encoder.fit(["tokyo", "amsterdam", "paris", "tokyo"])
     with pytest.warns(
         ColumnExistsWarning,
-        match="column 'col2' already exists in the DataFrame and will be overwritten",
+        match=r"column 'col2' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -304,7 +304,7 @@ def test_label_encoder_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = LabelEncoder(in_col="in", out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'in' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -314,7 +314,7 @@ def test_label_encoder_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = LabelEncoder(in_col="in", out_col="out", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'in' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -339,7 +339,7 @@ def test_label_encoder_transformer_transform_missing_policy_warn(
 def test_label_encoder_transformer_no_sklearn() -> None:
     with (
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
-        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'sklearn' package is required but not installed."),
     ):
         LabelEncoder(in_col="in", out_col="out")
 
@@ -416,7 +416,7 @@ def test_inplace_label_encoder_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceLabelEncoder(col="col")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
@@ -426,7 +426,7 @@ def test_inplace_label_encoder_transformer_fit_missing_policy_warn(
 ) -> None:
     transformer = InplaceLabelEncoder(col="col", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignored"
     ):
         transformer.fit(dataframe)
     assert not hasattr(transformer._encoder, "classes_")
@@ -471,7 +471,7 @@ def test_inplace_label_encoder_transformer_transform_not_fitted(dataframe: pl.Da
     transformer = InplaceLabelEncoder(col="col1")
     with pytest.raises(
         sklearn.exceptions.NotFittedError,
-        match="This LabelEncoder instance is not fitted yet.",
+        match=r"This LabelEncoder instance is not fitted yet.",
     ):
         transformer.transform(dataframe)
 
@@ -508,7 +508,7 @@ def test_inplace_label_encoder_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceLabelEncoder(col="col")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -518,7 +518,7 @@ def test_inplace_label_encoder_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = InplaceLabelEncoder(col="col", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -543,6 +543,6 @@ def test_inplace_label_encoder_transformer_transform_missing_policy_warn(
 def test_inplace_label_encoder_transformer_no_sklearn() -> None:
     with (
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
-        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'sklearn' package is required but not installed."),
     ):
         InplaceLabelEncoder(col="col")

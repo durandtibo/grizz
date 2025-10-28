@@ -187,7 +187,7 @@ def test_ordinal_encoder_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = OrdinalEncoder(columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -199,7 +199,7 @@ def test_ordinal_encoder_transformer_fit_missing_policy_warn(
         columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
     assert transformer._encoder.n_features_in_ == 3
@@ -518,11 +518,11 @@ def test_ordinal_encoder_transformer_transform_not_fitted(dataframe: pl.DataFram
     if compare_version("scikit-learn", operator.ge, "1.4.0"):
         exception = pytest.raises(
             sklearn.exceptions.NotFittedError,
-            match="This OrdinalEncoder instance is not fitted yet.",
+            match=r"This OrdinalEncoder instance is not fitted yet.",
         )
     else:
         exception = pytest.raises(
-            AttributeError, match="'OrdinalEncoder' object has no attribute '_missing_indices'"
+            AttributeError, match=r"'OrdinalEncoder' object has no attribute '_missing_indices'"
         )
     with exception:
         transformer.transform(dataframe)
@@ -560,7 +560,7 @@ def test_ordinal_encoder_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="")
-    with pytest.raises(ColumnExistsError, match="3 columns already exist in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match=r"3 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -576,7 +576,7 @@ def test_ordinal_encoder_transformer_transform_exist_policy_warn(
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="3 columns already exist in the DataFrame and will be overwritten:",
+        match=r"3 columns already exist in the DataFrame and will be overwritten:",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -639,7 +639,7 @@ def test_ordinal_encoder_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = OrdinalEncoder(columns=["col1", "col2", "col3", "col5"], prefix="", suffix="_out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -654,7 +654,7 @@ def test_ordinal_encoder_transformer_transform_missing_policy_warn(
         [[4, -1.0, "c"], [5, -2.0, "a"], [1, -3.0, "d"], [2, -4.0, "b"], [3, -5.0, "e"]]
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -685,6 +685,6 @@ def test_ordinal_encoder_transformer_transform_missing_policy_warn(
 def test_ordinal_encoder_transformer_no_sklearn() -> None:
     with (
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
-        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'sklearn' package is required but not installed."),
     ):
         OrdinalEncoder(columns=["col1", "col2", "col3"], prefix="", suffix="_out")

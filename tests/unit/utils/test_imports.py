@@ -41,7 +41,7 @@ def test_check_clickhouse_connect_without_package() -> None:
     with (
         patch("grizz.utils.imports.is_clickhouse_connect_available", lambda: False),
         pytest.raises(
-            RuntimeError, match="'clickhouse_connect' package is required but not installed."
+            RuntimeError, match=r"'clickhouse_connect' package is required but not installed."
         ),
     ):
         check_clickhouse_connect()
@@ -96,7 +96,7 @@ def test_check_colorlog_with_package() -> None:
 def test_check_colorlog_without_package() -> None:
     with (
         patch("grizz.utils.imports.is_colorlog_available", lambda: False),
-        pytest.raises(RuntimeError, match="'colorlog' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'colorlog' package is required but not installed."),
     ):
         check_colorlog()
 
@@ -150,7 +150,7 @@ def test_check_pyarrow_with_package() -> None:
 def test_check_pyarrow_without_package() -> None:
     with (
         patch("grizz.utils.imports.is_pyarrow_available", lambda: False),
-        pytest.raises(RuntimeError, match="'pyarrow' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'pyarrow' package is required but not installed."),
     ):
         check_pyarrow()
 
@@ -204,7 +204,7 @@ def test_check_sklearn_with_package() -> None:
 def test_check_sklearn_without_package() -> None:
     with (
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
-        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'sklearn' package is required but not installed."),
     ):
         check_sklearn()
 
@@ -258,7 +258,7 @@ def test_check_tqdm_with_package() -> None:
 def test_check_tqdm_without_package() -> None:
     with (
         patch("grizz.utils.imports.is_tqdm_available", lambda: False),
-        pytest.raises(RuntimeError, match="'tqdm' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'tqdm' package is required but not installed."),
     ):
         check_tqdm()
 

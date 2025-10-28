@@ -115,14 +115,14 @@ def test_time_to_second_transformer_fit_missing_policy_ignore(dataframe: pl.Data
 
 def test_time_to_second_transformer_fit_missing_policy_raise(dataframe: pl.DataFrame) -> None:
     transformer = TimeToSecond(in_col="in", out_col="second")
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'in' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
 def test_time_to_second_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = TimeToSecond(in_col="in", out_col="second", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'in' is missing in the DataFrame and will be ignored"
     ):
         transformer.fit(dataframe)
 
@@ -196,7 +196,7 @@ def test_time_to_second_transformer_transform_exist_policy_ignore(dataframe: pl.
 
 def test_time_to_second_transformer_transform_exist_policy_raise(dataframe: pl.DataFrame) -> None:
     transformer = TimeToSecond(in_col="time", out_col="col")
-    with pytest.raises(ColumnExistsError, match="column 'col' already exists in the DataFrame"):
+    with pytest.raises(ColumnExistsError, match=r"column 'col' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -204,7 +204,7 @@ def test_time_to_second_transformer_transform_exist_policy_warn(dataframe: pl.Da
     transformer = TimeToSecond(in_col="time", out_col="col", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
-        match="column 'col' already exists in the DataFrame and will be overwritten",
+        match=r"column 'col' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -252,14 +252,14 @@ def test_time_to_second_transformer_transform_missing_policy_ignore(
 
 def test_time_to_second_transformer_transform_missing_policy_raise(dataframe: pl.DataFrame) -> None:
     transformer = TimeToSecond(in_col="in", out_col="second")
-    with pytest.raises(ColumnNotFoundError, match="column 'in' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'in' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
 def test_time_to_second_transformer_transform_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = TimeToSecond(in_col="in", out_col="second", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'in' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'in' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

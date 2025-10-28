@@ -138,14 +138,14 @@ def test_categorical_cast_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = CategoricalCast(in_col="col", out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
 def test_categorical_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = CategoricalCast(in_col="col", out_col="out", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignored"
     ):
         transformer.fit(dataframe)
 
@@ -270,7 +270,7 @@ def test_categorical_cast_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = CategoricalCast(in_col="col4", out_col="col3")
-    with pytest.raises(ColumnExistsError, match="column 'col3' already exists in the DataFrame"):
+    with pytest.raises(ColumnExistsError, match=r"column 'col3' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -280,7 +280,7 @@ def test_categorical_cast_transformer_transform_exist_policy_warn(
     transformer = CategoricalCast(in_col="col4", out_col="col3", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
-        match="column 'col3' already exists in the DataFrame and will be overwritten",
+        match=r"column 'col3' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -326,7 +326,7 @@ def test_categorical_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = CategoricalCast(in_col="col", out_col="out")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -335,7 +335,7 @@ def test_categorical_cast_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = CategoricalCast(in_col="col", out_col="out", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -440,7 +440,7 @@ def test_inplace_categorical_cast_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceCategoricalCast(col="col")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
@@ -449,7 +449,7 @@ def test_inplace_categorical_cast_transformer_fit_missing_policy_warn(
 ) -> None:
     transformer = InplaceCategoricalCast(col="col", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignored"
     ):
         transformer.fit(dataframe)
 
@@ -564,7 +564,7 @@ def test_inplace_categorical_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceCategoricalCast(col="col")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -573,7 +573,7 @@ def test_inplace_categorical_cast_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = InplaceCategoricalCast(col="col", missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignored"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignored"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
