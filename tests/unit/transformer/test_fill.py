@@ -163,7 +163,7 @@ def test_fill_nan_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNan(columns=["col2", "col3", "col5"], prefix="", suffix="_out", value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -172,7 +172,7 @@ def test_fill_nan_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -
         columns=["col1", "col4", "col5"], prefix="", suffix="_out", missing_policy="warn", value=100
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -320,7 +320,7 @@ def test_fill_nan_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNan(columns=["col1", "col4"], prefix="", suffix="", value=100)
-    with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match=r"2 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -332,7 +332,7 @@ def test_fill_nan_transformer_transform_exist_policy_warn(
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="2 columns already exist in the DataFrame and will be overwritten:",
+        match=r"2 columns already exist in the DataFrame and will be overwritten:",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -385,7 +385,7 @@ def test_fill_nan_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNan(columns=["col2", "col3", "col5"], prefix="", suffix="_out", value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -394,7 +394,7 @@ def test_fill_nan_transformer_transform_missing_policy_warn(dataframe: pl.DataFr
         columns=["col1", "col4", "col5"], prefix="", suffix="_out", missing_policy="warn", value=100
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -549,14 +549,14 @@ def test_inplace_fill_nan_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceFillNan(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
 def test_inplace_fill_nan_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = InplaceFillNan(columns=["col1", "col4", "col5"], missing_policy="warn", value=100)
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -687,7 +687,7 @@ def test_inplace_fill_nan_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceFillNan(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -696,7 +696,7 @@ def test_inplace_fill_nan_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = InplaceFillNan(columns=["col1", "col4", "col5"], missing_policy="warn", value=100)
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -871,7 +871,7 @@ def test_fill_null_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNull(columns=["col2", "col3", "col5"], prefix="", suffix="_out", value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -880,7 +880,7 @@ def test_fill_null_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) 
         columns=["col1", "col4", "col5"], prefix="", suffix="_out", missing_policy="warn", value=100
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -1038,7 +1038,7 @@ def test_fill_null_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNull(columns=["col1", "col4"], prefix="", suffix="", value=100)
-    with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match=r"2 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -1050,7 +1050,7 @@ def test_fill_null_transformer_transform_exist_policy_warn(
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="2 columns already exist in the DataFrame and will be overwritten:",
+        match=r"2 columns already exist in the DataFrame and will be overwritten:",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -1105,7 +1105,7 @@ def test_fill_null_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = FillNull(columns=["col2", "col3", "col5"], prefix="", suffix="_out", value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -1114,7 +1114,7 @@ def test_fill_null_transformer_transform_missing_policy_warn(dataframe: pl.DataF
         columns=["col1", "col4", "col5"], prefix="", suffix="_out", missing_policy="warn", value=100
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -1273,7 +1273,7 @@ def test_inplace_fill_null_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceFillNull(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -1282,7 +1282,7 @@ def test_inplace_fill_null_transformer_fit_missing_policy_warn(dataframe: pl.Dat
         columns=["col1", "col4", "col5"], missing_policy="warn", value=100
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -1408,7 +1408,7 @@ def test_inplace_fill_null_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceFillNull(columns=["col2", "col3", "col5"], value=100)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -1419,7 +1419,7 @@ def test_inplace_fill_null_transformer_transform_missing_policy_warn(
         columns=["col1", "col4", "col5"], missing_policy="warn", value=100
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

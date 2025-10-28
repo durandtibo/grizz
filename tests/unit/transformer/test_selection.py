@@ -116,7 +116,7 @@ def test_column_selection_transformer_fit_missing_policy_warn(
 ) -> None:
     transformer = ColumnSelection(columns=["col", "col1"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -216,7 +216,7 @@ def test_column_selection_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = ColumnSelection(columns=["col", "col1"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

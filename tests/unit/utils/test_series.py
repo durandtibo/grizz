@@ -26,5 +26,5 @@ def test_compute_stats_boolean_empty() -> None:
 
 
 def test_compute_stats_boolean_incorrect_dtype() -> None:
-    with pytest.raises(ValueError, match="Incorrect dtype"):
+    with pytest.raises(ValueError, match=r"Incorrect dtype"):
         compute_stats_boolean(pl.Series())

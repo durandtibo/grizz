@@ -87,7 +87,7 @@ def test_base_arg_transformer_check_is_fitted_requires_fit_false() -> None:
 def test_base_arg_transformer_check_is_fitted_requires_fit_true() -> None:
     transformer = MyArgTransformer(col="col2", value=-1, requires_fit=True)
     with pytest.raises(
-        TransformerNotFittedError, match="This transformer instance is not fitted yet"
+        TransformerNotFittedError, match=r"This transformer instance is not fitted yet"
     ):
         transformer.check_is_fitted()
 
@@ -129,6 +129,6 @@ def test_base_arg_transformer_transform(dataframe: pl.DataFrame) -> None:
 def test_base_arg_transformer_transform_requires_fit(dataframe: pl.DataFrame) -> None:
     transformer = MyArgTransformer(col="col2", value=-1, requires_fit=True)
     with pytest.raises(
-        TransformerNotFittedError, match="This transformer instance is not fitted yet"
+        TransformerNotFittedError, match=r"This transformer instance is not fitted yet"
     ):
         transformer.transform(dataframe)

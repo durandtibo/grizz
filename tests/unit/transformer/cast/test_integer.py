@@ -191,7 +191,7 @@ def test_integer_cast_transformer_fit_missing_policy_raise(
     transformer = IntegerCast(
         columns=["col1", "col3", "col5"], dtype=pl.Float32, prefix="", suffix="_out"
     )
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -204,7 +204,7 @@ def test_integer_cast_transformer_fit_missing_policy_warn(dataframe: pl.DataFram
         missing_policy="warn",
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -344,7 +344,7 @@ def test_integer_cast_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = IntegerCast(columns=["col1", "col3"], dtype=pl.Float32, prefix="", suffix="")
-    with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match=r"2 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -356,7 +356,7 @@ def test_integer_cast_transformer_transform_exist_policy_warn(
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="2 columns already exist in the DataFrame and will be overwritten:",
+        match=r"2 columns already exist in the DataFrame and will be overwritten:",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -415,7 +415,7 @@ def test_integer_cast_transformer_transform_missing_policy_raise(
     transformer = IntegerCast(
         columns=["col1", "col3", "col5"], dtype=pl.Float32, prefix="", suffix="_out"
     )
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -430,7 +430,7 @@ def test_integer_cast_transformer_transform_missing_policy_warn(
         missing_policy="warn",
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -564,7 +564,7 @@ def test_inplace_integer_cast_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceIntegerCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -575,7 +575,7 @@ def test_inplace_integer_cast_transformer_fit_missing_policy_warn(dataframe: pl.
         missing_policy="warn",
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -679,7 +679,7 @@ def test_inplace_integer_cast_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceIntegerCast(columns=["col1", "col3", "col5"], dtype=pl.Float32)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -690,7 +690,7 @@ def test_inplace_integer_cast_transformer_transform_missing_policy_warn(
         columns=["col1", "col3", "col5"], dtype=pl.Float32, missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

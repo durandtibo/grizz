@@ -74,7 +74,7 @@ def test_find_time_unit(interval: str, time_unit: str) -> None:
     ["ns", "us", "ms", "s", "m", "h", "d", "w", "mo", "q", "y", "abc"],
 )
 def test_find_time_unit_incorrect(interval: str) -> None:
-    with pytest.raises(RuntimeError, match="could not find the time unit of"):
+    with pytest.raises(RuntimeError, match=r"could not find the time unit of"):
         find_time_unit(interval)
 
 
@@ -92,7 +92,7 @@ def test_interval_to_strftime_format_month() -> None:
 
 
 def test_interval_to_strftime_format_invalid() -> None:
-    with pytest.raises(RuntimeError, match="could not find the time unit of invalid"):
+    with pytest.raises(RuntimeError, match=r"could not find the time unit of invalid"):
         interval_to_strftime_format("invalid")
 
 
@@ -145,6 +145,6 @@ def test_time_unit_to_strftime_format_month() -> None:
 
 def test_time_unit_to_strftime_format_invalid() -> None:
     with pytest.raises(
-        RuntimeError, match="Incorrect time unit invalid. The valid time units are:"
+        RuntimeError, match=r"Incorrect time unit invalid. The valid time units are:"
     ):
         time_unit_to_strftime_format("invalid")

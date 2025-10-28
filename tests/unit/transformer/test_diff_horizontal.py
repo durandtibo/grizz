@@ -128,7 +128,7 @@ def test_abs_diff_horizontal_transformer_fit_missing_policy_raise_in1(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffHorizontal(in1_col="col", in2_col="col2", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
@@ -136,7 +136,7 @@ def test_abs_diff_horizontal_transformer_fit_missing_policy_raise_in2(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffHorizontal(in1_col="col1", in2_col="missing", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'missing' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
@@ -147,7 +147,7 @@ def test_abs_diff_horizontal_transformer_fit_missing_policy_warn_in1(
         in1_col="col", in2_col="col2", out_col="diff", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignore"
     ):
         transformer.fit(dataframe)
 
@@ -160,7 +160,7 @@ def test_abs_diff_horizontal_transformer_fit_missing_policy_warn_in2(
     )
     with pytest.warns(
         ColumnNotFoundWarning,
-        match="column 'missing' is missing in the DataFrame and will be ignore",
+        match=r"column 'missing' is missing in the DataFrame and will be ignore",
     ):
         transformer.fit(dataframe)
 
@@ -266,7 +266,7 @@ def test_abs_diff_horizontal_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffHorizontal(in1_col="col1", in2_col="col2", out_col="col3")
-    with pytest.raises(ColumnExistsError, match="column 'col3' already exists in the DataFrame"):
+    with pytest.raises(ColumnExistsError, match=r"column 'col3' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -278,7 +278,7 @@ def test_abs_diff_horizontal_transformer_transform_exist_policy_warn(
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="column 'col3' already exists in the DataFrame and will be overwritten",
+        match=r"column 'col3' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -334,7 +334,7 @@ def test_abs_diff_horizontal_transformer_transform_missing_policy_raise_in1(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffHorizontal(in1_col="col", in2_col="col2", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -342,7 +342,7 @@ def test_abs_diff_horizontal_transformer_transform_missing_policy_raise_in2(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = AbsDiffHorizontal(in1_col="col1", in2_col="missing", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'missing' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -353,7 +353,7 @@ def test_abs_diff_horizontal_transformer_transform_missing_policy_warn_in1(
         in1_col="col", in2_col="col2", out_col="diff", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignore"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -373,7 +373,7 @@ def test_abs_diff_horizontal_transformer_transform_missing_policy_warn_in2(
     )
     with pytest.warns(
         ColumnNotFoundWarning,
-        match="column 'missing' is missing in the DataFrame and will be ignore",
+        match=r"column 'missing' is missing in the DataFrame and will be ignore",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -488,7 +488,7 @@ def test_diff_horizontal_transformer_fit_missing_policy_raise_in1(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DiffHorizontal(in1_col="col", in2_col="col2", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
@@ -496,7 +496,7 @@ def test_diff_horizontal_transformer_fit_missing_policy_raise_in2(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DiffHorizontal(in1_col="col1", in2_col="missing", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'missing' is missing in the DataFrame"):
         transformer.fit(dataframe)
 
 
@@ -507,7 +507,7 @@ def test_diff_horizontal_transformer_fit_missing_policy_warn_in1(
         in1_col="col", in2_col="col2", out_col="diff", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignore"
     ):
         transformer.fit(dataframe)
 
@@ -520,7 +520,7 @@ def test_diff_horizontal_transformer_fit_missing_policy_warn_in2(
     )
     with pytest.warns(
         ColumnNotFoundWarning,
-        match="column 'missing' is missing in the DataFrame and will be ignore",
+        match=r"column 'missing' is missing in the DataFrame and will be ignore",
     ):
         transformer.fit(dataframe)
 
@@ -626,7 +626,7 @@ def test_diff_horizontal_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DiffHorizontal(in1_col="col1", in2_col="col2", out_col="col3")
-    with pytest.raises(ColumnExistsError, match="column 'col3' already exists in the DataFrame"):
+    with pytest.raises(ColumnExistsError, match=r"column 'col3' already exists in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -638,7 +638,7 @@ def test_diff_horizontal_transformer_transform_exist_policy_warn(
     )
     with pytest.warns(
         ColumnExistsWarning,
-        match="column 'col3' already exists in the DataFrame and will be overwritten",
+        match=r"column 'col3' already exists in the DataFrame and will be overwritten",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -694,7 +694,7 @@ def test_diff_horizontal_transformer_transform_missing_policy_raise_in1(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DiffHorizontal(in1_col="col", in2_col="col2", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'col' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'col' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -702,7 +702,7 @@ def test_diff_horizontal_transformer_transform_missing_policy_raise_in2(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DiffHorizontal(in1_col="col1", in2_col="missing", out_col="diff")
-    with pytest.raises(ColumnNotFoundError, match="column 'missing' is missing in the DataFrame"):
+    with pytest.raises(ColumnNotFoundError, match=r"column 'missing' is missing in the DataFrame"):
         transformer.transform(dataframe)
 
 
@@ -713,7 +713,7 @@ def test_diff_horizontal_transformer_transform_missing_policy_warn_in1(
         in1_col="col", in2_col="col2", out_col="diff", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="column 'col' is missing in the DataFrame and will be ignore"
+        ColumnNotFoundWarning, match=r"column 'col' is missing in the DataFrame and will be ignore"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -733,7 +733,7 @@ def test_diff_horizontal_transformer_transform_missing_policy_warn_in2(
     )
     with pytest.warns(
         ColumnNotFoundWarning,
-        match="column 'missing' is missing in the DataFrame and will be ignore",
+        match=r"column 'missing' is missing in the DataFrame and will be ignore",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
