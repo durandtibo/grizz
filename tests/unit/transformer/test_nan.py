@@ -134,7 +134,7 @@ def test_drop_nan_column_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DropNanColumn(columns=["col1", "col2", "col5"], threshold=0.4)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -145,7 +145,7 @@ def test_drop_nan_column_transformer_fit_missing_policy_warn(
         columns=["col1", "col2", "col5"], threshold=0.4, missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -275,7 +275,7 @@ def test_drop_nan_column_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = DropNanColumn(columns=["col1", "col2", "col5"], threshold=0.4)
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -286,7 +286,7 @@ def test_drop_nan_column_transformer_transform_missing_policy_warn(
         columns=["col1", "col2", "col5"], threshold=0.4, missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -381,7 +381,7 @@ def test_drop_nan_row_transformer_fit_missing_policy_raise(
     frame_row: pl.DataFrame,
 ) -> None:
     transformer = DropNanRow(columns=["col1", "col2", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(frame_row)
 
 
@@ -390,7 +390,7 @@ def test_drop_nan_row_transformer_fit_missing_policy_warn(
 ) -> None:
     transformer = DropNanRow(columns=["col1", "col2", "col5"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(frame_row)
 
@@ -490,7 +490,7 @@ def test_drop_nan_row_transformer_transform_missing_policy_raise(
     frame_row: pl.DataFrame,
 ) -> None:
     transformer = DropNanRow(columns=["col1", "col2", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(frame_row)
 
 
@@ -499,7 +499,7 @@ def test_drop_nan_row_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = DropNanRow(columns=["col1", "col2", "col5"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(frame_row)
     assert_frame_equal(

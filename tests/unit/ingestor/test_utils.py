@@ -24,5 +24,5 @@ def test_check_data_file_exists(tmp_path: Path) -> None:
 
 def test_check_data_file_missing(tmp_path: Path) -> None:
     path = tmp_path.joinpath("data.txt")
-    with pytest.raises(DataNotFoundError, match="Data file does not exist"):
+    with pytest.raises(DataNotFoundError, match=r"Data file does not exist"):
         check_data_file(path)

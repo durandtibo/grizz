@@ -172,5 +172,5 @@ def test_parquet_file_ingestor_ingest_with_kwargs(frame_path: Path) -> None:
 
 def test_parquet_file_ingestor_ingest_missing_path(tmp_path: Path) -> None:
     ingestor = ParquetFileIngestor(tmp_path.joinpath("data.parquet"))
-    with pytest.raises(DataNotFoundError, match="Data file does not exist"):
+    with pytest.raises(DataNotFoundError, match=r"Data file does not exist"):
         ingestor.ingest()

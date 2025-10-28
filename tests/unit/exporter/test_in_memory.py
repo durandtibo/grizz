@@ -111,5 +111,5 @@ def test_in_memory_exporter_ingest(dataframe: pl.DataFrame) -> None:
 
 def test_in_memory_exporter_ingest_empty() -> None:
     exporter = InMemoryExporter()
-    with pytest.raises(DataNotFoundError, match="No DataFrame available for ingestion."):
+    with pytest.raises(DataNotFoundError, match=r"No DataFrame available for ingestion."):
         exporter.ingest()

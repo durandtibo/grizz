@@ -184,7 +184,7 @@ def test_power_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = PowerTransformer(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -196,7 +196,7 @@ def test_power_transformer_fit_missing_policy_warn(
         columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
     assert transformer._transformer.n_features_in_ == 2
@@ -502,7 +502,8 @@ def test_power_transformer_transform_propagate_nulls_false() -> None:
 def test_power_transformer_transform_not_fitted(dataframe: pl.DataFrame) -> None:
     transformer = PowerTransformer(columns=["col1", "col3"], prefix="", suffix="_out")
     with pytest.raises(
-        sklearn.exceptions.NotFittedError, match="This PowerTransformer instance is not fitted yet."
+        sklearn.exceptions.NotFittedError,
+        match=r"This PowerTransformer instance is not fitted yet.",
     ):
         transformer.transform(dataframe)
 
@@ -554,7 +555,7 @@ def test_power_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = PowerTransformer(columns=["col1", "col3"], prefix="", suffix="")
-    with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match=r"2 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -568,7 +569,7 @@ def test_power_transformer_transform_exist_policy_warn(
     transformer._transformer.fit(np.array([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]))
     with pytest.warns(
         ColumnExistsWarning,
-        match="2 columns already exist in the DataFrame and will be overwritten:",
+        match=r"2 columns already exist in the DataFrame and will be overwritten:",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -653,7 +654,7 @@ def test_power_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = PowerTransformer(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -666,7 +667,7 @@ def test_power_transformer_transform_missing_policy_warn(
     )
     transformer._transformer.fit(np.array([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]))
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -707,7 +708,7 @@ def test_power_transformer_transform_missing_policy_warn(
 def test_power_transformer_no_sklearn() -> None:
     with (
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
-        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'sklearn' package is required but not installed."),
     ):
         PowerTransformer(columns=["col1", "col3"], prefix="", suffix="_out")
 
@@ -824,7 +825,7 @@ def test_inplace_power_transformer_fit_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplacePowerTransformer(columns=["col1", "col3", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -834,7 +835,7 @@ def test_inplace_power_transformer_fit_missing_policy_warn(
 ) -> None:
     transformer = InplacePowerTransformer(columns=["col1", "col3", "col5"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
     assert transformer._transformer.n_features_in_ == 2
@@ -1066,7 +1067,7 @@ def test_inplace_power_transformer_transform_not_fitted(dataframe: pl.DataFrame)
     transformer = InplacePowerTransformer(columns=["col1", "col3"])
     with pytest.raises(
         sklearn.exceptions.NotFittedError,
-        match="This PowerTransformer instance is not fitted yet.",
+        match=r"This PowerTransformer instance is not fitted yet.",
     ):
         transformer.transform(dataframe)
 
@@ -1111,7 +1112,7 @@ def test_inplace_power_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplacePowerTransformer(columns=["col1", "col3", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -1122,7 +1123,7 @@ def test_inplace_power_transformer_transform_missing_policy_warn(
     transformer = InplacePowerTransformer(columns=["col1", "col3", "col5"], missing_policy="warn")
     transformer._transformer.fit(np.array([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]))
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -1154,6 +1155,6 @@ def test_inplace_power_transformer_transform_missing_policy_warn(
 def test_inplace_power_transformer_no_sklearn() -> None:
     with (
         patch("grizz.utils.imports.is_sklearn_available", lambda: False),
-        pytest.raises(RuntimeError, match="'sklearn' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'sklearn' package is required but not installed."),
     ):
         InplacePowerTransformer(columns=["col1", "col3"])

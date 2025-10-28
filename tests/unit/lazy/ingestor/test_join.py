@@ -49,7 +49,7 @@ def ingestors() -> tuple[BaseIngestor, ...]:
 
 
 def test_join_ingestor_incorrect_ingestors() -> None:
-    with pytest.raises(ValueError, match="'ingestors' must contain at least one ingestor"):
+    with pytest.raises(ValueError, match=r"'ingestors' must contain at least one ingestor"):
         JoinIngestor([])
 
 

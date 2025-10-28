@@ -162,7 +162,7 @@ def test_compute_pairwise_cooccurrence_null() -> None:
 def test_compute_pairwise_cooccurrence_no_numpy() -> None:
     with (
         patch("coola.utils.imports.is_numpy_available", lambda: False),
-        pytest.raises(RuntimeError, match="'numpy' package is required but not installed."),
+        pytest.raises(RuntimeError, match=r"'numpy' package is required but not installed."),
     ):
         compute_pairwise_cooccurrence(
             pl.DataFrame({"col1": [0, 1, 1, 0, 0], "col2": [0, 1, 0, 1, 0]})

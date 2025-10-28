@@ -224,7 +224,7 @@ def test_to_datetime_transformer_fit_missing_policy_ignore(dataframe: pl.DataFra
 
 def test_to_datetime_transformer_fit_missing_policy_raise(dataframe: pl.DataFrame) -> None:
     transformer = ToDatetime(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
@@ -233,7 +233,7 @@ def test_to_datetime_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame
         columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -1149,7 +1149,7 @@ def test_to_datetime_transformer_transform_exist_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = ToDatetime(columns=["col1", "col3"], prefix="", suffix="")
-    with pytest.raises(ColumnExistsError, match="2 columns already exist in the DataFrame:"):
+    with pytest.raises(ColumnExistsError, match=r"2 columns already exist in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -1159,7 +1159,7 @@ def test_to_datetime_transformer_transform_exist_policy_warn(
     transformer = ToDatetime(columns=["col1", "col3"], prefix="", suffix="", exist_policy="warn")
     with pytest.warns(
         ColumnExistsWarning,
-        match="2 columns already exist in the DataFrame and will be overwritten:",
+        match=r"2 columns already exist in the DataFrame and will be overwritten:",
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -1461,7 +1461,7 @@ def test_to_datetime_transformer_transform_missing_policy_ignore(dataframe: pl.D
 
 def test_to_datetime_transformer_transform_missing_policy_raise(dataframe: pl.DataFrame) -> None:
     transformer = ToDatetime(columns=["col1", "col3", "col5"], prefix="", suffix="_out")
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -1470,7 +1470,7 @@ def test_to_datetime_transformer_transform_missing_policy_warn(dataframe: pl.Dat
         columns=["col1", "col3", "col5"], prefix="", suffix="_out", missing_policy="warn"
     )
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(
@@ -1745,14 +1745,14 @@ def test_inplace_to_datetime_transformer_fit_missing_policy_ignore(dataframe: pl
 
 def test_inplace_to_datetime_transformer_fit_missing_policy_raise(dataframe: pl.DataFrame) -> None:
     transformer = InplaceToDatetime(columns=["col1", "col3", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.fit(dataframe)
 
 
 def test_inplace_to_datetime_transformer_fit_missing_policy_warn(dataframe: pl.DataFrame) -> None:
     transformer = InplaceToDatetime(columns=["col1", "col3", "col5"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         transformer.fit(dataframe)
 
@@ -2440,7 +2440,7 @@ def test_inplace_to_datetime_transformer_transform_missing_policy_raise(
     dataframe: pl.DataFrame,
 ) -> None:
     transformer = InplaceToDatetime(columns=["col1", "col3", "col5"])
-    with pytest.raises(ColumnNotFoundError, match="1 column is missing in the DataFrame:"):
+    with pytest.raises(ColumnNotFoundError, match=r"1 column is missing in the DataFrame:"):
         transformer.transform(dataframe)
 
 
@@ -2449,7 +2449,7 @@ def test_inplace_to_datetime_transformer_transform_missing_policy_warn(
 ) -> None:
     transformer = InplaceToDatetime(columns=["col1", "col3", "col5"], missing_policy="warn")
     with pytest.warns(
-        ColumnNotFoundWarning, match="1 column is missing in the DataFrame and will be ignored:"
+        ColumnNotFoundWarning, match=r"1 column is missing in the DataFrame and will be ignored:"
     ):
         out = transformer.transform(dataframe)
     assert_frame_equal(

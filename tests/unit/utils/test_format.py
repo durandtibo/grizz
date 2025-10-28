@@ -300,5 +300,5 @@ def test_str_boolean_series_stats_all_true() -> None:
 
 
 def test_str_boolean_series_stats_incorrect_dtype() -> None:
-    with pytest.raises(ValueError, match="Incorrect dtype"):
+    with pytest.raises(ValueError, match=r"Incorrect dtype"):
         str_boolean_series_stats(pl.Series())
