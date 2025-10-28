@@ -26,9 +26,10 @@ jobs:
           ubuntu-24.04-arm,
           ubuntu-22.04-arm,
           macos-latest,
+          macos-26,
           macos-15,
           macos-14,
-          macos-13,
+          macos-15-intel,
         ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
@@ -64,9 +65,10 @@ jobs:
           ubuntu-24.04-arm,
           ubuntu-22.04-arm,
           macos-latest,
+          macos-26,
           macos-15,
           macos-14,
-          macos-13,
+          macos-15-intel,
         ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
@@ -102,9 +104,10 @@ jobs:
           ubuntu-24.04-arm,
           ubuntu-22.04-arm,
           macos-latest,
+          macos-26,
           macos-15,
           macos-14,
-          macos-13,
+          macos-15-intel,
         ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
@@ -140,9 +143,10 @@ jobs:
           ubuntu-24.04-arm,
           ubuntu-22.04-arm,
           macos-latest,
+          macos-26,
           macos-15,
           macos-14,
-          macos-13,
+          macos-15-intel,
         ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
 
@@ -400,7 +404,7 @@ jobs:
         os: [ ubuntu-latest ]
         python-version: [ '3.13', '3.12', '3.11', '3.10', '3.9' ]
         numpy-version: [
-          2.3.2,
+          2.3.4,
           2.2.6,
           2.1.3,
           2.0.2,
