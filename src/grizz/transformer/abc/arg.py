@@ -13,6 +13,7 @@ from coola import objects_are_equal
 from coola.utils.format import repr_mapping_line, str_mapping_line
 from iden.utils.time import timeblock
 
+from grizz.exceptions import TransformerNotFittedError
 from grizz.transformer.base import BaseTransformer
 from grizz.utils.format import str_dataframe_diff
 
@@ -39,6 +40,11 @@ class BaseArgTransformer(BaseTransformer):
         args = str_mapping_line(self.get_args())
         return f"{self.__class__.__qualname__}({args})"
 
+    def check_is_fitted(self) -> None:
+        if self.requires_fit and not self._is_fitted:
+            msg = "This transformer instance is not fitted yet"
+            raise TransformerNotFittedError(msg)
+
     def equal(self, other: Any, equal_nan: bool = False) -> bool:
         if not isinstance(other, self.__class__):
             return False
@@ -60,8 +66,9 @@ class BaseArgTransformer(BaseTransformer):
         logger.info(str_dataframe_diff(orig=frame, final=out))
         return out
 
+    @property
     @abstractmethod
-    def check_is_fitted(self) -> None: ...
+    def requires_fit(self) -> bool: ...
 
     @abstractmethod
     def get_args(self) -> dict:
