@@ -156,7 +156,7 @@ def time_unit_to_strftime_format(time_unit: str) -> str:
 
     ```
     """
-    template = STRFTIME_FORMAT.get(time_unit.lower(), None)
+    template = STRFTIME_FORMAT.get(time_unit.lower())
     if template is None:
         msg = (
             f"Incorrect time unit {time_unit}. The valid time units are: "
