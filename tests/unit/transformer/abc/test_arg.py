@@ -32,13 +32,11 @@ class MyArgTransformer(BaseArgTransformer):
         super().__init__()
         self._col = col
         self._value = value
-
         self._requires_fit = requires_fit
 
-    def check_is_fitted(self) -> None:
-        if self._requires_fit and not self._is_fitted:
-            msg = "This transformer instance is not fitted yet"
-            raise TransformerNotFittedError(msg)
+    @property
+    def requires_fit(self) -> bool:
+        return self._requires_fit
 
     def get_args(self) -> dict:
         return {"col": self._col, "value": self._value}
